@@ -361,7 +361,7 @@ pub struct AccumulatorData {
 }
 
 /// An accumulator's public keys.
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, JsonSchema)]
 pub struct AccumulatorPublicData(pub OpaqueMaterial);
 impl_Debug_for_OpaqueMaterial_wrapper! { AccumulatorPublicData }
 
@@ -607,7 +607,7 @@ impl DataForVerifier {
 }
 
 /// Warnings and DataForVerifier.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct WarningsAndDataForVerifier {
 
     /// A list of warnings.
