@@ -11,7 +11,7 @@ use std::fs;
 use std::collections::HashMap;
 
 /// Summary: for each file in `<dir_path>`, generate a test function that runs the test represented
-/// in a JSON file loaded from `<file_path>` using a PlatformAPI generated from <crypto_interface>.
+/// in a JSON file loaded from `<file_path>` using a VcaApi generated from <crypto_interface>.
 ///
 /// `input` should have the form:
 /// ```ignore
@@ -42,30 +42,30 @@ use std::collections::HashMap;
 ///
 ///      If the specified override file contains no overrides, then:
 ///
-///      $ cargo test vcp::r#impl::general::proof_system::direct::tests -- --test-threads=1
+///      $ cargo test vca::r#impl::general::proof_system::direct::tests -- --test-threads=1
 ///
-///      test vcp::r#impl::general::proof_system::direct::tests::test_014_slow_verifies_with_small_range_below_signed_value ... ok
-///      test vcp::r#impl::general::proof_system::direct::tests::test_015_slow_verifies_with_small_range_above_signed_value ... ok
-///      test vcp::r#impl::general::proof_system::direct::tests::test_017_slowslow_encrypt_and_decrypt_one_attribute_no_verification_yet ... FAILED
-///      test vcp::r#impl::general::proof_system::direct::tests::test_018_slowslow_encrypt_and_decrypt_one_attribute_and_verify ... FAILED
+///      test vca::r#impl::general::proof_system::direct::tests::test_014_slow_verifies_with_small_range_below_signed_value ... ok
+///      test vca::r#impl::general::proof_system::direct::tests::test_015_slow_verifies_with_small_range_above_signed_value ... ok
+///      test vca::r#impl::general::proof_system::direct::tests::test_017_slowslow_encrypt_and_decrypt_one_attribute_no_verification_yet ... FAILED
+///      test vca::r#impl::general::proof_system::direct::tests::test_018_slowslow_encrypt_and_decrypt_one_attribute_and_verify ... FAILED
 ///
 ///      The failures are currently expected.  Note that all four tests ran.
 ///
-///      $ cargo test --features=ignore_slow vcp::r#impl::general::proof_system::direct::tests -- --test-threads=1
+///      $ cargo test --features=ignore_slow vca::r#impl::general::proof_system::direct::tests -- --test-threads=1
 ///
-///      test vcp::r#impl::general::proof_system::direct::tests::test_014_slow_verifies_with_small_range_below_signed_value ... ignored
-///      test vcp::r#impl::general::proof_system::direct::tests::test_015_slow_verifies_with_small_range_above_signed_value ... ignored
-///      test vcp::r#impl::general::proof_system::direct::tests::test_017_slowslow_encrypt_and_decrypt_one_attribute_no_verification_yet ... ignored
-///      test vcp::r#impl::general::proof_system::direct::tests::test_018_slowslow_encrypt_and_decrypt_one_attribute_and_verify ... ignored
+///      test vca::r#impl::general::proof_system::direct::tests::test_014_slow_verifies_with_small_range_below_signed_value ... ignored
+///      test vca::r#impl::general::proof_system::direct::tests::test_015_slow_verifies_with_small_range_above_signed_value ... ignored
+///      test vca::r#impl::general::proof_system::direct::tests::test_017_slowslow_encrypt_and_decrypt_one_attribute_no_verification_yet ... ignored
+///      test vca::r#impl::general::proof_system::direct::tests::test_018_slowslow_encrypt_and_decrypt_one_attribute_and_verify ... ignored
 ///
 ///      All tests with 'slow' are ignored
 ///
-///      $ cargo test --features=ignore_slow_slow vcp::r#impl::general::proof_system::direct::tests -- --test-threads=1
+///      $ cargo test --features=ignore_slow_slow vca::r#impl::general::proof_system::direct::tests -- --test-threads=1
 ///
-///      test vcp::r#impl::general::proof_system::direct::tests::test_014_slow_verifies_with_small_range_below_signed_value ... ok
-///      test vcp::r#impl::general::proof_system::direct::tests::test_015_slow_verifies_with_small_range_above_signed_value ... ok
-///      test vcp::r#impl::general::proof_system::direct::tests::test_017_slowslow_encrypt_and_decrypt_one_attribute_no_verification_yet ... ignored
-///      test vcp::r#impl::general::proof_system::direct::tests::test_018_slowslow_encrypt_and_decrypt_one_attribute_and_verify ... ignored
+///      test vca::r#impl::general::proof_system::direct::tests::test_014_slow_verifies_with_small_range_below_signed_value ... ok
+///      test vca::r#impl::general::proof_system::direct::tests::test_015_slow_verifies_with_small_range_above_signed_value ... ok
+///      test vca::r#impl::general::proof_system::direct::tests::test_017_slowslow_encrypt_and_decrypt_one_attribute_no_verification_yet ... ignored
+///      test vca::r#impl::general::proof_system::direct::tests::test_018_slowslow_encrypt_and_decrypt_one_attribute_and_verify ... ignored
 ///
 ///      Only tests with 'slowslow' are ignored
 ///
@@ -89,12 +89,12 @@ use std::collections::HashMap;
 ///      Suppose the specified override file contains
 ///        {"014_verifies_with_small_range_below_signed_value": {"tag": "NotSoSlow"}}
 ///
-///      $ cargo test --features=ignore_slow vcp::r#impl::general::proof_system::direct::tests -- --test-threads=1
+///      $ cargo test --features=ignore_slow vca::r#impl::general::proof_system::direct::tests -- --test-threads=1
 ///
-///      test vcp::r#impl::general::proof_system::direct::tests::test_014_verifies_with_small_range_below_signed_value ... ok
-///      test vcp::r#impl::general::proof_system::direct::tests::test_015_slow_verifies_with_small_range_above_signed_value ... ignored
-///      test vcp::r#impl::general::proof_system::direct::tests::test_017_slowslow_encrypt_and_decrypt_one_attribute_no_verification_yet ... ignored
-///      test vcp::r#impl::general::proof_system::direct::tests::test_018_slowslow_encrypt_and_decrypt_one_attribute_and_verify ... ignored
+///      test vca::r#impl::general::proof_system::direct::tests::test_014_verifies_with_small_range_below_signed_value ... ok
+///      test vca::r#impl::general::proof_system::direct::tests::test_015_slow_verifies_with_small_range_above_signed_value ... ignored
+///      test vca::r#impl::general::proof_system::direct::tests::test_017_slowslow_encrypt_and_decrypt_one_attribute_no_verification_yet ... ignored
+///      test vca::r#impl::general::proof_system::direct::tests::test_018_slowslow_encrypt_and_decrypt_one_attribute_and_verify ... ignored
 ///
 ///      Same as before, except test 014 is no longer labeled as 'slow', and is no longer ignored
 ///
@@ -105,12 +105,12 @@ use std::collections::HashMap;
 ///
 ///      $ make test
 ///
-///      test vcp::r#impl::general::proof_system::direct::tests::test_014_slow_verifies_with_small_range_below_signed_value ... FAILED
-///      test vcp::r#impl::general::proof_system::direct::tests::test_015_slow_verifies_with_small_range_above_signed_value ... ignored, can't run this test for some external reason
+///      test vca::r#impl::general::proof_system::direct::tests::test_014_slow_verifies_with_small_range_below_signed_value ... FAILED
+///      test vca::r#impl::general::proof_system::direct::tests::test_015_slow_verifies_with_small_range_above_signed_value ... ignored, can't run this test for some external reason
 ///
-///      ---- vcp::r#impl::general::proof_system::direct::tests::test_014_slow_verifies_with_small_range_below_signed_value stdout ----
-///      thread 'vcp::r#impl::general::proof_system::direct::tests::test_014_slow_verifies_with_small_range_below_signed_value' panicked at
-///             'don't run this test because of some deficiency in the library', tests/vcp/impl/general/proof_system/direct.rs:71:5
+///      ---- vca::r#impl::general::proof_system::direct::tests::test_014_slow_verifies_with_small_range_below_signed_value stdout ----
+///      thread 'vca::r#impl::general::proof_system::direct::tests::test_014_slow_verifies_with_small_range_below_signed_value' panicked at
+///             'don't run this test because of some deficiency in the library', tests/vca/impl/general/proof_system/direct.rs:71:5
 ///
 ///
 ///
@@ -124,12 +124,12 @@ use std::collections::HashMap;
 ///      $ cargo test ac2c::test_014 -- --nocapture
 ///      ...
 ///      running 1 test
-///      thread 'vcp::r#impl::general::proof_system::direct::tests::ac2c::test_014_verifies_with_small_range_below_signed_value_overridden_to_fail' panicked at tests/vcp/impl/general/proof_system/direct.rs:71:9:
+///      thread 'vca::r#impl::general::proof_system::direct::tests::ac2c::test_014_verifies_with_small_range_below_signed_value_overridden_to_fail' panicked at tests/vca/impl/general/proof_system/direct.rs:71:9:
 ///      don't run this test because of some deficiency in the library       <=== reason for overriding the test to Fail
-///      test vcp::r#impl::general::proof_system::direct::tests::ac2c::test_014_verifies_with_small_range_below_signed_value_overridden_to_fail ... FAILED
+///      test vca::r#impl::general::proof_system::direct::tests::ac2c::test_014_verifies_with_small_range_below_signed_value_overridden_to_fail ... FAILED
 ///
 ///      failures:
-///          vcp::r#impl::general::proof_system::direct::tests::ac2c::test_020_SLOWSLOW_encrypt_and_decrypt_one_attribute_and_verify_overridden_to_fail
+///          vca::r#impl::general::proof_system::direct::tests::ac2c::test_020_SLOWSLOW_encrypt_and_decrypt_one_attribute_and_verify_overridden_to_fail
 ///
 ///      test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 119 filtered out; finished in 0.00s
 ///
@@ -325,10 +325,10 @@ pub fn map_test_over_dir(input: pm1::TokenStream) -> pm1::TokenStream {
                 ts.extend(quote!{
                     fn #test_name_id() {
                         extern crate credx;
-                        use credx::vcp::api_utils::implement_platform_api_using;
+                        use credx::vca::api_utils::implement_vca_api_using;
                         if let Err(e) =
-                            crate::vcp::test_framework::run_test_from_json_file(
-                                &implement_platform_api_using(&#crypto_interface),
+                            crate::vca::test_framework::run_test_from_json_file(
+                                &implement_vca_api_using(&#crypto_interface),
                                 #file_path_lit.to_string())
                         {
                             panic!("run_json_test failed with {:?}", e)
@@ -380,7 +380,7 @@ pub fn map_test_over_dir(input: pm1::TokenStream) -> pm1::TokenStream {
 }
 
 // Ideally we would export this here to avoid DRY fail with
-// tests/vcp/impl/general/proof_system/utils.rs, but proc-macro crate types "currently" cannot do so
+// tests/vca/impl/general/proof_system/utils.rs, but proc-macro crate types "currently" cannot do so
 type TestLabel = String;
 type LibrarySpecificTestHandlers = HashMap<TestLabel, TestHandler>;
 

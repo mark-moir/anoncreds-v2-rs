@@ -3,7 +3,7 @@ apply plugin: 'eclipse'
 apply plugin: 'java'
 apply plugin: 'com.diffplug.spotless'
 
-group = 'com.example.vcp'
+group = 'com.example.vca'
 version = '0.1.0'
 
 buildscript {
@@ -89,7 +89,7 @@ if(hasProperty('target') && target == 'android') {
     publishing {
         publications {
             maven(MavenPublication) {
-               artifactId = 'vcp-demo-client'
+               artifactId = 'vca-demo-client'
                from components.java
             }
         }

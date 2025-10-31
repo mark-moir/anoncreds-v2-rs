@@ -1,8 +1,8 @@
 This demonstrates
-- running the vcp-server and getting its OpenAPI specification
+- running the vca-server and getting its OpenAPI specification
 - generating Java client code from that specification
 - writing code to use the generated code
-- interacting with vcp-server
+- interacting with vca-server
 
 * hand written part
 
@@ -10,7 +10,7 @@ Code generated from the OpenAPI specification handles marshalling from/to JSON/J
 That generated code is then called from "hand written" application code.  In this example, the hand written
 code resides in:
 
-=./src/main/java/com/example/vcp/demos/=
+=./src/main/java/com/example/vca/demos/=
 
 * how to build and run
 
@@ -23,7 +23,7 @@ make run &
 popd
 
 # expects server to be running
-make get-vcp-server-swagger
+make get-vca-server-swagger
 
 # install tools
 make install-openapi-cli

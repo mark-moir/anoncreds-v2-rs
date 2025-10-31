@@ -3,7 +3,7 @@
 // based on okapi/examples/custom_schema
 
 // ------------------------------------------------------------------------------
-use credx::vcp::interfaces::types::*;
+use credx::vca::interfaces::types::*;
 // ------------------------------------------------------------------------------
 use rocket::{get,post};
 use rocket::data::{ByteUnit, Limits};
@@ -43,7 +43,7 @@ struct CreateSignerDataRequest {
 /// Returns SignerData.
 // #[openapi(tag = "Signer")]
 #[openapi()]
-#[post("/vcp/createSignerData?<rng_and_zkp..>", data = "<dat>")]
+#[post("/vca/createSignerData?<rng_and_zkp..>", data = "<dat>")]
 fn createSignerData(
     rng_and_zkp : RngSeedAndZkpLibQueryParams,
     dat         : crate::DataResult<'_, CreateSignerDataRequest>,
@@ -54,7 +54,7 @@ fn createSignerData(
         |v| Ok(v.into_inner()))?;
     let op          = api.create_signer_data;
     op(seed, &dat.claimTypes, &dat.blindedAttributeIndices, ProofMode::Strict).map_or_else(
-        |e| vcpErr(e, "createSignerData"),
+        |e| vcaErr(e, "createSignerData"),
         |v| Ok(Json(v)))
 }
 
@@ -77,7 +77,7 @@ struct CreateBlindSigningInfoRequest {
 /// Returns BlindSigningInfo
 // #[openapi(tag = "Signer")]
 #[openapi()]
-#[post("/vcp/createBlindSigningInfo?<rng_and_zkp..>", data = "<dat>")]
+#[post("/vca/createBlindSigningInfo?<rng_and_zkp..>", data = "<dat>")]
 fn createBlindSigningInfo(
     rng_and_zkp : RngSeedAndZkpLibQueryParams,
     dat         : crate::DataResult<'_, CreateBlindSigningInfoRequest>,
@@ -88,7 +88,7 @@ fn createBlindSigningInfo(
         |v| Ok(v.into_inner()))?;
     let op          = api.create_blind_signing_info;
     op(seed, &dat.signerPublicData, &dat.blindedIndicesAndValues, ProofMode::Strict).map_or_else(
-        |e| vcpErr(e, "createBlindSigningInfo"),
+        |e| vcaErr(e, "createBlindSigningInfo"),
         |v| Ok(Json(v)))
 }
 
@@ -110,7 +110,7 @@ struct SignRequest {
 /// Returns Signature.
 // #[openapi(tag = "Signer")]
 #[openapi()]
-#[post("/vcp/sign?<rng_and_zkp..>", data = "<dat>")]
+#[post("/vca/sign?<rng_and_zkp..>", data = "<dat>")]
 fn sign(
     rng_and_zkp : RngSeedAndZkpLibQueryParams,
     dat         : crate::DataResult<'_, SignRequest>,
@@ -121,7 +121,7 @@ fn sign(
         |v| Ok(v.into_inner()))?;
     let op = api.sign;
     op(seed, &dat.values, &dat.signerData, ProofMode::Strict).map_or_else(
-        |e| vcpErr(e, "sign"),
+        |e| vcaErr(e, "sign"),
         |v| Ok(Json(v)))
 }
 
@@ -145,7 +145,7 @@ struct SignWithBlindedAttributesRequest {
 /// Returns a BlindSignature.
 // #[openapi(tag = "Signer")]
 #[openapi()]
-#[post("/vcp/signWithBlindedAttributes?<rng_and_zkp..>", data = "<dat>")]
+#[post("/vca/signWithBlindedAttributes?<rng_and_zkp..>", data = "<dat>")]
 fn signWithBlindedAttributes(
     rng_and_zkp : RngSeedAndZkpLibQueryParams,
     dat         : crate::DataResult<'_, SignWithBlindedAttributesRequest>,
@@ -156,7 +156,7 @@ fn signWithBlindedAttributes(
         |v| Ok(v.into_inner()))?;
     let op = api.sign_with_blinded_attributes;
     op(seed, &dat.nonBlindedAttributes, &dat.blindInfoForSigner, &dat.signerData, ProofMode::Strict).map_or_else(
-        |e| vcpErr(e, "signWithBlindedAttributes"),
+        |e| vcaErr(e, "signWithBlindedAttributes"),
         |v| Ok(Json(v)))
 }
 
@@ -184,7 +184,7 @@ struct UnblindBlindedSignatureRequest {
 /// Returns Signature.
 // #[openapi(tag = "Signer")]
 #[openapi()]
-#[post("/vcp/unblindBlindedSignature?<rng_and_zkp..>", data = "<dat>")]
+#[post("/vca/unblindBlindedSignature?<rng_and_zkp..>", data = "<dat>")]
 fn unblindBlindedSignature(
     rng_and_zkp : RngSeedAndZkpLibQueryParams,
     dat         : crate::DataResult<'_, UnblindBlindedSignatureRequest>,
@@ -195,7 +195,7 @@ fn unblindBlindedSignature(
         |v| Ok(v.into_inner()))?;
     let op = api.unblind_blinded_signature;
     op(&dat.claimTypes, &dat.blindedIndicesAndValues, &dat.blindSignature, &dat.infoForUnblinding,  ProofMode::Strict).map_or_else(
-        |e| vcpErr(e, "unblindBlindedSignature"),
+        |e| vcaErr(e, "unblindBlindedSignature"),
         |v| Ok(Json(v)))
 }
 
@@ -206,14 +206,14 @@ fn unblindBlindedSignature(
 /// Returns CreateAccumulatorResponse.
 // #[openapi(tag = "Accumulator Manager")]
 #[openapi()]
-#[post("/vcp/createAccumulatorData?<rng_and_zkp..>")]
+#[post("/vca/createAccumulatorData?<rng_and_zkp..>")]
 fn createAccumulatorData(
     rng_and_zkp : RngSeedAndZkpLibQueryParams,
 ) -> Result<Json<CreateAccumulatorResponse>, (Status, Json<Error>)> {
     let (seed, api) = getSeedAndApi(rng_and_zkp, "createAccumulatorData")?;
     let op          = api.create_accumulator_data;
     op(seed).map_or_else(
-        |e| vcpErr(e, "createAccumulatorData"),
+        |e| vcaErr(e, "createAccumulatorData"),
         |v| Ok(Json(v)))
 }
 
@@ -224,7 +224,7 @@ fn createAccumulatorData(
 /// Returns AccumulatorElement.
 // #[openapi(tag = "Accumulator Manager")]
 #[openapi()]
-#[post("/vcp/createAccumulatorElement?<zkp..>", data = "<text>")]
+#[post("/vca/createAccumulatorElement?<zkp..>", data = "<text>")]
 fn createAccumulatorElement(
     zkp  : ZkpLibQueryParam,
     text : crate::DataResult<'_, String>,
@@ -235,7 +235,7 @@ fn createAccumulatorElement(
         |v| Ok(v.into_inner()))?;
     let op  = api.create_accumulator_element;
     op(dat).map_or_else(
-        |e| vcpErr(e, "createAccumulatorElement"),
+        |e| vcaErr(e, "createAccumulatorElement"),
         |v| Ok(Json(v)))
 }
 
@@ -263,7 +263,7 @@ struct AccumulatorAddRemoveRequest {
 /// Returns AccumulatorAddRemoveResponse.
 // #[openapi(tag = "Accumulator Manager")]
 #[openapi()]
-#[post("/vcp/accumulatorAddRemove?<zkp..>", data = "<dat>")]
+#[post("/vca/accumulatorAddRemove?<zkp..>", data = "<dat>")]
 fn accumulatorAddRemove(
     zkp : ZkpLibQueryParam,
     dat : crate::DataResult<'_, AccumulatorAddRemoveRequest>,
@@ -274,7 +274,7 @@ fn accumulatorAddRemove(
         |v| Ok(v.into_inner()))?;
     let op  = api.accumulator_add_remove;
     op(&dat.accumulatorData, &dat.accumulator, &dat.additions, &dat.removals).map_or_else(
-        |e| vcpErr(e, "accumulatorAddRemove"),
+        |e| vcaErr(e, "accumulatorAddRemove"),
         |v| Ok(Json(v)))
 }
 
@@ -299,7 +299,7 @@ struct UpdateAccumulatorWitnessRequest {
 /// Returns AccumulatorMembershipWitness.
 // #[openapi(tag = "Accumulator Manager")]
 #[openapi()]
-#[post("/vcp/updateAccumulatorWitness?<zkp..>", data = "<dat>")]
+#[post("/vca/updateAccumulatorWitness?<zkp..>", data = "<dat>")]
 fn updateAccumulatorWitness(
     zkp : ZkpLibQueryParam,
     dat : crate::DataResult<'_, UpdateAccumulatorWitnessRequest>,
@@ -310,7 +310,7 @@ fn updateAccumulatorWitness(
         |v| Ok(v.into_inner()))?;
     let op  = api.update_accumulator_witness;
     op(&dat.witness, &dat.element, &dat.witnessUpdateInfo).map_or_else(
-        |e| vcpErr(e, "updateAccumulatorWitness"),
+        |e| vcaErr(e, "updateAccumulatorWitness"),
         |v| Ok(Json(v)))
 }
 
@@ -337,7 +337,7 @@ struct GetAccumulatorWitnessRequest {
 /// Returns AccumulatorWitness
 // #[openapi(tag = "Accumulator Manager")]
 #[openapi()]
-#[post("/vcp/getAccumulatorWitness?<zkp..>", data = "<dat>")]
+#[post("/vca/getAccumulatorWitness?<zkp..>", data = "<dat>")]
 fn getAccumulatorWitness(
     zkp : ZkpLibQueryParam,
     dat : crate::DataResult<'_, GetAccumulatorWitnessRequest>,
@@ -348,7 +348,7 @@ fn getAccumulatorWitness(
         |v| Ok(v.into_inner()))?;
     let op  = api.get_accumulator_witness;
     op(&dat.accumulatorData, &dat.accumulator, &dat.accumulatorElement).map_or_else(
-        |e| vcpErr(e, "createMembershipProvingKey"),
+        |e| vcaErr(e, "createMembershipProvingKey"),
         |v| Ok(Json(v)))
 }
 
@@ -359,14 +359,14 @@ fn getAccumulatorWitness(
 /// Returns MembershipProvingKey.
 // #[openapi(tag = "Accumulator Manager")]
 #[openapi()]
-#[post("/vcp/createMembershipProvingKey?<rng_and_zkp..>")]
+#[post("/vca/createMembershipProvingKey?<rng_and_zkp..>")]
 fn createMembershipProvingKey(
     rng_and_zkp : RngSeedAndZkpLibQueryParams,
 ) -> Result<Json<MembershipProvingKey>, (Status, Json<Error>)> {
     let (seed, api) = getSeedAndApi(rng_and_zkp, "createMembershipProvingKey")?;
     let op          = api.create_membership_proving_key;
     op(seed).map_or_else(
-        |e| vcpErr(e, "createMembershipProvingKey"),
+        |e| vcaErr(e, "createMembershipProvingKey"),
         |v| Ok(Json(v)))
 }
 
@@ -377,14 +377,14 @@ fn createMembershipProvingKey(
 /// Returns RangeProofProvingKey.
 // #[openapi(tag = "Verifier")]
 #[openapi()]
-#[post("/vcp/createRangeProofProvingKey?<rng_and_zkp..>")]
+#[post("/vca/createRangeProofProvingKey?<rng_and_zkp..>")]
 fn createRangeProofProvingKey(
     rng_and_zkp : RngSeedAndZkpLibQueryParams,
 ) -> Result<Json<RangeProofProvingKey>, (Status, Json<Error>)> {
     let (seed, api) = getSeedAndApi(rng_and_zkp, "createRangeProofProvingKey")?;
     let op          = api.create_range_proof_proving_key;
     op(seed).map_or_else(
-        |e| vcpErr(e, "createRangeProofProvingKey"),
+        |e| vcaErr(e, "createRangeProofProvingKey"),
         |v| Ok(Json(v)))
 }
 
@@ -395,7 +395,7 @@ fn createRangeProofProvingKey(
 /// Returns the maximum value.
 // #[openapi(tag = "Verifier")]
 #[openapi()]
-#[get("/vcp/getRangeProofMaxValue?<zkp..>")]
+#[get("/vca/getRangeProofMaxValue?<zkp..>")]
 fn getRangeProofMaxValue(
     zkp : ZkpLibQueryParam,
 ) -> Result<Json<u64>, (Status, Json<Error>)> {
@@ -411,14 +411,14 @@ fn getRangeProofMaxValue(
 /// Returns AuthorityData.
 // #[openapi(tag = "Authority")]
 #[openapi()]
-#[post("/vcp/createAuthorityData?<rng_and_zkp..>")]
+#[post("/vca/createAuthorityData?<rng_and_zkp..>")]
 fn createAuthorityData(
     rng_and_zkp : RngSeedAndZkpLibQueryParams,
 ) -> Result<Json<AuthorityData>, (Status, Json<Error>)> {
     let (seed, api) = getSeedAndApi(rng_and_zkp, "createAuthorityData")?;
     let op          = api.create_authority_data;
     op(seed).map_or_else(
-        |e| vcpErr(e, "createAuthorityData"),
+        |e| vcaErr(e, "createAuthorityData"),
         |v| Ok(Json(v)))
 }
 
@@ -448,7 +448,7 @@ struct CreateProofRequest {
 /// Returns WarningsAndDataForVerifier.
 // #[openapi(tag = "Holder")]
 #[openapi()]
-#[post("/vcp/createProof?<zkp..>", data = "<dat>")]
+#[post("/vca/createProof?<zkp..>", data = "<dat>")]
 fn createProof(
     zkp : ZkpLibQueryParam,
     dat : crate::DataResult<'_, CreateProofRequest>,
@@ -460,7 +460,7 @@ fn createProof(
     let op  = api.create_proof;
     op(&dat.proofReqs, &dat.sharedParams, &dat.sigsAndRelatedData,
        ProofMode::Strict, Some(dat.nonce)).map_or_else(
-        |e| vcpErr(e, "createProof"),
+        |e| vcaErr(e, "createProof"),
         |v| Ok(Json(v)))
 }
 
@@ -494,7 +494,7 @@ struct VerifyProofRequest {
 /// Returns WarningsAndDecryptResponses.
 // #[openapi(tag = "Verifier")]
 #[openapi()]
-#[post("/vcp/verifyProof?<zkp..>", data = "<dat>")]
+#[post("/vca/verifyProof?<zkp..>", data = "<dat>")]
 fn verifyProof(
     zkp : ZkpLibQueryParam,
     dat : crate::DataResult<'_, VerifyProofRequest>,
@@ -506,7 +506,7 @@ fn verifyProof(
     let op  = api.verify_proof;
     op(&dat.proofReqs, &dat.sharedParams, &dat.dataForVerifier, &dat.decryptRequests,
        ProofMode::Strict, Some(dat.nonce)).map_or_else(
-        |e| vcpErr(e, "verifyProof"),
+        |e| vcaErr(e, "verifyProof"),
         |v| Ok(Json(v)))
 }
 
@@ -543,7 +543,7 @@ struct VerifyDecryptionRequest {
 /// Returns list of Warnings.
 // #[openapi(tag = "Authority")]
 #[openapi()]
-#[post("/vcp/verifyDecryption?<zkp..>", data = "<dat>")]
+#[post("/vca/verifyDecryption?<zkp..>", data = "<dat>")]
 fn verifyDecryption(
     zkp : ZkpLibQueryParam,
     dat : crate::DataResult<'_, VerifyDecryptionRequest>,
@@ -555,7 +555,7 @@ fn verifyDecryption(
     let op  = api.verify_decryption;
     op(&dat.proofReqs, &dat.sharedParams, &dat.proof,&dat.decryptionKeys, &dat.decryptResponses,
        ProofMode::Strict, Some(dat.nonce)).map_or_else(
-        |e| vcpErr(e, "verifyDecryption"),
+        |e| vcaErr(e, "verifyDecryption"),
         |v| Ok(Json(v)))
 }
 
@@ -619,7 +619,7 @@ async fn main() {
         .launch()
         .await;
     match launch_result {
-        Ok(_)    => println!("VCP server shut down gracefully."),
-        Err(err) => println!("VCP server had an error: {}", err),
+        Ok(_)    => println!("VCA server shut down gracefully."),
+        Err(err) => println!("VCA server had an error: {}", err),
     };
 }

@@ -13,7 +13,7 @@ on:
 
 jobs:
   build:
-    name: Build vcp_server
+    name: Build vca_server
     runs-on: ubuntu-latest
     strategy:
       matrix:

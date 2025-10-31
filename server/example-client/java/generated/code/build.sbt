@@ -1,7 +1,7 @@
 lazy val root = (project in file(".")).
   settings(
-    organization := "com.example.vcp",
-    name := "vcp-demo-client",
+    organization := "com.example.vca",
+    name := "vca-demo-client",
     version := "0.1.0",
     scalaVersion := "2.11.12",
     scalacOptions ++= Seq("-feature"),

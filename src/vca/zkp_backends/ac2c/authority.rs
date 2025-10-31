@@ -1,0 +1,35 @@
+// ------------------------------------------------------------------------------
+use crate::vca::VCAResult;
+use crate::vca::r#impl::general::signer::create_signer_data;
+use crate::vca::r#impl::to_from_api::*;
+use crate::vca::interfaces::crypto_interface::*;
+use crate::vca::interfaces::types::ProofMode::*;
+use crate::vca::zkp_backends::ac2c::signer::specific_create_signer_data;
+// ------------------------------------------------------------------------------
+use crate::knox::short_group_sig_core::short_group_traits::ShortGroupSignatureScheme;
+use crate::prelude::{Issuer, IssuerPublic};
+// ------------------------------------------------------------------------------
+use std::sync::Arc;
+// ------------------------------------------------------------------------------
+
+// Because AC2C conflates Issuer and Authority, it is convenient to just create a new Issuer to
+// represent the Authority.  Using Verifiable Encryption functionality directly may make sense in
+// future, but not before AC2C supports decryption.  Therefore, for now, we create a dummy Issuer to
+// be used only for the purposes of verifiable encryption.
+pub fn create_authority_data<S: ShortGroupSignatureScheme>() -> CreateAuthorityData {
+    let create_signer_data = create_signer_data(specific_create_signer_data::<S>());
+    Arc::new(move |rng_seed| {
+        // The schema is empty because we use the API-level create_signer_data, which adds the revocation
+        // claim required by AC2C's "opinionated" requirement
+        let schema = [];
+        let SignerData {signer_public_data, signer_secret_data} = create_signer_data(rng_seed,&schema,&[],Strict)?;
+        let SignerPublicData {signer_public_setup_data, signer_public_schema, ..} = *signer_public_data;
+        let IssuerPublic::<S> {verifiable_encryption_key, ..} = from_api(&signer_public_setup_data)?;
+        let Issuer::<S> {verifiable_decryption_key, ..} = from_api(&signer_secret_data)?;
+        Ok(AuthorityData::new(
+            AuthorityPublicData(signer_public_setup_data.0),
+            AuthoritySecretData("BOGUS-AUTHORITY-DOES-NOT-SIGN-ANYTHING".to_string()),
+            to_api(verifiable_decryption_key)?))
+    })
+}
+

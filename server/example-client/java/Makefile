@@ -10,7 +10,7 @@ GEN_DIR  = ./generated
 #
 # TODO: UNSUPPORTEDFEATURE and REVEALPRIVACYWARNING renames are not working.
 # The consequence of this not working is that manually written Java code needs to refer to the nonsnakecase name.
-# See src/main/java/com/example/vcp/demos/Util.java for examples of using sum types.
+# See src/main/java/com/example/vca/demos/Util.java for examples of using sum types.
 #
 # If the following (optional) variable is set, it MUST be set before the includes.
 GENERATE_CONFIG = \
@@ -31,10 +31,10 @@ MAIN_CODE_DIR=$(CODE_GEN_DIR)/src/main/java
 TEST_CODE_DIR=$(CODE_GEN_DIR)/src/test/java
 
 define rename
-	mv   $(MAIN_CODE_DIR)/$(COM_slash_EXAMPLE_slash_VCP)/$(MODEL_PACKAGE_WITH_SLASH)/$1.java \
-             $(MAIN_CODE_DIR)/$(COM_slash_EXAMPLE_slash_VCP)/$(MODEL_PACKAGE_WITH_SLASH)/$2.java
-	mv   $(TEST_CODE_DIR)/$(COM_slash_EXAMPLE_slash_VCP)/$(MODEL_PACKAGE_WITH_SLASH)/$1Test.java \
-             $(TEST_CODE_DIR)/$(COM_slash_EXAMPLE_slash_VCP)/$(MODEL_PACKAGE_WITH_SLASH)/$2Test.java
+	mv   $(MAIN_CODE_DIR)/$(COM_slash_EXAMPLE_slash_VCA)/$(MODEL_PACKAGE_WITH_SLASH)/$1.java \
+             $(MAIN_CODE_DIR)/$(COM_slash_EXAMPLE_slash_VCA)/$(MODEL_PACKAGE_WITH_SLASH)/$2.java
+	mv   $(TEST_CODE_DIR)/$(COM_slash_EXAMPLE_slash_VCA)/$(MODEL_PACKAGE_WITH_SLASH)/$1Test.java \
+             $(TEST_CODE_DIR)/$(COM_slash_EXAMPLE_slash_VCA)/$(MODEL_PACKAGE_WITH_SLASH)/$2Test.java
 	find $(CODE_GEN_DIR) -name "*.java" -type f \
              | xargs sed -i 's/$1/$2/g'
 endef
@@ -111,7 +111,7 @@ clean: reset-db
 .PHONY: really-clean
 really-clean: reset-db
 	mvn clean
-	rm -rf ~/.m2/repository/$(COM_slash_EXAMPLE_slash_VCP)/$(ARTIFACT_ID)
+	rm -rf ~/.m2/repository/$(COM_slash_EXAMPLE_slash_VCA)/$(ARTIFACT_ID)
 
 .PHONY: reset-db
 reset-db:

@@ -1,5 +1,5 @@
 {
-  "name": "VCP",
+  "name": "VCA",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -11,7 +11,7 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [],
-  "author": "VCP",
+  "author": "VCA",
   "license": "TODO",
   "packageManager": "pnpm@10.7.1",
   "devDependencies": {

@@ -64,11 +64,11 @@ test-json-tests-skip-slow:
 clean:
 	cargo clean
 
-# Note: edit ./src/vcp/README.org, then do
+# Note: edit ./src/vca/README.org, then do
 #   M-x org-md-export-to-markdown (in emacs)
 # Then:
 #   make fix-readme-markdown
-README_MD = ./src/vcp/README.md
+README_MD = ./src/vca/README.md
 .PHONY: fix-readme-markdown
 fix-readme-markdown:
 	sed -i -e 's/<sub>/_/g'  $(README_MD)

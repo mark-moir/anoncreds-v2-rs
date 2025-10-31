@@ -11,7 +11,7 @@ importers:
       '@types/chai':
         specifier: <5.0.0
         version: 4.3.20
-      VCP:
+      VCA:
         specifier: link:generated/code
         version: link:generated/code
       chai:

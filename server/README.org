@@ -1,11 +1,11 @@
-#+TITLE: Verifiable Credentials Platform (VCP) Server
+#+TITLE: Verifiable Credentials Abstraction (VCA) Server
 
 #+OPTIONS: broken-links:t
 #+OPTIONS: toc:t
 
 * Introduction
 
-This crate contains an HTTP/REST server for the VCP API.
+This crate contains an HTTP/REST server for the VCA API.
 
 * Build
 
@@ -30,8 +30,8 @@ Configured for debug.
 ...
 Routes:
 >> GET /openapi.json
->> (sign) POST /vcp/sign?<rng_and_zkp..>
->> (createProof) POST /vcp/createProof?<zkp..>
+>> (sign) POST /vca/sign?<rng_and_zkp..>
+>> (createProof) POST /vca/createProof?<zkp..>
 ...
 >> GET /rapidoc/
 ...
@@ -57,11 +57,11 @@ The server provides an [[https://www.openapis.org/][OpenAPI]] (aka "Swagger") de
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "vcp_server",
+    "title": "vca_server",
     "version": "0.1.0"
   },
   "paths": {
-    "/vcp/createSignerData": {
+    "/vca/createSignerData": {
       "post": {
         "summary": "Create the secret and public data used to sign and verify messages.",
 ...
@@ -74,9 +74,21 @@ For example, =createSignerData= can be called using =curl=:
 > curl --header "Content-Type: application/json" \
        --request POST \
        --data '["CTText","CTAccumulatorMember"]' \
-       http://localhost:8080/vcp/createSignerData?zkpLib=ac2c_ps&rngSeed=3
+       http://localhost:8080/vca/createSignerData?zkpLib=ac2c_ps&rngSeed=3
 
-{"signerPublicData":{"signerPublicSetupData":"ey...","signerPublicSchema":["CTText","CTAccumulatorMember"]},...
+> curl -X 'POST' \
+    'http://127.0.0.1:8080/vca/createSignerData?zkpLib=DNC&rngSeed=45' \
+    -H 'accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{
+          "claimTypes"             : [ "CTText" ],
+          "blindedAttributeIndices": [ 0 ]
+        }'
+
+{"signerPublicData":{"signerPublicSetupData":"W3si...dXQ==",
+                     "signerPublicSchema":["CTText"],
+ "signerBlindedAttrIdxs":[0]},
+ "signerSecretData":"WzIw...V0="}
 #+end_src
 
 * Swagger-UI
@@ -84,26 +96,26 @@ For example, =createSignerData= can be called using =curl=:
 The server provides [[https://swagger.io/tools/swagger-ui/][swagger-ui]] at [[http://127.0.0.1:8080/swagger-ui]] that can be used to read the documentation.
 
 #+ATTR_LaTeX: :width 6.5in
-[[file:./README-images/vcp-server-swagger.png]]
+[[file:./README-images/vca-server-swagger.png]]
 
 Swagger-ui can also be used to interact with the server.
 
 A request:
 
 #+ATTR_LaTeX: :width 6.5in
-[[file:./README-images/vcp-swagger-create-signer-date-request.png]]
+[[file:./README-images/vca-swagger-create-signer-date-request.png]]
 
 The response:
 
 #+ATTR_LaTeX: :width 6.5in
-[[file:./README-images/vcp-swagger-create-signer-date-response.png]]
+[[file:./README-images/vca-swagger-create-signer-date-response.png]]
 
 * RapiDoc
 
 The server also provides [[https://rapidocweb.com/][RapiDoc]] at [[http://127.0.0.1:8080/rapidoc]]  that can be used to read the documentation and to interact with the server.
 
 #+ATTR_LaTeX: :width 6.5in
-[[file:./README-images/vcp-rapidoc.png]]
+[[file:./README-images/vca-rapidoc.png]]
 
 * Generating client code from the OpenAPI description.
 
