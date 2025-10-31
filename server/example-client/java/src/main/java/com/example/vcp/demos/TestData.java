@@ -1,7 +1,7 @@
-package com.example.vcp.demos;
+package com.example.vca.demos;
 
 // ---------------------------------------------------------------------------
-import com.example.vcp.client.model.*;
+import com.example.vca.client.model.*;
 // ---------------------------------------------------------------------------
 import java.util.*;
 import java.util.stream.*;

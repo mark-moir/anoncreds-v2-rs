@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
-  title: vcp_server
+  title: vca_server
   version: 0.1.0
 servers:
 - url: /
 paths:
-  /vcp/createSignerData:
+  /vca/createSignerData:
     post:
       description: Returns SignerData.
       operationId: createSignerData
@@ -59,7 +59,7 @@ paths:
       x-content-type: application/json
       x-accepts:
       - application/json
-  /vcp/createBlindSigningInfo:
+  /vca/createBlindSigningInfo:
     post:
       description: Returns BlindSigningInfo
       operationId: createBlindSigningInfo
@@ -113,7 +113,7 @@ paths:
       x-content-type: application/json
       x-accepts:
       - application/json
-  /vcp/createAccumulatorData:
+  /vca/createAccumulatorData:
     post:
       description: Returns CreateAccumulatorResponse.
       operationId: createAccumulatorData
@@ -160,7 +160,7 @@ paths:
       summary: Create an accumulator and its associated secret/public data.
       x-accepts:
       - application/json
-  /vcp/sign:
+  /vca/sign:
     post:
       description: Returns Signature.
       operationId: sign
@@ -214,7 +214,7 @@ paths:
       x-content-type: application/json
       x-accepts:
       - application/json
-  /vcp/signWithBlindedAttributes:
+  /vca/signWithBlindedAttributes:
     post:
       description: Returns a BlindSignature.
       operationId: signWithBlindedAttributes
@@ -269,7 +269,7 @@ paths:
       x-content-type: application/json
       x-accepts:
       - application/json
-  /vcp/unblindBlindedSignature:
+  /vca/unblindBlindedSignature:
     post:
       description: Returns Signature.
       operationId: unblindBlindedSignature
@@ -323,7 +323,7 @@ paths:
       x-content-type: application/json
       x-accepts:
       - application/json
-  /vcp/createAccumulatorElement:
+  /vca/createAccumulatorElement:
     post:
       description: Returns AccumulatorElement.
       operationId: createAccumulatorElement
@@ -362,7 +362,7 @@ paths:
       x-content-type: application/json
       x-accepts:
       - application/json
-  /vcp/accumulatorAddRemove:
+  /vca/accumulatorAddRemove:
     post:
       description: Returns AccumulatorAddRemoveResponse.
       operationId: accumulatorAddRemove
@@ -401,7 +401,7 @@ paths:
       x-content-type: application/json
       x-accepts:
       - application/json
-  /vcp/updateAccumulatorWitness:
+  /vca/updateAccumulatorWitness:
     post:
       description: Returns AccumulatorMembershipWitness.
       operationId: updateAccumulatorWitness
@@ -440,7 +440,7 @@ paths:
       x-content-type: application/json
       x-accepts:
       - application/json
-  /vcp/getAccumulatorWitness:
+  /vca/getAccumulatorWitness:
     post:
       description: Returns AccumulatorWitness
       operationId: getAccumulatorWitness
@@ -480,7 +480,7 @@ paths:
       x-content-type: application/json
       x-accepts:
       - application/json
-  /vcp/createMembershipProvingKey:
+  /vca/createMembershipProvingKey:
     post:
       description: Returns MembershipProvingKey.
       operationId: createMembershipProvingKey
@@ -527,7 +527,7 @@ paths:
       summary: Create accumulator membership proving key.
       x-accepts:
       - application/json
-  /vcp/createRangeProofProvingKey:
+  /vca/createRangeProofProvingKey:
     post:
       description: Returns RangeProofProvingKey.
       operationId: createRangeProofProvingKey
@@ -574,7 +574,7 @@ paths:
       summary: Create range proof proving key.
       x-accepts:
       - application/json
-  /vcp/getRangeProofMaxValue:
+  /vca/getRangeProofMaxValue:
     get:
       description: Returns the maximum value.
       operationId: getRangeProofMaxValue
@@ -608,7 +608,7 @@ paths:
       summary: Get the maximum value supported in range proofs for the specific zkpLib.
       x-accepts:
       - application/json
-  /vcp/createAuthorityData:
+  /vca/createAuthorityData:
     post:
       description: Returns AuthorityData.
       operationId: createAuthorityData
@@ -655,7 +655,7 @@ paths:
       summary: Create authority data.  Used in verifiable encryption.
       x-accepts:
       - application/json
-  /vcp/createProof:
+  /vca/createProof:
     post:
       description: Returns WarningsAndDataForVerifier.
       operationId: createProof
@@ -694,7 +694,7 @@ paths:
       x-content-type: application/json
       x-accepts:
       - application/json
-  /vcp/verifyProof:
+  /vca/verifyProof:
     post:
       description: Returns WarningsAndDecryptResponses.
       operationId: verifyProof
@@ -733,7 +733,7 @@ paths:
       x-content-type: application/json
       x-accepts:
       - application/json
-  /vcp/verifyDecryption:
+  /vca/verifyDecryption:
     post:
       description: Returns list of Warnings.
       operationId: verifyDecryption

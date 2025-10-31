@@ -1,10 +1,10 @@
-package com.example.vcp.demos;
+package com.example.vca.demos;
 
 // ---------------------------------------------------------------------------
-import com.example.vcp.client.api.DefaultApi;
-import com.example.vcp.client.ApiException;
-import com.example.vcp.client.Configuration;
-import com.example.vcp.client.model.*;
+import com.example.vca.client.api.DefaultApi;
+import com.example.vca.client.ApiException;
+import com.example.vca.client.Configuration;
+import com.example.vca.client.model.*;
 // ---------------------------------------------------------------------------
 import java.io.IOException;
 import java.util.*;

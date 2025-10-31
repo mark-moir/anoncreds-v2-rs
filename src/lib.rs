@@ -56,7 +56,7 @@ mod utils;
 /// Presentation verifiers
 mod verifier;
 
-pub mod vcp;
+pub mod vca;
 
 /// One import to rule them all
 pub mod prelude {

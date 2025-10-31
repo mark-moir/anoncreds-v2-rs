@@ -2,17 +2,17 @@
 # The Java Makefile first defines LANGUAGE, GEN_DIR and (optionally GENERATE_CONFIG)
 # before including this Makefile.
 
-ARTIFACT_ID                = vcp-demo-client
+ARTIFACT_ID                = vca-demo-client
 ARTIFACT_VERSION           = 0.1.0
 
-COM_dot_EXAMPLE_dot_VCP    = com.example.vcp
+COM_dot_EXAMPLE_dot_VCA    = com.example.vca
 
 CODE_GEN_DIR               = $(GEN_DIR)/code
 SWAGGER_DIR                = $(GEN_DIR)/swagger
-SWAGGER_FILE               = $(SWAGGER_DIR)/vcp-server-swagger.json
+SWAGGER_FILE               = $(SWAGGER_DIR)/vca-server-swagger.json
 
-.PHONEY: get-vcp-server-swagger
-get-vcp-server-swagger:
+.PHONEY: get-vca-server-swagger
+get-vca-server-swagger:
 	rm    -f $(SWAGGER_FILE)
 	mkdir -p $(SWAGGER_DIR)
 	curl http://localhost:8080/openapi.json -o $(SWAGGER_FILE)
@@ -33,7 +33,7 @@ codegen:
            --skip-validate-spec \
            $(GENERATE_CONFIG) \
            --generator-name   $(LANGUAGE) \
-           --group-id         $(COM_dot_EXAMPLE_dot_VCP) \
+           --group-id         $(COM_dot_EXAMPLE_dot_VCA) \
            --artifact-id      $(ARTIFACT_ID) \
            --artifact-version $(ARTIFACT_VERSION) \
            --input-spec       $(SWAGGER_FILE) \

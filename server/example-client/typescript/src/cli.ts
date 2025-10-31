@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import * as Test from './vcp/test/AppTest';
+import * as Test from './vca/test/AppTest';
 import { Command } from 'commander';
 
 const program = new Command();
 program
   .version('1.0.0')
-  .description('VCP test runner')
+  .description('VCA test runner')
   .option('-r, --revealed'                             , 'run testRevealed')
   .option('-e, --equalities'                           , 'run testEqualities')
   .option('-a, --accumulators'                         , 'run testAccumulators')

@@ -47,14 +47,14 @@ uint-zigzag = { version = "0.2", features = ["std"] }
 uuid = {version = "1.11", features = ["v4"]}
 zeroize = "1"
 
-# VCP specific dependencies
+# VCA specific dependencies
 # ----- docknetwork crypto
 bbs_plus = "0.24.0"
 legogroth16 = "0.17.0"
 proof_system = "0.33.0"
 saver = "0.20.0"
 vb_accumulator = "0.28.0"
-# ----- needed for VCP usage of docknetwork crypto
+# ----- needed for VCA usage of docknetwork crypto
 ark-bls12-381 = "0.4.0"
 ark-ec = { version = "^0.4.1", default-features = false }
 ark-ff = { version = "^0.4.1", default-features = false }

@@ -4503,7 +4503,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "vcp_server"
+name = "vca_server"
 version = "0.1.0"
 dependencies = [
  "credx",

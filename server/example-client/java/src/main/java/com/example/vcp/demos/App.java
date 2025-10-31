@@ -1,15 +1,15 @@
-package com.example.vcp.demos;
+package com.example.vca.demos;
 
 // ---------------------------------------------------------------------------
-import com.example.vcp.client.ApiException;
-import com.example.vcp.client.model.*;
+import com.example.vca.client.ApiException;
+import com.example.vca.client.model.*;
 // ---------------------------------------------------------------------------
 import java.util.*;
 // ---------------------------------------------------------------------------
 
 // SEE
-//     src/test/java/com/example/vcp/demos/AppTest.java
-// for examples of using the various VCP features.
+//     src/test/java/com/example/vca/demos/AppTest.java
+// for examples of using the various VCA features.
 
 public class App
 {
@@ -34,7 +34,7 @@ public class App
     public static void doit(final X x)
     {
         try {
-            Util.banner(x, "VCP");
+            Util.banner(x, "VCA");
             Util.sop("dSard"     , x.dSard);
             Util.sop("sSard"     , x.sSard);
             Util.sop("shared"    , x.shared);

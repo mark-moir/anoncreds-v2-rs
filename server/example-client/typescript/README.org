@@ -1,8 +1,8 @@
 This demonstrates
-- running the vcp-server and getting its OpenAPI specification
+- running the vca-server and getting its OpenAPI specification
 - generating typescript client code from that specification
 - manually writing code to use the generated code
-- interacting with vcp-server
+- interacting with vca-server
 
 * hand written part
 
@@ -23,7 +23,7 @@ make run &
 popd
 
 # expects server to be running
-make get-vcp-server-swagger
+make get-vca-server-swagger
 
 # install openapi-generator-cli
 make install-openapi-cli
@@ -51,7 +51,7 @@ make test-revealed
 # kill the server when done
 #+end_src
 
-* BUG in VCP/typescript of DNC verify decryption
+* BUG in VCA/typescript of DNC verify decryption
 
 Using DNC, creating and verifying proofs and decrypting values using the  typescript client works.
 But when it gets to the verifying decryption it fails.
@@ -70,7 +70,7 @@ Here is the failure report (note: ignore references to ac2c in the report).
 $ make test-verifiable-encryption-dnc-blinded
 pnpm run test --verifiable-encryption-dnc-blinded
 
-> example-vcp-typescript-client@1.0.0 test /server/example-client/typescript
+> example-vca-typescript-client@1.0.0 test /server/example-client/typescript
 > ts-node src/cli.ts --verifiable-encryption-dnc-blinded
 
 
@@ -79,12 +79,12 @@ pnpm run test --verifiable-encryption-dnc-blinded
 ------------------------- expect DNC Blinded -------------------------
 
 ------------------------- verifyDecryption DNC Blinded -------------------------
-/server/example-client/typescript/src/vcp/test/AppTest.ts:171
+/server/example-client/typescript/src/vca/test/AppTest.ts:171
   assert.strictEqual((e as ApiError).apiErrorMessage.reason,
          ^
 AssertionError: expected 'B64DecodeError(InvalidByte(0, 34))' to equal 'General("specific_verify_decryption_a…'
-    at checkAC2CVerifiableEncryptionException (/server/example-client/typescript/src/vcp/test/AppTest.ts:171:10)
-    at /server/example-client/typescript/src/vcp/test/AppTest.ts:394:19
+    at checkAC2CVerifiableEncryptionException (/server/example-client/typescript/src/vca/test/AppTest.ts:171:10)
+    at /server/example-client/typescript/src/vca/test/AppTest.ts:394:19
     at processTicksAndRejections (node:internal/process/task_queues:95:5) {
   showDiff: true,
   actual: 'B64DecodeError(InvalidByte(0, 34))',
@@ -98,7 +98,7 @@ make: *** [Makefile:82: test-verifiable-encryption-dnc-blinded] Error 1
 $ make test-verifiable-encryption-dnc-non-blinded
 pnpm run test --verifiable-encryption-dnc-non-blinded
 
-> example-vcp-typescript-client@1.0.0 test /server/example-client/typescript
+> example-vca-typescript-client@1.0.0 test /server/example-client/typescript
 > ts-node src/cli.ts --verifiable-encryption-dnc-non-blinded
 
 
@@ -107,12 +107,12 @@ pnpm run test --verifiable-encryption-dnc-non-blinded
 ------------------------- expect DNC NonBlinded -------------------------
 
 ------------------------- verifyDecryption DNC NonBlinded -------------------------
-/server/example-client/typescript/src/vcp/test/AppTest.ts:171
+/server/example-client/typescript/src/vca/test/AppTest.ts:171
   assert.strictEqual((e as ApiError).apiErrorMessage.reason,
          ^
 AssertionError: expected 'B64DecodeError(InvalidByte(0, 34))' to equal 'General("specific_verify_decryption_a…'
-    at checkAC2CVerifiableEncryptionException (/server/example-client/typescript/src/vcp/test/AppTest.ts:171:10)
-    at /server/example-client/typescript/src/vcp/test/AppTest.ts:394:19
+    at checkAC2CVerifiableEncryptionException (/server/example-client/typescript/src/vca/test/AppTest.ts:171:10)
+    at /server/example-client/typescript/src/vca/test/AppTest.ts:394:19
     at processTicksAndRejections (node:internal/process/task_queues:95:5) {
   showDiff: true,
   actual: 'B64DecodeError(InvalidByte(0, 34))',
