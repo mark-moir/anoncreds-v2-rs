@@ -3,6 +3,7 @@ use credx::str_vec_from;
 use credx::vca::{Error, VCAResult};
 use credx::vca::api;
 use credx::vca::r#impl::general::presentation_request_setup::get_proof_instructions;
+use credx::vca::r#impl::general::proof::{get_all_vals, get_vals_to_reveal};
 use credx::vca::r#impl::json::shared_params::put_shared_one;
 use credx::vca::r#impl::json::util::encode_to_text;
 use credx::vca::r#impl::util::*;
@@ -613,17 +614,10 @@ pub fn step_create_and_verify_proof(
             let all_wits: HashMap<IssuerLabelAsCredentialLabel,api::AllAccumulatorWitnesses> =
                 ts.accum_witnesses.get(&h_lbl).cloned().unwrap_or_default();
 
-            // We don't need to request revealing any attributes for getting ProofInstructions
-            // for InAccum requirements.
-            // But we do need to provide a map for each CredentialLabel
-            // because Proof.getValsToReveal uses mergeMaps and is therefore arguably too inflexible.
-            let to_reveal: HashMap<CredentialLabel,HashMap<CredAttrIndex,DataValue>> =
-                proof_reqs
-                .keys()
-                .map(|k| (k.clone(),HashMap::new()))
-                .collect();
+            let to_reveal = get_vals_to_reveal(
+                &get_all_vals(proof_reqs, all_sigs_and_rd)?);
 
-            let witness_reqs = get_proof_instructions(shared_params, proof_reqs, &to_reveal)?;
+            let witness_reqs = get_proof_instructions(shared_params, proof_reqs, &to_reveal, proof_mode)?;
 
             // collect all attributeIndex/sequenceNumber pairs,
             // together for each credential label

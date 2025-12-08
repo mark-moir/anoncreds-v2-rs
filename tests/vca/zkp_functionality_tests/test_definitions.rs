@@ -276,15 +276,27 @@ macro_rules! revealed_test {
             }
 
             $crate::test_verify_disclosed!
-              { $vca_api, $lib_spec, verify_disclosed_correct, RevealedState::Correct }
+              { $vca_api, $lib_spec, verify_disclosed_correct, RevealedState::Correct, TestBackend }
             $crate::test_verify_disclosed!
-              { $vca_api, $lib_spec, verify_disclosed_empty  , RevealedState::Empty }
+              { $vca_api, $lib_spec, verify_disclosed_empty  , RevealedState::Empty,   TestBackend }
             $crate::test_verify_disclosed!
-              { $vca_api, $lib_spec, verify_disclosed_less   , RevealedState::Less }
+              { $vca_api, $lib_spec, verify_disclosed_less   , RevealedState::Less,    TestBackend }
             $crate::test_verify_disclosed!
-              { $vca_api, $lib_spec, verify_disclosed_change , RevealedState::Change }
+              { $vca_api, $lib_spec, verify_disclosed_change , RevealedState::Change,  TestBackend }
             $crate::test_verify_disclosed!
-              { $vca_api, $lib_spec, verify_disclosed_more   , RevealedState::More }
+              { $vca_api, $lib_spec, verify_disclosed_more   , RevealedState::More,    TestBackend }
+
+            $crate::test_verify_disclosed!
+              { $vca_api, $lib_spec, verify_disclosed_correct, RevealedState::Correct, Strict }
+            $crate::test_verify_disclosed!
+              { $vca_api, $lib_spec, verify_disclosed_empty  , RevealedState::Empty,   Strict }
+            $crate::test_verify_disclosed!
+              { $vca_api, $lib_spec, verify_disclosed_less   , RevealedState::Less,    Strict }
+            // We do not test Change in Strict mode, because the values are revealed for the
+            // correct indices and wrong values, which presentation_request_setup is not expected
+            // to catch
+            $crate::test_verify_disclosed!
+              { $vca_api, $lib_spec, verify_disclosed_more   , RevealedState::More,    Strict }
 
             $crate::test_in_range! { $vca_api, $lib_spec, 0, revealed_0 }
             $crate::test_in_range! { $vca_api, $lib_spec, 3, revealed_3 }
@@ -297,12 +309,19 @@ macro_rules! revealed_test {
 
 #[macro_export]
 macro_rules! test_verify_disclosed {
-    ($vca_api: expr, $lib_spec: expr, $name: ident, $mode: expr) => {
-        #[test]
-        fn $name() {
-            let proof_reqs = td::proof_reqs_with((vec![0], vec![0]), (vec![], vec![]), (vec![], vec![]), (vec![], vec![]),   (vec![], vec![]));
-            expect_disclosed($vca_api, $lib_spec, &proof_reqs, &SHARED, &D_SIG_CD, &S_SIG_CD, &hashmap!(), Strict,
-                             $mode);
+    ($vca_api: expr, $lib_spec: expr, $name: ident, $revealed_state: expr, $prfmode: expr) => {
+        paste::item! {
+            #[test]
+            fn [<test_ $name _ $prfmode:lower>]() {
+                let proof_reqs = td::proof_reqs_with(
+                    (vec![0], vec![0]),
+                    (vec![], vec![]),
+                    (vec![], vec![]),
+                    (vec![], vec![]),
+                    (vec![], vec![]));
+                expect_disclosed($vca_api, $lib_spec, &proof_reqs, &SHARED,
+                                 &D_SIG_CD, &S_SIG_CD, &hashmap!(), $revealed_state, $prfmode);
+            }
         }
     };
 }
@@ -327,7 +346,7 @@ macro_rules! test_in_range {
                 &D_SIG_CD,
                 &S_SIG_CD,
                 &hashmap!(),
-                Strict
+                TestBackend
             );
         }
     };
@@ -826,11 +845,11 @@ pub fn expect_disclosed(
     decrypt_reqs   : &HashMap<api::CredentialLabel,
                               HashMap<api::CredAttrIndex,
                                       HashMap<api::AuthorityLabel, api::DecryptRequest>>>,
+    revealed_state : RevealedState,
     proof_mode     : ProofMode,
-    revealed_state : RevealedState
 ) {
     let api::WarningsAndDataForVerifier { data_for_verifier: dfv, .. } =
-        match do_create_proof(vca_api, proof_reqs, shared, d_sig_cd, s_sig_cd, proof_mode.clone()) {
+        match do_create_proof(vca_api, proof_reqs, shared, d_sig_cd, s_sig_cd, proof_mode) {
             Err(e) => panic!("expect_disclosed create_proof; unexpected failure; {e:?}"),
             Ok(x)  => x,
         };
@@ -880,16 +899,21 @@ pub fn expect_disclosed(
         dfv            : api::DataForVerifier
     ) {
         match do_verify_proof(vca_api, proof_reqs, shared, dfv, decrypt_reqs, proof_mode) {
-            Err(api::Error::General(e)) => panic_on_wrong_general_error_msg(&e, revealed_state),
+            Err(api::Error::General(e)) => panic_on_wrong_general_error_msg(&e, revealed_state, proof_mode),
             x                           => panic_on_ok_or_wrong_error(revealed_state, x),
         };
     }
 
-    fn contains_expected_error_messages(e: &str) -> bool {
+    fn contains_expected_error_messages(e: &str, prf_mode: ProofMode) -> bool {
         let ac2c_1 = "verify_disclosed_messages: disclosed_messages_from_proof";
         let ac2c_2 = "differ from revealed values";
         let dnc    = "DNC prf.verify BBSPlusProofContributionFailed(0, FirstSchnorrVerificationFailed)";
-        (e.contains(ac2c_1) && e.contains(ac2c_2)) || e.contains(dnc)
+        let gen_1  = "get_proof_instructions_for_cred";
+        let gen_2  = "do not match indexes requested";
+        match prf_mode {
+            TestBackend => (e.contains(ac2c_1) && e.contains(ac2c_2)) || e.contains(dnc),
+            _           => e.contains(gen_1) && e.contains(gen_2)
+        }
     }
 
     // The Option controls make the inner map of disclosed values for one credential:
@@ -913,8 +937,11 @@ pub fn expect_disclosed(
         api::DataForVerifier { revealed_idxs_and_vals : riav, proof: dfv.proof }
     }
 
-    fn panic_on_wrong_general_error_msg(e: &str, revealed_state: RevealedState) {
-        if !contains_expected_error_messages(e) {
+    fn panic_on_wrong_general_error_msg(
+        e: &str,
+        revealed_state: RevealedState,
+        prf_mode: ProofMode) {
+        if !contains_expected_error_messages(e, prf_mode) {
             panic!("'{revealed_state:?}' failed in the wrong way; {e:?}")
         }
     }
