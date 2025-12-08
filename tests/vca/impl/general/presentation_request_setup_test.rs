@@ -84,6 +84,7 @@ mod spec {
                     td::D_CRED_LABEL.to_owned() => hashmap!(),
                     td::S_CRED_LABEL.to_owned() => hashmap!(),
                 ),
+                ProofMode::TestBackend
             )
             .unwrap();
 
@@ -207,7 +208,7 @@ mod spec {
 
         #[test]
         fn detects_and_rejects_an_equality_requirement_for_attributes_with_different_claimtypes() {
-            match presentation_request_setup(&PROOF_REQS, &SHARED, &REVEALS, &Strict) {
+            match presentation_request_setup(&PROOF_REQS, &SHARED, &REVEALS, Strict) {
                 Err(Error::General(t)) => {
                     let expected_strings: Vec<_> = vec!["multiple claim types",
                                                         "CTEncryptableText",

@@ -7,7 +7,7 @@ use crate::vca::primitives::types::*;
 use crate::vca::types::*;
 // ----------------------------------------------------------------------------
 use std::cmp::{min, Ordering};
-use std::collections::HashMap;
+use std::collections::{HashMap,HashSet};
 use std::hash::Hash;
 // ----------------------------------------------------------------------------
 
@@ -15,14 +15,14 @@ pub fn presentation_request_setup(
     pres_reqs: &HashMap<CredentialLabel, CredentialReqs>,
     shared_params: &HashMap<SharedParamKey, SharedParamValue>,
     vals_to_reveal: &HashMap<CredentialLabel, HashMap<CredAttrIndex, DataValue>>,
-    proof_mode: &ProofMode,
+    proof_mode: ProofMode,
 ) -> VCAResult<(
     Vec<ProofInstructionGeneral<ResolvedRequirement>>,
     EqualityReqs,
 )> {
-    let res_prf_insts = get_proof_instructions(shared_params, pres_reqs, vals_to_reveal)?;
+    let res_prf_insts = get_proof_instructions(shared_params, pres_reqs, vals_to_reveal, proof_mode)?;
     let eq_reqs = equality_reqs_from_pres_reqs_general(pres_reqs)?;
-    if (*proof_mode != ProofMode::TestBackend) {
+    if proof_mode != ProofMode::TestBackend {
         for eq_req in eq_reqs.clone() {
             check_equalities_have_same_claim_types::main(pres_reqs, shared_params, eq_req)?
         };
@@ -86,6 +86,7 @@ pub fn get_proof_instructions(
     sparms: &HashMap<SharedParamKey, SharedParamValue>,
     cred_reqs: &HashMap<CredentialLabel, CredentialReqs>,
     vals_to_reveal: &HashMap<CredentialLabel, HashMap<CredAttrIndex, DataValue>>,
+    prf_mode: ProofMode,
 ) -> VCAResult<Vec<ProofInstructionGeneral<ResolvedRequirement>>> {
     let lkups = keys_vec_sorted(cred_reqs)
         .into_iter()
@@ -96,7 +97,7 @@ pub fn get_proof_instructions(
     Ok(sort_by(
         merge_maps(cred_reqs.iter().collect(), vals_to_reveal.iter().collect())?
             .into_iter()
-            .map(|(label, reqs)| get_proof_instructions_for_cred(sparms, &lkups, label, reqs))
+            .map(|(label, reqs)| get_proof_instructions_for_cred(sparms, &lkups, label, reqs, prf_mode))
             .try_collect_concat()?,
         compare_prf_instrs,
     ))
@@ -128,7 +129,7 @@ fn get_proof_instructions_for_cred(
     (
         CredentialReqs {
             signer_label,
-            disclosed: Disclosed(_),
+            disclosed: Disclosed(requested_idxs),
             in_accum: InAccum(in_accum),
             not_in_accum: NotInAccum(not_in_accum),
             in_range: InRange(in_range),
@@ -137,11 +138,25 @@ fn get_proof_instructions_for_cred(
         },
         vals_to_reveal,
     ): (&CredentialReqs, &HashMap<CredAttrIndex, DataValue>),
+    prf_mode: ProofMode,
 ) -> VCAResult<Vec<ProofInstructionGeneral<ResolvedRequirement>>> {
     let cred_pi_idxs = lkups.get(c_lbl).ok_or_else(|| {
         Error::General("get_proof_instructions_for_cred; INTERNAL ERROR".to_string())
     })?;
     let sig_res: ProofInstructionGeneral<ResolvedRequirement> = {
+        if prf_mode != ProofMode::TestBackend {
+            let revealed_idxs: HashSet<_> =
+                vals_to_reveal.iter().map(|(i, _)| *i).collect();
+            let requested_idxs: HashSet<_> =
+                requested_idxs.iter().cloned().collect();
+            if revealed_idxs != requested_idxs {
+                return Err(Error::General(
+                    format!("get_proof_instructions_for_cred; \
+                             revealed values {:?} do not match \
+                             indexes requested {:?} for {c_lbl}",
+                            vals_to_reveal, requested_idxs)))
+            }
+        };
         let signer_public_data: SignerPublicData = decode_from_text(
             "Unable to decode IssuerPublic from shared parameters",
             lookup_one_text(signer_label, sparms)?)?;

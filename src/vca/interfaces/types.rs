@@ -662,7 +662,7 @@ pub type OpaqueMaterial  = String;
 pub type RawIndex        = u64;
 pub type SharedParamKey  = String;
 
-#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum ProofMode {
     // Allow warnings when creating or verifying a proof
     Loose,
