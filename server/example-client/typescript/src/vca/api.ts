@@ -96,7 +96,7 @@ export interface VCA {
   verifyDecryption: (
     proofReqs          : Map<string, GENERATED.CredentialReqs>,
     shared             : Map<string, GENERATED.SharedParamValue>,
-    proof              : string,
+    dataForVerifier    : GENERATED.DataForVerifier,
     authDecryptionKeys : Map<string, string>,
     drsp               : IndexSignature3Level<GENERATED.DecryptResponse>,
     nonce              : string
@@ -283,14 +283,14 @@ export function defineCryptoInterfaceWith(zkpLib: string, port: string) : VCA {
       }
     },
 
-    verifyDecryption: async (reqs, shared, proof, authDecryptionKeys, drsp, nonce) => {
+    verifyDecryption: async (reqs, shared, dfv, authDecryptionKeys, drsp, nonce) => {
       try {
         //console.log("enter verifyDecryption");
         const response = await network.verifyDecryption(
           { verifyDecryptionRequest : {
               proofReqs        : Object.fromEntries(reqs)               as { [key: string]: GENERATED.CredentialReqs },
               sharedParams     : Object.fromEntries(shared)             as { [key: string]: GENERATED.SharedParamValue },
-              proof            : proof,
+              dataForVerifier  : dfv,
               decryptionKeys   : Object.fromEntries(authDecryptionKeys) as { [key: string]: string },
               decryptResponses : drsp,
               nonce : nonce },

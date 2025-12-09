@@ -2105,10 +2105,10 @@
         "description": "Verify that each decrypted value is correct.",
         "type": "object",
         "required": [
+          "dataForVerifier",
           "decryptResponses",
           "decryptionKeys",
           "nonce",
-          "proof",
           "proofReqs",
           "sharedParams"
         ],
@@ -2127,11 +2127,11 @@
               "$ref": "#/components/schemas/SharedParamValue"
             }
           },
-          "proof": {
+          "dataForVerifier": {
             "description": "See Proof.",
             "allOf": [
               {
-                "$ref": "#/components/schemas/Proof"
+                "$ref": "#/components/schemas/DataForVerifier"
               }
             ]
           },

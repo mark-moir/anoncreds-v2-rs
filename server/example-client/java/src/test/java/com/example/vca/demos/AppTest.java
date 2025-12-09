@@ -423,7 +423,7 @@ public class AppTest
         final var req = new VerifyDecryptionRequest()
             .proofReqs(x.reqs)
             .sharedParams(x.shared)
-            .proof(dfv.getProof())
+            .dataForVerifier(dfv)
             .decryptionKeys(adks)
             .decryptResponses(decryptResponses)
             .nonce(nonce);

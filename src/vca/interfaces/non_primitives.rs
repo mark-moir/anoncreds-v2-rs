@@ -95,7 +95,7 @@ pub type VerifyDecryption = Arc<
     dyn Fn(
             &HashMap<CredentialLabel, CredentialReqs>,
             &HashMap<SharedParamKey, SharedParamValue>,
-            &Proof,
+            &DataForVerifier,
             &HashMap<SharedParamKey, AuthorityDecryptionKey>,
             &HashMap<CredentialLabel, HashMap<CredAttrIndex, HashMap<AuthorityLabel, DecryptResponse>>>,
             ProofMode,
