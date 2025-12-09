@@ -210,7 +210,7 @@ pub type SpecificVerifyDecryption = Arc<
     dyn Fn(
             &[ProofInstructionGeneral<ResolvedRequirement>],
             &EqualityReqs,
-            &Proof,
+            &DataForVerifier,
             &HashMap<AuthorityLabel, AuthorityDecryptionKey>,
             &HashMap<CredentialLabel, HashMap<CredAttrIndex, HashMap<AuthorityLabel, DecryptResponse>>>,
         ) -> VCAResult<Vec<Warning>>

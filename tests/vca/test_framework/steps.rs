@@ -1100,7 +1100,7 @@ pub fn verify_decrypt_responses(
     vca_api: &api::VcaApi,
     proof_reqs: &HashMap<IssuerLabelAsCredentialLabel, api::CredentialReqs>,
     shared_params: &HashMap<api::SharedParamKey, api::SharedParamValue>,
-    prf: &Proof,
+    dfv: &DataForVerifier,
     perturb: PerturbDecryptedValue,
     d_reqs: &HashMap<IssuerLabelAsCredentialLabel,
                      HashMap<api::CredAttrIndex,
@@ -1119,7 +1119,7 @@ pub fn verify_decrypt_responses(
         .iter()
         .map(|(_,_,a_lbl,d_req)| (a_lbl.to_string(),d_req.authority_decryption_key.clone()))
         .collect::<HashMap<AuthorityLabel,AuthorityDecryptionKey>>();
-    match (vca_api.verify_decryption)(proof_reqs, shared_params, prf, &auth_dks, d_resps, proof_mode, None) {
+    match (vca_api.verify_decryption)(proof_reqs, shared_params, dfv, &auth_dks, d_resps, proof_mode, None) {
         Err(e) => {
             if perturb != Perturb {
                 return Err(Error::General(ic_semi(&str_vec_from!(
@@ -1158,9 +1158,9 @@ pub fn step_verify_decryption(
         let d_resps =
             lookup_throw_if_absent(&h_lbl, &ts.last_decrypt_responses, Error::General,
                                    &str_vec_from!("step_verify_decryption", "no decryption responses found for holder"))?;
-        let prf = &ts.warnings_and_data_for_verifier.data_for_verifier.proof.clone();
-        verify_decrypt_responses(&vca_api, proof_reqs, &ts.sparms, prf, Perturb,     d_reqs, d_resps, proof_mode.clone())?;
-        verify_decrypt_responses(&vca_api, proof_reqs, &ts.sparms, prf, DontPerturb, d_reqs, d_resps, proof_mode.clone())?;
+        let dfv = &ts.warnings_and_data_for_verifier.data_for_verifier.clone();
+        verify_decrypt_responses(&vca_api, proof_reqs, &ts.sparms, dfv, Perturb,     d_reqs, d_resps, proof_mode)?;
+        verify_decrypt_responses(&vca_api, proof_reqs, &ts.sparms, dfv, DontPerturb, d_reqs, d_resps, proof_mode)?;
         Ok(())
     })
 }

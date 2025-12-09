@@ -13,6 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
+import type { DataForVerifier } from './DataForVerifier';
+import {
+    DataForVerifierFromJSON,
+    DataForVerifierFromJSONTyped,
+    DataForVerifierToJSON,
+    DataForVerifierToJSONTyped,
+} from './DataForVerifier';
 import type { DecryptResponse } from './DecryptResponse';
 import {
     DecryptResponseFromJSON,
@@ -55,10 +62,10 @@ export interface VerifyDecryptionRequest {
     sharedParams: { [key: string]: SharedParamValue; };
     /**
      * See Proof.
-     * @type {string}
+     * @type {DataForVerifier}
      * @memberof VerifyDecryptionRequest
      */
-    proof: string;
+    dataForVerifier: DataForVerifier;
     /**
      * Map from Authority label to decryption key.
      * @type {{ [key: string]: string; }}
@@ -85,7 +92,7 @@ export interface VerifyDecryptionRequest {
 export function instanceOfVerifyDecryptionRequest(value: object): value is VerifyDecryptionRequest {
     if (!('proofReqs' in value) || value['proofReqs'] === undefined) return false;
     if (!('sharedParams' in value) || value['sharedParams'] === undefined) return false;
-    if (!('proof' in value) || value['proof'] === undefined) return false;
+    if (!('dataForVerifier' in value) || value['dataForVerifier'] === undefined) return false;
     if (!('decryptionKeys' in value) || value['decryptionKeys'] === undefined) return false;
     if (!('decryptResponses' in value) || value['decryptResponses'] === undefined) return false;
     if (!('nonce' in value) || value['nonce'] === undefined) return false;
@@ -104,7 +111,7 @@ export function VerifyDecryptionRequestFromJSONTyped(json: any, ignoreDiscrimina
         
         'proofReqs': (mapValues(json['proofReqs'], CredentialReqsFromJSON)),
         'sharedParams': (mapValues(json['sharedParams'], SharedParamValueFromJSON)),
-        'proof': json['proof'],
+        'dataForVerifier': DataForVerifierFromJSON(json['dataForVerifier']),
         'decryptionKeys': json['decryptionKeys'],
         'decryptResponses': json['decryptResponses'],
         'nonce': json['nonce'],
@@ -124,7 +131,7 @@ export function VerifyDecryptionRequestToJSONTyped(value?: VerifyDecryptionReque
         
         'proofReqs': (mapValues(value['proofReqs'], CredentialReqsToJSON)),
         'sharedParams': (mapValues(value['sharedParams'], SharedParamValueToJSON)),
-        'proof': value['proof'],
+        'dataForVerifier': DataForVerifierToJSON(value['dataForVerifier']),
         'decryptionKeys': value['decryptionKeys'],
         'decryptResponses': value['decryptResponses'],
         'nonce': value['nonce'],

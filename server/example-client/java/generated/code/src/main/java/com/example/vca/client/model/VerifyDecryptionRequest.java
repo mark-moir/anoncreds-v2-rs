@@ -14,6 +14,7 @@ package com.example.vca.client.model;
 
 import java.util.Objects;
 import com.example.vca.client.model.CredentialReqs;
+import com.example.vca.client.model.DataForVerifier;
 import com.example.vca.client.model.DecryptResponse;
 import com.example.vca.client.model.SharedParamValue;
 import com.google.gson.TypeAdapter;
@@ -63,10 +64,10 @@ public class VerifyDecryptionRequest {
   @javax.annotation.Nonnull
   private Map<String, SharedParamValue> sharedParams = new HashMap<>();
 
-  public static final String SERIALIZED_NAME_PROOF = "proof";
-  @SerializedName(SERIALIZED_NAME_PROOF)
+  public static final String SERIALIZED_NAME_DATA_FOR_VERIFIER = "dataForVerifier";
+  @SerializedName(SERIALIZED_NAME_DATA_FOR_VERIFIER)
   @javax.annotation.Nonnull
-  private String proof;
+  private DataForVerifier dataForVerifier;
 
   public static final String SERIALIZED_NAME_DECRYPTION_KEYS = "decryptionKeys";
   @SerializedName(SERIALIZED_NAME_DECRYPTION_KEYS)
@@ -140,22 +141,22 @@ public class VerifyDecryptionRequest {
   }
 
 
-  public VerifyDecryptionRequest proof(@javax.annotation.Nonnull String proof) {
-    this.proof = proof;
+  public VerifyDecryptionRequest dataForVerifier(@javax.annotation.Nonnull DataForVerifier dataForVerifier) {
+    this.dataForVerifier = dataForVerifier;
     return this;
   }
 
   /**
    * See Proof.
-   * @return proof
+   * @return dataForVerifier
    */
   @javax.annotation.Nonnull
-  public String getProof() {
-    return proof;
+  public DataForVerifier getDataForVerifier() {
+    return dataForVerifier;
   }
 
-  public void setProof(@javax.annotation.Nonnull String proof) {
-    this.proof = proof;
+  public void setDataForVerifier(@javax.annotation.Nonnull DataForVerifier dataForVerifier) {
+    this.dataForVerifier = dataForVerifier;
   }
 
 
@@ -244,7 +245,7 @@ public class VerifyDecryptionRequest {
     VerifyDecryptionRequest verifyDecryptionRequest = (VerifyDecryptionRequest) o;
     return Objects.equals(this.proofReqs, verifyDecryptionRequest.proofReqs) &&
         Objects.equals(this.sharedParams, verifyDecryptionRequest.sharedParams) &&
-        Objects.equals(this.proof, verifyDecryptionRequest.proof) &&
+        Objects.equals(this.dataForVerifier, verifyDecryptionRequest.dataForVerifier) &&
         Objects.equals(this.decryptionKeys, verifyDecryptionRequest.decryptionKeys) &&
         Objects.equals(this.decryptResponses, verifyDecryptionRequest.decryptResponses) &&
         Objects.equals(this.nonce, verifyDecryptionRequest.nonce);
@@ -252,7 +253,7 @@ public class VerifyDecryptionRequest {
 
   @Override
   public int hashCode() {
-    return Objects.hash(proofReqs, sharedParams, proof, decryptionKeys, decryptResponses, nonce);
+    return Objects.hash(proofReqs, sharedParams, dataForVerifier, decryptionKeys, decryptResponses, nonce);
   }
 
   @Override
@@ -261,7 +262,7 @@ public class VerifyDecryptionRequest {
     sb.append("class VerifyDecryptionRequest {\n");
     sb.append("    proofReqs: ").append(toIndentedString(proofReqs)).append("\n");
     sb.append("    sharedParams: ").append(toIndentedString(sharedParams)).append("\n");
-    sb.append("    proof: ").append(toIndentedString(proof)).append("\n");
+    sb.append("    dataForVerifier: ").append(toIndentedString(dataForVerifier)).append("\n");
     sb.append("    decryptionKeys: ").append(toIndentedString(decryptionKeys)).append("\n");
     sb.append("    decryptResponses: ").append(toIndentedString(decryptResponses)).append("\n");
     sb.append("    nonce: ").append(toIndentedString(nonce)).append("\n");
@@ -289,7 +290,7 @@ public class VerifyDecryptionRequest {
     openapiFields = new HashSet<String>();
     openapiFields.add("proofReqs");
     openapiFields.add("sharedParams");
-    openapiFields.add("proof");
+    openapiFields.add("dataForVerifier");
     openapiFields.add("decryptionKeys");
     openapiFields.add("decryptResponses");
     openapiFields.add("nonce");
@@ -298,7 +299,7 @@ public class VerifyDecryptionRequest {
     openapiRequiredFields = new HashSet<String>();
     openapiRequiredFields.add("proofReqs");
     openapiRequiredFields.add("sharedParams");
-    openapiRequiredFields.add("proof");
+    openapiRequiredFields.add("dataForVerifier");
     openapiRequiredFields.add("decryptionKeys");
     openapiRequiredFields.add("decryptResponses");
     openapiRequiredFields.add("nonce");
@@ -332,9 +333,8 @@ public class VerifyDecryptionRequest {
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (!jsonObj.get("proof").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `proof` to be a primitive type in the JSON string but got `%s`", jsonObj.get("proof").toString()));
-      }
+      // validate the required field `dataForVerifier`
+      DataForVerifier.validateJsonElement(jsonObj.get("dataForVerifier"));
       if (!jsonObj.get("nonce").isJsonPrimitive()) {
         throw new IllegalArgumentException(String.format("Expected the field `nonce` to be a primitive type in the JSON string but got `%s`", jsonObj.get("nonce").toString()));
       }

@@ -522,8 +522,8 @@ struct VerifyDecryptionRequest {
     /// A map from parameter labels to associated parameter values.
     sharedParams     : HashMap<SharedParamKey, SharedParamValue>,
 
-    /// See Proof.
-    proof            : Proof,
+    /// See DataForVerifier.
+    dataForVerifier  : DataForVerifier,
 
     /// Map from Authority label to decryption key.
     decryptionKeys   : HashMap<SharedParamKey, AuthorityDecryptionKey>,
@@ -553,7 +553,7 @@ fn verifyDecryption(
         |e| err(format!("{:?}", e), "verifyDecryption"),
         |v| Ok(v.into_inner()))?;
     let op  = api.verify_decryption;
-    op(&dat.proofReqs, &dat.sharedParams, &dat.proof,&dat.decryptionKeys, &dat.decryptResponses,
+    op(&dat.proofReqs, &dat.sharedParams, &dat.dataForVerifier, &dat.decryptionKeys, &dat.decryptResponses,
        ProofMode::Strict, Some(dat.nonce)).map_or_else(
         |e| vcaErr(e, "verifyDecryption"),
         |v| Ok(Json(v)))

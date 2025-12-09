@@ -51,7 +51,8 @@ build:
 
 .PHONY: test
 test:
-	pnpm run test
+	pnpm run test -- --runInBand
+
 
 .PHONY: test-revealed
 test-revealed:

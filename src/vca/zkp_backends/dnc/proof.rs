@@ -76,10 +76,10 @@ pub fn specific_verifier_dnc() -> SpecificVerifier {
 }
 
 pub fn specific_verify_decryption_dnc() -> SpecificVerifyDecryption {
-    Arc::new(|prf_instrs, eqs, proof_api, auth_dks, decr_resps| {
+    Arc::new(|prf_instrs, eqs, dfv, auth_dks, decr_resps| {
         let (WarningsAndResult { warnings, result: _ }, decr_req_lkups) =
             proof_spec_from(true, &prf_instrs.to_vec(), eqs, None)?;
-        let proof : ProofG1 = from_api(proof_api)?;
+        let proof : ProofG1 = from_api(&dfv.proof)?;
         map_3_lvl_with_keys_partially_applied_with_error(
             (decr_req_lkups,
              proof,

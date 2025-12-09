@@ -122,19 +122,13 @@ pub fn verify_decryption(spec_verifier: SpecificVerifier,
                          spec_verify_decryption: SpecificVerifyDecryption
 ) -> VerifyDecryption {
     Arc::new(
-        move |pres_reqs, shared_params, prf, auth_dks, decrypt_responses, proof_mode, nonce| {
+        move |pres_reqs, shared_params, dfv, auth_dks, decrypt_responses, proof_mode, nonce| {
             // Verify the original proof, to ensure that information extracted from it for verifying
             // decryption satisfies the presentation/proof requirements
-
-            // No values to reveal
-            let mut vals_to_reveal = HashMap::<CredentialLabel, HashMap< CredAttrIndex, DataValue>>::new();
-            for key in pres_reqs.keys() {
-                vals_to_reveal.insert(key.to_string(), HashMap::new());
-            };
             let (res_prf_instrs, eq_reqs) = presentation_request_setup(
                 pres_reqs,
                 shared_params,
-                &vals_to_reveal,
+                &dfv.revealed_idxs_and_vals,
                 proof_mode,
             )?;
             let warns_rev = validate_cred_reqs_against_schemas(
@@ -147,12 +141,12 @@ pub fn verify_decryption(spec_verifier: SpecificVerifier,
             } = spec_verifier(
                 &res_prf_instrs,
                 &eq_reqs,
-                prf,
+                &dfv.proof,
                 &HashMap::new(),
                 get_nonce(&nonce),
             )?;
             let warns_ver_decr = spec_verify_decryption(
-                &res_prf_instrs, &eq_reqs, prf, auth_dks, decrypt_responses)?;
+                &res_prf_instrs, &eq_reqs, dfv, auth_dks, decrypt_responses)?;
             let all_warnings = [warns_rev, warns_ver, warns_ver_decr].concat();
             check_warnings("verify_decryption", &proof_mode, &all_warnings)?;
             Ok(all_warnings)

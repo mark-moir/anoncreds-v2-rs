@@ -393,7 +393,7 @@ function verifyDecryption(
       }
     }
   }
-  x.ci.verifyDecryption(x.reqs, x.shared, dfv.proof, adks, decryptResponses, nonce)
+  x.ci.verifyDecryption(x.reqs, x.shared, dfv, adks, decryptResponses, nonce)
     .then( (w) => {
       assert.strictEqual(w, []);
     })

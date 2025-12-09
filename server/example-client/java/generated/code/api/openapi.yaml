@@ -1764,9 +1764,9 @@ components:
               key:
                 decryptionProof: ""
                 value: value
+        dataForVerifier: ""
         decryptionKeys:
           key: null
-        proof: ""
         nonce: nonce
       properties:
         proofReqs:
@@ -1779,9 +1779,9 @@ components:
             $ref: '#/components/schemas/SharedParamValue'
           description: A map from parameter labels to associated parameter values.
           type: object
-        proof:
+        dataForVerifier:
           allOf:
-          - $ref: '#/components/schemas/Proof'
+          - $ref: '#/components/schemas/DataForVerifier'
           description: See Proof.
         decryptionKeys:
           additionalProperties:
@@ -1802,10 +1802,10 @@ components:
           description: Arbitrary text.
           type: string
       required:
+      - dataForVerifier
       - decryptResponses
       - decryptionKeys
       - nonce
-      - proof
       - proofReqs
       - sharedParams
       type: object

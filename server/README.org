@@ -71,11 +71,6 @@ This describes the API "routes" and data arguments and return values.
 For example, =createSignerData= can be called using =curl=:
 
 #+begin_src bash
-> curl --header "Content-Type: application/json" \
-       --request POST \
-       --data '["CTText","CTAccumulatorMember"]' \
-       http://localhost:8080/vca/createSignerData?zkpLib=ac2c_ps&rngSeed=3
-
 > curl -X 'POST' \
     'http://127.0.0.1:8080/vca/createSignerData?zkpLib=DNC&rngSeed=45' \
     -H 'accept: application/json' \
@@ -103,12 +98,12 @@ Swagger-ui can also be used to interact with the server.
 A request:
 
 #+ATTR_LaTeX: :width 6.5in
-[[file:./README-images/vca-swagger-create-signer-date-request.png]]
+[[file:./README-images/vca-swagger-create-signer-data-request.png]]
 
 The response:
 
 #+ATTR_LaTeX: :width 6.5in
-[[file:./README-images/vca-swagger-create-signer-date-response.png]]
+[[file:./README-images/vca-swagger-create-signer-data-response.png]]
 
 * RapiDoc
 
