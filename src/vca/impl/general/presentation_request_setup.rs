@@ -26,9 +26,11 @@ pub fn presentation_request_setup(
         for eq_req in eq_reqs.clone() {
             check_equalities_have_same_claim_types::main(pres_reqs, shared_params, eq_req)?
         };
+        // We could also check that values are the same if called by the prover, which would help to
+        // catch mistakes by honest provers, but verification will fail if values differ anyway.
+        // For this, we would need to have the caller optionally provide all attribute values, not
+        // just disclosed ones.
     }
-    // We could also check that values are the same if called by the prover, which would help to
-    // catch mistakes by honest provers, but verification will fail if values differ anyway.
     Ok((res_prf_insts, eq_reqs))
 }
 
@@ -97,7 +99,8 @@ pub fn get_proof_instructions(
     Ok(sort_by(
         merge_maps(cred_reqs.iter().collect(), vals_to_reveal.iter().collect())?
             .into_iter()
-            .map(|(label, reqs)| get_proof_instructions_for_cred(sparms, &lkups, label, reqs, prf_mode))
+            .map(|(label, reqs_and_vals)|
+                 get_proof_instructions_for_cred(sparms, &lkups, label, reqs_and_vals, prf_mode))
             .try_collect_concat()?,
         compare_prf_instrs,
     ))
@@ -140,7 +143,7 @@ fn get_proof_instructions_for_cred(
     ): (&CredentialReqs, &HashMap<CredAttrIndex, DataValue>),
     prf_mode: ProofMode,
 ) -> VCAResult<Vec<ProofInstructionGeneral<ResolvedRequirement>>> {
-    let cred_pi_idxs = lkups.get(c_lbl).ok_or_else(|| {
+    let cred_pi_idx = lkups.get(c_lbl).ok_or_else(|| {
         Error::General("get_proof_instructions_for_cred; INTERNAL ERROR".to_string())
     })?;
     let sig_res: ProofInstructionGeneral<ResolvedRequirement> = {
@@ -176,7 +179,7 @@ fn get_proof_instructions_for_cred(
         Ok(ProofInstructionGeneral {
             cred_label: c_lbl.clone(),
             attr_idx_general: POK_OF_SIGNATURE_APPLIES_TO_ALL_ATTRIBUTES,
-            related_pi_idx: *cred_pi_idxs,
+            related_pi_idx: *cred_pi_idx,
             requirement: ResolvedRequirement::CredentialResolvedWrapper(CredentialResolved {
                 issuer_public: signer_public_data,
                 rev_idxs_and_vals: reveal_vals_and_cts,
@@ -212,7 +215,7 @@ fn get_proof_instructions_for_cred(
                 Ok(ProofInstructionGeneral {
                     cred_label: c_lbl.clone(),
                     attr_idx_general: *index,
-                    related_pi_idx: *cred_pi_idxs,
+                    related_pi_idx: *cred_pi_idx,
                     requirement: ResolvedRequirement::InAccumResolvedWrapper(InAccumResolved {
                         public_data,
                         mem_prv,
@@ -231,7 +234,7 @@ fn get_proof_instructions_for_cred(
                 Ok(ProofInstructionGeneral {
                     cred_label: c_lbl.clone(),
                     attr_idx_general: info.index,
-                    related_pi_idx: *cred_pi_idxs,
+                    related_pi_idx: *cred_pi_idx,
                     requirement: ResolvedRequirement::InRangeResolvedWrapper(InRangeResolved {
                         min_val: *lookup_one_int(&info.min_label, sparms)?,
                         max_val: *lookup_one_int(&info.max_label, sparms)?,
@@ -261,7 +264,7 @@ fn get_proof_instructions_for_cred(
                 Ok(ProofInstructionGeneral {
                     cred_label: c_lbl.clone(),
                     attr_idx_general: *a_idx,
-                    related_pi_idx: *cred_pi_idxs,
+                    related_pi_idx: *cred_pi_idx,
                     requirement: ResolvedRequirement::EncryptedForResolvedWrapper(x),
                 })
             },
@@ -271,16 +274,10 @@ fn get_proof_instructions_for_cred(
     Ok([vec![sig_res], in_accum_res, in_range_res, en_f_res].concat())
 }
 
-/// Check that all Equality Reqs reference existing credentials, and attribute indices are in range
-fn equality_reqs_from_pres_reqs_general(
+fn extract_eq_pairs_from_pres_reqs (
     pres_reqs: &HashMap<CredentialLabel, CredentialReqs>,
 ) -> VCAResult<EqualityReqs> {
     let mut all_eq_pairs: EqualityReqs = vec![];
-    // Ensure all target credential labels are in map -- maybe unnecessary, will
-    // be done by next step anyway
-    // TODO: this is difficult to compare to the corresponding Haskell code, which itself
-    // is not completely straightforward to understand.  I think we need better tests in both.
-    // In particular, I'm concerned that we might be conflating all equivalence classes into one here.
     pres_reqs.iter().for_each(
         |(
             from_label,
@@ -289,39 +286,58 @@ fn equality_reqs_from_pres_reqs_general(
                 ..
             },
         )| {
-            equal_to.iter().for_each(|equal_info| {
+            equal_to.iter().for_each(|EqInfo { from_index, to_label, to_index }| {
                 all_eq_pairs.extend([vec![
-                    (from_label.clone(), equal_info.from_index),
-                    (equal_info.to_label.clone(), equal_info.to_index),
+                    (from_label.clone(), *from_index),
+                    (to_label.clone(), *to_index),
                 ]]);
             });
         },
     );
+    Ok(all_eq_pairs)
+}
+
+// Ensure that, regardless of the order of `CredentialReqs` in `pres_reqs`,
+// the `EqualityReqs` result is always in the same order.
+// The order of `CredentialReqs` in `pres_reqs` may be different because of external input, such as:
+// - provers and verifiers using equivalent but differently ordered `pres_reqs`
+// - json de/serializers changing the order of items in maps
+// When using AC2C, the prover and verifier must produce the same order of `EqualityReqs`
+// regardless of the order of items in `pres_reqs`.
+// If not, then the Merlin transcript check in verify fails.
+fn equality_reqs_canonical_order (
+    all_eq_pairs: &EqualityReqs,
+) -> EqualityReqs {
+    let mut all_eq_pairs_sorted = vec![];
+    for v in all_eq_pairs.iter() {
+        let mut v = v.clone().to_vec();
+        v.sort();
+        all_eq_pairs_sorted.push(v);
+    }
+    all_eq_pairs_sorted.sort();
+    all_eq_pairs_sorted
+}
+
+/// Check that all Equality Reqs reference existing credentials, and attribute indices are in range
+fn equality_reqs_from_pres_reqs_general(
+    pres_reqs: &HashMap<CredentialLabel, CredentialReqs>,
+) -> VCAResult<EqualityReqs> {
+    // Get equality pairs from presentation requirements
+    let mut all_eq_pairs =
+        extract_eq_pairs_from_pres_reqs(pres_reqs)?;
     all_eq_pairs = disjoint_vec_of_vecs(all_eq_pairs);
-    // Ensure all target credential labels are in map -- maybe unnecessary, will be done by next step anyway
+    // Ensure all target credential labels are in map
     all_eq_pairs.iter().try_for_each(|eq_pairs| {
         eq_pairs.iter().try_for_each(|(x, _)| {
             pres_reqs
                 .get(x)
-                .ok_or(Error::General("Non-existent credential label".to_string()))?;
+                .ok_or(Error::General(
+                    format!("equality_reqs_from_pres_reqs_general: Non-existent credential label {x}")))?;
             Ok(())
         })
     })?;
-    // Ensure that, regardless of the order of `CredentialReqs` in `pres_reqs`,
-    // the `EqualityReqs` result is always in the same order.
-    // The order of `CredentialReqs` in `pres_reqs` may be different because of external input, such as:
-    // - provers and verifiers using equivalent but differently ordered `pres_reqs`
-    // - json de/serializers changing the order of items in maps
-    // When using AC2C, the prover and verifier must produce the same order of `EqualityReqs`
-    // regardless of the order of items in `pres_reqs`.
-    // If not, then the Merlin transcript check in verify fails.
-    let mut all_eq_pairs_sorted = vec![];
-    for mut v in all_eq_pairs.iter_mut() {
-        v.sort();
-        all_eq_pairs_sorted.push((*v).clone());
-    }
-    all_eq_pairs_sorted.sort();
-    Ok(all_eq_pairs_sorted)
+    // Put equality requirement in canoncial order
+    Ok(equality_reqs_canonical_order(&all_eq_pairs))
 }
 
 pub fn is_cred_resolved(instr: &ProofInstructionGeneral<ResolvedRequirement>) -> bool {

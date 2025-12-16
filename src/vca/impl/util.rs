@@ -34,20 +34,27 @@ pub fn disjoint_vec_of_vecs<T: Eq + Clone>(
 ) -> Vec<Vec<T>> {
     let mut yss : Vec<Vec<T>> = vec![];
     xss.into_iter().for_each(|xs| {
+        // Find lists already in yss that overlap with xs
         let mut overlapping_idxs = vec![];
         for (idx, ys) in yss.iter().enumerate() {
-            if xs.iter().any(|x| ys.iter().any(|y| *x == *y)) {
+            if xs.iter().any(|x| ys.contains(x)) {
                 overlapping_idxs.push(idx);
             }
         }
         overlapping_idxs.sort_unstable();
 
-        if !overlapping_idxs.is_empty() {
+        // If none, add xs to yss
+        if overlapping_idxs.is_empty() {
+            yss.push(xs)
+        } else {
+            // Otherwise, remove all lists from yss that overlap with
+            // xs, collect them together, and add them as a single list
+            // in the position of the first overlapping one
             let first_overlapping_idx = overlapping_idxs
                 .first()
                 .expect("overlapping_idxs isn't empty");
 
-            // remove the overlapping_idxs in reverse order so that removing
+            // Remove the overlapping_idxs in reverse order so that removing
             // an index doesn't affect the rest of the indices to remove
             let mut rev_removed_yss = vec![];
             overlapping_idxs.iter().rev().for_each(|i| {
@@ -58,11 +65,11 @@ pub fn disjoint_vec_of_vecs<T: Eq + Clone>(
             rev_removed_yss.into_iter().rev().for_each(|ys| {
                 new_first_overlapping_ys.extend(ys);
             });
+            // Add collected values, ensuring no duplicates
             extend_nub(&mut new_first_overlapping_ys, xs);
 
+            // Insert collected values in original position of first overlapping one
             yss.insert(*first_overlapping_idx, new_first_overlapping_ys);
-        } else {
-            yss.push(xs)
         }
     });
     yss
@@ -334,25 +341,29 @@ mod tests {
     #[test]
     fn test_disjoint_vec_of_vecs() {
         // only care for equality up to reordering
-        fn test(input: Vec<Vec<u8>>, mut expected_output: Vec<Vec<u8>>) {
+        fn test(label: &str, input: Vec<Vec<u8>>, mut expected_output: Vec<Vec<u8>>) {
             sort_vec_of_vecs(&mut expected_output);
             let mut actual_output: Vec<Vec<u8>> = disjoint_vec_of_vecs(input);
             sort_vec_of_vecs(&mut actual_output);
-            assert_eq!(actual_output, expected_output);
+            assert_eq!(actual_output, expected_output, "test: {}", label);
         }
 
-        test(vec![vec![1]], vec![vec![1]]);
-        test(vec![vec![1], vec![2]], vec![vec![1], vec![2]]);
-        test(vec![vec![1], vec![1, 2]], vec![vec![1, 2]]);
-        test(
+        test("test1", vec![vec![1]], vec![vec![1]]);
+        test("test2", vec![vec![1], vec![2]], vec![vec![1], vec![2]]);
+        test("test3", vec![vec![1], vec![1, 2]], vec![vec![1, 2]]);
+        test("test4",
             vec![vec![1], vec![1, 2], vec![3], vec![3, 4]],
             vec![vec![1, 2], vec![3, 4]],
         );
-        test(
+        test("test5",
             vec![vec![1], vec![1, 2], vec![3], vec![2, 3, 4]],
             vec![vec![1, 2, 3, 4]],
         );
-        test(
+        test("test6",
+            vec![vec![1, 2], vec![3, 4], vec![2, 3]],
+            vec![vec![1, 2, 3, 4]],
+        );
+        test("test7",
             vec![
                 vec![10],
                 vec![1, 2],
@@ -368,7 +379,7 @@ mod tests {
         // DockNetwork crypto: https://github.com/docknetwork/crypto/issues/18
         // The irrelevant tuples in that test have been "collapsed" to integers,
         // with leading zeroes removed to avoid warnings.
-        test(
+        test("test8",
             vec![
                 vec![1, 20],
                 vec![5, 12],

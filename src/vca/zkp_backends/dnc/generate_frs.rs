@@ -37,7 +37,7 @@ pub fn generate_fr_from_val_and_ct(
     }
 }
 
-pub fn generate_frs_from_vals_and_ct(
+pub fn generate_frs_from_vals_and_cts(
     vals    : &[DataValue],
     sdcts   : &[ClaimType],
     err_msg : &str,
