@@ -22,12 +22,12 @@ pub fn create_proof(spec_prover: SpecificProver) -> CreateProof {
         move |pres_reqs, shared_params, sigs_and_rel_data_api, proof_mode, nonce| {
             let all_vals = get_all_vals(pres_reqs, sigs_and_rel_data_api)?;
             let vals_to_reveal = get_vals_to_reveal(&all_vals);
-            let (res_prf_insts, eq_reqs) = presentation_request_setup(
-                pres_reqs, shared_params, &vals_to_reveal, proof_mode)?;
             let warns_rev = validate_cred_reqs_against_schemas(
                 pres_reqs,
                 &get_schemas(shared_params, pres_reqs)?,
             )?;
+            let (res_prf_insts, eq_reqs) =
+                presentation_request_setup(pres_reqs, shared_params, &vals_to_reveal, proof_mode)?;
             if (proof_mode != ProofMode::TestBackend) {
                 validate_proof_instructions_against_values(&all_vals, &res_prf_insts)?;
                 eq_reqs.iter().try_for_each(|x| {validate_one_equality(&all_vals, x)})?;
@@ -49,7 +49,7 @@ pub fn create_proof(spec_prover: SpecificProver) -> CreateProof {
     )
 }
 
-pub fn validate_one_equality (
+fn validate_one_equality (
     all_vals: &HashMap<CredentialLabel,HashMap<CredAttrIndex,(DataValue,bool)>>,
     eq_req: &[(CredentialLabel, CredAttrIndex)]
 ) -> VCAResult<()> {

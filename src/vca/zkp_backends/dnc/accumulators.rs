@@ -34,12 +34,13 @@ pub fn create_accumulator_data() -> CreateAccumulatorData {
         let sp      = VbaSetupParams::<Bls12_381>::generate_using_rng(&mut rng);
         let kp      = VbaKeypair::<Bls12_381>::generate_using_rng(&mut rng, &sp);
         let pk      = &kp.public_key;
-        let ims : InMemoryState::<Fr> = InMemoryState::<Fr>::new();
         let acc     = PositiveAccumulator::initialize(&sp);
         let ad      = to_api_accumulator_data(&sp, &kp)?;
         #[cfg(not(feature="in_memory_state"))]
         let accumulator : api::Accumulator
                     = to_api(&acc)?;
+        #[cfg(feature="in_memory_state")]
+        let ims : InMemoryState::<Fr> = InMemoryState::<Fr>::new();
         #[cfg(feature="in_memory_state")]
         let accumulator : api::Accumulator
                     = to_api((&acc, &ims))?;
@@ -106,7 +107,6 @@ pub fn accumulator_add_remove() -> AccumulatorAddRemove {
             witnesses_for_new.insert(k.clone(), to_api(wit)?);
         }
         let witness_update_info : AccumulatorWitnessUpdateInfo = to_api( (o, afl, rfl) )?;
-        let accumulator_data      = to_api_accumulator_data(&sp, &kp)?;
         #[cfg(not(feature="in_memory_state"))]
         let accumulator           = to_api(&pa3)?;
         #[cfg(feature="in_memory_state")]

@@ -16,7 +16,7 @@ use zeroize::Zeroize;
 
 // see crypto-wasm/src/common.rs 56f4723103ab83b1cae23df3d013573c5c0ffb5d
 fn field_element_as_bytes(x : &mut Vec<u8>)
-    -> VCAResult<ark_ff::Fp<ark_ff::MontBackend<ark_bls12_381::FrConfig, 4>, 4>>
+    -> VCAResult<Fr>
 {
     let f = fr_from_uint8_array(x)?; // TODO true as argument
     let mut bytes = vec![];

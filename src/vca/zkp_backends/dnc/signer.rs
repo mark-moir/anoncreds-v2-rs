@@ -42,7 +42,7 @@ pub fn sign() -> SpecificSign {
         let sk : SecretKeyBls12_381 = from_api(signer_secret_data)?;
         let SignerPublicData { signer_public_setup_data, signer_public_schema, .. } = *signer_public_data.clone();
         let (sp, _) : (SignatureParamsG1::<Bls12_381>, PublicKeyG2<Bls12_381>) = from_api(&signer_public_setup_data)?;
-        let frs = generate_frs_from_vals_and_ct(vals, &signer_public_schema, "sign")?;
+        let frs = generate_frs_from_vals_and_cts(vals, &signer_public_schema, "sign")?;
         let mut rng = StdRng::seed_from_u64(rng_seed);
         let s = SignatureG1::<Bls12_381>::new(&mut rng, &frs, &sk, &sp)
             .map_err(|e| Error::General(format!("sign, {:?}", e)))?;

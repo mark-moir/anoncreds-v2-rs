@@ -219,7 +219,7 @@ fn add_statement_and_maybe_witness(
                     &cred_label, sigs, Error::General,
                     &["add_statement_and_maybe_witness".to_string(), "PoKofSig".to_string(),
                       "no signature for credential".to_string()])?;
-                let frs = generate_frs_from_vals_and_ct(vals, &schema, "add_statement_and_maybe_witness")?;
+                let frs = generate_frs_from_vals_and_cts(vals, &schema, "add_statement_and_maybe_witness")?;
                 add_pok_witness_new(witnesses, ((sig, frs), revealed_idxs_and_frs_for_cred));
             } else {
                 stmts.add(bbs_plus::PoKBBSSignatureG1Verifier::new_statement_from_params(*sig_pars, *pk, revealed));
