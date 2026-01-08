@@ -191,28 +191,27 @@ impl VcaTryFrom<&InMemoryStateOpaque> for InMemoryState::<Fr> {
 
 // ------------------------------------------------------------------------------
 
-pub fn to_api_accumulator_data(
-    sp  : &VbaSetupParams::<Bls12_381>,
-    kp  : &VbaKeypair::<Bls12_381>,
-) -> VCAResult<api::AccumulatorData>
-{
-    let ad = api::AccumulatorData {
-        accumulator_public_data : to_api((sp, &kp.public_key))?,
-        accumulator_secret_data : to_api(kp)?
-    };
-    Ok(ad)
+impl VcaTryFrom<(&VbaSetupParams::<Bls12_381>,
+                 &VbaKeypair::<Bls12_381>)> for api::AccumulatorData {
+    fn vca_try_from(pair: (&VbaSetupParams::<Bls12_381>,
+                           &VbaKeypair::<Bls12_381>)) -> VCAResult<api::AccumulatorData> {
+        let accumulator_public_data = to_api((pair.0, &pair.1.public_key))?;
+        let accumulator_secret_data = to_api(pair.1)?;
+        Ok(api::AccumulatorData{accumulator_public_data, accumulator_secret_data})
+    }
+
 }
 
-#[allow(clippy::type_complexity)]
-pub fn from_api_accumulator_data(
-    ad : &api::AccumulatorData
-) -> VCAResult<(VbaSetupParams::<Bls12_381>,
-                VbaKeypair::<Bls12_381>)>
-{
-    let api::AccumulatorData { accumulator_public_data, accumulator_secret_data } = ad;
-    let (sp, _pk)          = from_api(accumulator_public_data)?;
-    let kp = from_api(accumulator_secret_data)?;
-    Ok((sp, kp))
+impl VcaTryFrom<&api::AccumulatorData > for (VbaSetupParams::<Bls12_381>,
+                                             VbaKeypair::<Bls12_381>){
+    fn vca_try_from(ad: &api::AccumulatorData)
+                    -> VCAResult<(VbaSetupParams::<Bls12_381>,
+                                  VbaKeypair::<Bls12_381>)> {
+        let api::AccumulatorData { accumulator_public_data, accumulator_secret_data } = ad;
+        let (sp, _pk) = from_api(accumulator_public_data)?;
+        let kp        = from_api(accumulator_secret_data)?;
+        Ok((sp, kp))
+    }
 }
 
 // ------------------------------------------------------------------------------
