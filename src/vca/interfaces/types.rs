@@ -90,9 +90,7 @@ pub enum ClaimType {
     #[serde(rename = "CTInt")]
     CTInt,
     #[serde(rename = "CTAccumulatorMember")]
-    CTAccumulatorMember,
-    #[serde(rename = "CTTextOrInt")]
-    CTTextOrInt,
+    CTAccumulatorMember
 }
 
 impl fmt::Display for ClaimType {
@@ -101,8 +99,7 @@ impl fmt::Display for ClaimType {
             ClaimType::CTText              => write!(f, "CTText"),
             ClaimType::CTEncryptableText   => write!(f, "CTEncryptableText"),
             ClaimType::CTInt               => write!(f, "CTInt"),
-            ClaimType::CTAccumulatorMember => write!(f, "CTAccumulatorMember"),
-            ClaimType::CTTextOrInt         => write!(f, "CTTextOrInt"),
+            ClaimType::CTAccumulatorMember => write!(f, "CTAccumulatorMember")
         }
     }
 }
