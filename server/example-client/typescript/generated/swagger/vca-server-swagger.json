@@ -993,8 +993,7 @@
           "CTText",
           "CTEncryptableText",
           "CTInt",
-          "CTAccumulatorMember",
-          "CTTextOrInt"
+          "CTAccumulatorMember"
         ]
       },
       "SignerSecretData": {
@@ -2128,7 +2127,7 @@
             }
           },
           "dataForVerifier": {
-            "description": "See Proof.",
+            "description": "See DataForVerifier.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/DataForVerifier"

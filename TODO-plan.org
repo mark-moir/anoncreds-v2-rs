@@ -28,6 +28,9 @@
       - // TODO: remove?
 
 
+** Server and example clients
+*** TODO the server seems to only handle requests sequentially - investigate and make parallel
+
 ** Probably unnecessary - confirm and remove TODO
 
 *** TODO src/vca/impl/to_from_api.rs:12                        - not sure what the point was
