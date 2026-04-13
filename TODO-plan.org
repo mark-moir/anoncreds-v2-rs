@@ -7,7 +7,10 @@
       - let mut rng = StdRng::seed_from_u64(0); // TODO: real seed
 *** TODO src/vca/zkp_backends/dnc/proof.rs:64                  - use real seed
       - let mut rng = StdRng::seed_from_u64(137); // TODO: 137
- 
+*** TODO src/vca/zkp_backends/ac2c/signer.rs:87                - include PoK of blinder in BlindInfoForSigner
+      - specific_create_blind_signing_info should embed a correctness proof of the blinding randomness into BlindInfoForSigner so callers need no new API
+*** TODO src/vca/zkp_backends/dnc/signer.rs:67                 - include PoK of blinder in BlindInfoForSigner
+      - specific_create_blind_signing_info should include proof of blinder (commitment correctness) inside BlindInfoForSigner to avoid upstream API changes
 
 ** Improve error messages
 *** TODO src/vca/impl/general/presentation_request_setup.rs:75 - TODO error message
