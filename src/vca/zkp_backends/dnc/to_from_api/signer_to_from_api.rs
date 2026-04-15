@@ -16,15 +16,22 @@ use ark_ec::pairing::Pairing;
 
 // ------------------------------------------------------------------------------
 
+#[derive(Clone, CanonicalSerialize, CanonicalDeserialize)]
+pub struct DncSignerPublicSetupData {
+    pub sig_params: SignatureParamsG1::<Bls12_381>,
+    pub pk: PublicKeyG2<Bls12_381>,
+}
+
 impl VcaTryFrom<(SignatureParamsG1::<Bls12_381>, PublicKeyG2<Bls12_381>)> for api::SignerPublicSetupData {
     fn vca_try_from((sp, pk): (SignatureParamsG1::<Bls12_381>, PublicKeyG2<Bls12_381>)) -> VCAResult<api::SignerPublicSetupData> {
-        Ok(api::SignerPublicSetupData(to_opaque_json(&(sp, pk.clone()))?)) // TODO no clone
+        Ok(api::SignerPublicSetupData(to_opaque_ark(&DncSignerPublicSetupData { sig_params: sp, pk })?))
     }
 }
 
 impl VcaTryFrom<&api::SignerPublicSetupData> for (SignatureParamsG1::<Bls12_381>, PublicKeyG2<Bls12_381>) {
     fn vca_try_from(x: &api::SignerPublicSetupData) -> VCAResult<(SignatureParamsG1::<Bls12_381>, PublicKeyG2<Bls12_381>)> {
-        from_opaque_json(&x.0)
+        let inner: DncSignerPublicSetupData = from_opaque_ark(&x.0)?;
+        Ok((inner.sig_params, inner.pk))
     }
 }
 

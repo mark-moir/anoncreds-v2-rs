@@ -66,9 +66,6 @@
 *** TODO src/vca/README.md:92                                  - comment about TODOs in README
       - -   There are quite a few TODOs, potentially including some that would undermine security if left
 
-*** TODO src/vca/zkp_backends/dnc/to_from_api/signer_to_from_api.rs:21 - clone unnecessary?
-      - Ok(api::SignerPublicSetupData(to_opaque_json(&(sp, pk.clone()))?)) // TODO no clone
-
 *** TODO src/vca/zkp_backends/dnc/reversible_encoding.rs:21    - don't remember/understand reason for TODO
       - let f = fr_from_uint8_array(x)?; // TODO true as argument
       - I (MSM) wrote this comment, and I have no idea what it means :-)
