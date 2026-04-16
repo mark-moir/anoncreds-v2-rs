@@ -6,11 +6,13 @@
 *** TODO src/vca/zkp_backends/dnc/proof.rs:48                  - use real seed
       - let mut rng = StdRng::seed_from_u64(0); // TODO: real seed
 *** TODO src/vca/zkp_backends/dnc/proof.rs:64                  - use real seed
+
       - let mut rng = StdRng::seed_from_u64(137); // TODO: 137
 *** TODO src/vca/zkp_backends/ac2c/signer.rs:87                - include PoK of blinder in BlindInfoForSigner
       - specific_create_blind_signing_info should embed a correctness proof of the blinding randomness into BlindInfoForSigner so callers need no new API
 *** TODO src/vca/zkp_backends/dnc/signer.rs:67                 - include PoK of blinder in BlindInfoForSigner
       - specific_create_blind_signing_info should include proof of blinder (commitment correctness) inside BlindInfoForSigner to avoid upstream API changes
+
 
 ** Improve error messages
 *** TODO src/vca/impl/general/presentation_request_setup.rs:75 - TODO error message
@@ -27,12 +29,13 @@
       - [DataValue::DVText(x)] => Ok(x), // TODO: temporary workaround, or reasonable semantic change?
       - This would go away if we eliminated =SPVList=, which we never ended up using
 
-*** TODO src/vca/interfaces/types.rs:219
+*** TODO src/vca/interfaces/types.rs:222
       - // TODO: remove?
 
 
 ** Server and example clients
 *** TODO the server seems to only handle requests sequentially - investigate and make parallel
+
 
 ** Probably unnecessary - confirm and remove TODO
 
@@ -43,17 +46,17 @@
       - // TODO: feature gate - use compute_membership_witness if InMemoryState not available
       - This was already done, it seems
 
-*** TODO src/vca/zkp_backends/dnc/proof.rs:185                 - set RANGE_PROOF_CHEAT_OFFSET at runtime
+*** TODO src/vca/zkp_backends/dnc/proof.rs:187                 - set RANGE_PROOF_CHEAT_OFFSET at runtime
       - //// This should be 0 for normal operation, but can be set to emulate a dishonest prover that lies
       - //// about the value; see usage below for RangeProof case, also in Direct tests, which differ
       - //// depending on how this is set.  TODO: think about how to enable configuring this at runtime;
       - // probably thread something akin to Loose/Strict through to here.
       - const RANGE_PROOF_CHEAT_OFFSET : u64 = 0;
 
-*** TODO src/vca/interfaces/types.rs:140                       - comment incomplete?, seems historical
+*** TODO src/vca/interfaces/types.rs:143                       - comment incomplete?, seems historical
       - /// A blinded signature, based on the 'values', etc., given in a TODO -- what's this?
 
-*** TODO src/vca/interfaces/types.rs:393                       - HolderID does not need to be OpaqueMaterial
+*** TODO src/vca/interfaces/types.rs:396                       - HolderID does not need to be OpaqueMaterial
       - // TODO: this does not need to be OpaqueMaterial, String will suffice.  It is not specific to an underlying ZKP library.  Nonetheless,
 
 
@@ -105,16 +108,16 @@
 
 
 ** No functional change, code quality only
-*** TODO src/vca/zkp_backends/ac2c/to_from_api/signer_to_from_api.rs:17 - to/from_api includes too much data
+*** TODO src/vca/zkp_backends/ac2c/to_from_api/signer_to_from_api.rs:18 - to/from_api includes too much data
       - // TODO: this should not be for a triple, two components of which are not AC2C-specific
 
-*** TODO src/vca/zkp_backends/ac2c/signer.rs:53                - unnecessary to/from_api
+*** TODO src/vca/zkp_backends/ac2c/signer.rs:54                - unnecessary to/from_api
       - // TODO: - make sign take schema from General, like sign_with_blinded_attributes
 
-*** TODO src/vca/zkp_backends/ac2c/signer.rs:77                - refactor for DRY
+*** TODO src/vca/zkp_backends/ac2c/signer.rs:78                - refactor for DRY
       - // TODO: DRY fail, refactor
 
-*** TODO src/vca/zkp_backends/ac2c/signer.rs:96                - refactor for DRY
+*** TODO src/vca/zkp_backends/ac2c/signer.rs:107               - refactor for DRY
       - // TODO: refactor, DRY fail with sign
 
 
