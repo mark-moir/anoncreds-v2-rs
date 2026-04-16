@@ -80,11 +80,17 @@ CLOSED: [2026-04-16 Thu 21:00]
 
 
 ** Nice to have - consider leaving comment, removing "TODO"
-*** TODO generate-tests-from-json/src/lib.rs:84                - refine how "slowness" is expressed
-      - ///      TODO: revisit "slowness" handling; replace NotSoSlow with (something like) Slowness(n), and enable skipping all tests
+*** DROP generate-tests-from-json/src/lib.rs:84                - refine how "slowness" is expressed
+CLOSED: [2026-04-16 Thu 22:34]
+- State "DROP"       from "TODO"       [2026-04-16 Thu 22:34]
+  - ///      TODO: revisit "slowness" handling; replace NotSoSlow with (something like) Slowness(n), and enable skipping all tests
+  - not high enough priority
 
-*** TODO generate-tests-from-json/src/lib.rs:239               - report overrides that match multiple tests
+*** DROP generate-tests-from-json/src/lib.rs:239               - report overrides that match multiple tests
+CLOSED: [2026-04-16 Thu 22:35]
+- State "DROP"       from "TODO"       [2026-04-16 Thu 22:35]
       - // TODO: detect overrides used for multiple tests, report which ones
+      - Not high enough priority
 
 *** TODO src/vca/impl/util.rs:684                              - unnecessary generalisation
       - // TODO: ideally make this work for any KeyValueContainer, but only used for HashMap so far
