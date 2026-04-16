@@ -39,8 +39,11 @@
 
 *** TODO src/vca/impl/to_from_api.rs:12                        - DRY
       - // TODO: create and use macro for common patterns such as to/from_opaque_json
+      - search all files ending with _to_from_api.rs under all zkp_backends
 
-*** TODO src/vca/zkp_backends/dnc/accumulators.rs:137          - already done, remove TODO
+*** DONE src/vca/zkp_backends/dnc/accumulators.rs:137          - already done, remove TODO
+CLOSED: [2026-04-16 Thu 18:21]
+- State "DONE"       from "TODO"       [2026-04-16 Thu 18:21]
       - // TODO: feature gate - use compute_membership_witness if InMemoryState not available
       - This was already done, it seems
 
@@ -56,8 +59,8 @@ CLOSED: [2026-04-16 Thu 17:44]
       - /// A blinded signature, based on the 'values', etc., given in a TODO -- what's this?
 
 *** TODO src/vca/interfaces/types.rs:396                       - HolderID does not need to be OpaqueMaterial
-      - // TODO: this does not need to be OpaqueMaterial, String will suffice.  It is not specific to an underlying ZKP library.  Nonetheless,
-
+      - // TODO: this does not need to be OpaqueMaterial, String will suffice.  It is not specific to an underlying ZKP library.
+      - But a HolderID(String) type will disambiguate from other Strings
 
 ** Assess whether still needed, remove or update
 *** TODO src/vca/impl/to_from_api.rs:40                        - check status of dependency bug
