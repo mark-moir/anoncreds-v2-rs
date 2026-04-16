@@ -26,6 +26,8 @@
 
 *** TODO src/vca/interfaces/types.rs:222
       - // TODO: remove?
+      - remove NotInAccum and eveything related to it
+      - check that "cargo test 000" still passes
 
 
 ** Server and example clients
