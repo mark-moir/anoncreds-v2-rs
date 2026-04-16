@@ -111,7 +111,7 @@ CLOSED: [2026-04-16 Thu 21:00]
 
 
 ** No functional change, code quality only
-*** TODO src/vca/zkp_backends/ac2c/to_from_api/signer_to_from_api.rs:18 - to/from_api includes too much data
+*** TODO src/vca/zkp_backends/ac2c/to_from_api/signer_to_from_api.rs:23 - to/from_api includes too much data
       - // TODO: this should not be for a triple, two components of which are not AC2C-specific
 
 *** TODO src/vca/zkp_backends/ac2c/signer.rs:54                - unnecessary to/from_api
