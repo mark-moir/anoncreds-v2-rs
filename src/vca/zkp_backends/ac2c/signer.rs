@@ -84,6 +84,7 @@ pub fn specific_create_blind_signing_info<S: ShortGroupSignatureScheme>()
             .map_err(|e| Error::General(ic_semi(&str_vec_from!("specific_create_blind_signing_info",
                                                                "BlindCredentialRequest::new",
                                                                format!("{e:?}")))))?;
+        // TODO: create and include PoK of blinder
         Ok(BlindSigningInfo {blind_info_for_signer: to_api(blind_credential_request)?,
                              blinded_attributes: blind_attrs.to_vec(),
                              info_for_unblinding: to_api(blinder)?})
