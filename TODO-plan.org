@@ -31,7 +31,9 @@
       - suspended because it will require updating server and example workloads
 
 ** Server and example clients
-*** TODO the server seems to only handle requests sequentially - investigate and make parallel
+*** SUSP the server seems to only handle requests sequentially - investigate and make parallel
+    - suspended, low priority
+
 
 ** Probably unnecessary - confirm and remove TODO
 
