@@ -46,12 +46,8 @@ CLOSED: [2026-04-16 Thu 18:21]
       - // TODO: feature gate - use compute_membership_witness if InMemoryState not available
       - This was already done, it seems
 
-*** TODO src/vca/zkp_backends/dnc/proof.rs:187                 - set RANGE_PROOF_CHEAT_OFFSET at runtime
-      - //// This should be 0 for normal operation, but can be set to emulate a dishonest prover that lies
-      - //// about the value; see usage below for RangeProof case, also in Direct tests, which differ
-      - //// depending on how this is set.  TODO: think about how to enable configuring this at runtime;
-      - // probably thread something akin to Loose/Strict through to here.
-      - const RANGE_PROOF_CHEAT_OFFSET : u64 = 0;
+*** DONE src/vca/zkp_backends/dnc/proof.rs:187                 - set RANGE_PROOF_CHEAT_OFFSET at runtime
+      - cheat offset now read once from env RANGE_PROOF_CHEAT_OFFSET (default 0) via OnceLock; applied in prover path
 
 *** DONE src/vca/interfaces/types.rs:143                       - comment incomplete?, seems historical
 CLOSED: [2026-04-16 Thu 17:44]
