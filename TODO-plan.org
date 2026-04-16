@@ -89,7 +89,8 @@ CLOSED: [2026-04-16 Thu 21:00]
       - // TODO: ideally make this work for any KeyValueContainer, but only used for HashMap so far
 *** TODO src/vca/impl/util.rs:714                              - unnecessary generalisation
       - // TODO: ideally make this work for any KeyValueContainer, but only used for HashMap so far
-*** TODO src/vca/impl/util.rs:715                              - add tests
+*** DONE src/vca/impl/util.rs:715                              - add tests
+      - added unit test covering success and duplicate error with context propagation
       - // TODO: add tests
 
 *** TODO src/vca/impl/util.rs:1077                             - more idiomatic Rust, possible change to eliminate clones
@@ -98,7 +99,7 @@ CLOSED: [2026-04-16 Thu 21:00]
       - //// call to this function.  Thus, it may be reasonable for this function to take a &mut for m,
       - // which may help to avoid unnecessary clones.
 
-*** TODO src/vca/zkp_backends/dnc/to_from_api/accumulators_to_from_api.rs:149 - feature gate in_memory_state debug output
+*** TODO src/vca/zkp_backends/dnc/to_from_api/accumulators_to_from_api.rs:131 - feature gate in_memory_state debug output
       - // TODO: feature gate
       - Note: already feature gated on in_memory_state; TODO is to consider feature that enables
         printing; we could just remove the printing, but it would be useful for debugging, which

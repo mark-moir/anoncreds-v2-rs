@@ -329,7 +329,7 @@ mod tests {
 
     use maplit::hashmap;
 
-    use crate::vca::r#impl::util::merge_maps;
+    use crate::vca::r#impl::util::{merge_maps, insert_throw_if_present_3_lvl};
 
     use super::disjoint_vec_of_vecs;
 
@@ -425,6 +425,28 @@ mod tests {
         test(hashmap! {1 => 1}, hashmap! {}, None);
         test(hashmap! {1 => 1}, hashmap! {2 => 2}, None);
         test(hashmap! {1 => 1, 2 => 2}, hashmap! {1 => 10, 3 => 30}, None);
+    }
+
+    #[test]
+    fn test_insert_throw_if_present_3_lvl_ok_and_duplicate() {
+        type H3 = HashMap<&'static str, HashMap<&'static str, HashMap<&'static str, u8>>>;
+        let mut m: H3 = HashMap::new();
+        let mk_err = |s: String| s;
+
+        // first insert populates empty maps
+        insert_throw_if_present_3_lvl(&"k1", &"k2", &"k3", 1u8, &mut m, mk_err, &[]).unwrap();
+        assert_eq!(m["k1"]["k2"]["k3"], 1);
+
+        // second insert under same outer key but new inner keys succeeds
+        insert_throw_if_present_3_lvl(&"k1", &"k2b", &"k3b", 2u8, &mut m, mk_err, &[]).unwrap();
+        assert_eq!(m["k1"]["k2b"]["k3b"], 2);
+
+        // duplicate third-level insert should error and include outer context
+        let err = insert_throw_if_present_3_lvl(&"k1", &"k2", &"k3", 9u8, &mut m, mk_err, &["ctx".to_string()])
+            .unwrap_err();
+        assert!(err.contains("already present"), "err missing duplicate text: {}", err);
+        assert!(err.contains("outer_key_present"), "err missing outer context: {}", err);
+        assert!(err.contains("ctx"), "err missing caller context: {}", err);
     }
 }
 
@@ -712,7 +734,6 @@ pub fn insert_throw_if_present_2_lvl<'a,
 }
 
 // TODO: ideally make this work for any KeyValueContainer, but only used for HashMap so far
-// TODO: add tests
 pub fn insert_throw_if_present_3_lvl<'a,
                                      K1: Eq+Debug+Hash+Clone,
                                      K2: Eq+Debug+Hash+Clone,
