@@ -48,8 +48,9 @@ fn verify_proof(bp_gens : BulletproofGens,
     );
 }
 
-// This test is ignored because it fails due to an apparent serialisation bug in bulletproofs (see
-// next test, which is identical except that it uses cbor instead of json for serialisation
+// This test is ignored because it fails due to an apparent serialisation bug in bulletproofs-bls
+// v4.0.0 (see next test, which is identical except that it uses cbor instead of json for
+// serialisation)
 #[ignore]
 #[test]
 fn range_proof_round_trip_json_serialization_json() -> Result<(),serde_json::Error> {
