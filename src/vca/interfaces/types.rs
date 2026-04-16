@@ -140,7 +140,7 @@ impl_Debug_for_OpaqueMaterial_wrapper! { Signature }
 
 impl Eq for Signature {}
 
-/// A blinded signature, based on the 'values', etc., given in a TODO -- what's this?
+/// A blinded signature
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct BlindSignature(pub OpaqueMaterial);
 impl_Debug_for_OpaqueMaterial_wrapper! { BlindSignature }

@@ -48,7 +48,8 @@
       - // probably thread something akin to Loose/Strict through to here.
       - const RANGE_PROOF_CHEAT_OFFSET : u64 = 0;
 
-*** TODO src/vca/interfaces/types.rs:143                       - comment incomplete?, seems historical
+*** DONE src/vca/interfaces/types.rs:143                       - comment incomplete?, seems historical
+CLOSED: [2026-04-16 Thu 17:44]
       - /// A blinded signature, based on the 'values', etc., given in a TODO -- what's this?
 
 *** TODO src/vca/interfaces/types.rs:396                       - HolderID does not need to be OpaqueMaterial
