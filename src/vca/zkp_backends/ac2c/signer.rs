@@ -72,7 +72,6 @@ pub fn specific_create_blind_signing_info<S: ShortGroupSignatureScheme>()
 -> SpecificCreateBlindSigningInfo {
     Arc::new(|_rng_seed, spsd, schema, blind_attrs| {
         let issuer_public: IssuerPublic<S> = from_api(spsd)?;
-        // TODO: DRY fail, refactor
         let blind_claims: BTreeMap<String,ClaimData> = blind_attrs
             .iter()
             .map(|idx_val_pair| create_label_claim_pair("create_blind_signing_info, AC2C", schema, idx_val_pair))
@@ -92,7 +91,6 @@ pub fn specific_create_blind_signing_info<S: ShortGroupSignatureScheme>()
 pub fn specific_sign_with_blinded_attributes<S: ShortGroupSignatureScheme>(
 ) -> SpecificSignWithBlindedAttributes {
     Arc::new(|_rng_seed, schema, non_blinded_attrs, bifs, _, signer_secret_data| {
-        // TODO: refactor, DRY fail with sign
         let mut claims: BTreeMap<String,ClaimData> = non_blinded_attrs
             .iter()
             .map(|idx_val_pair| create_label_claim_pair("sign_with_blinded_attributes, AC2C", schema, idx_val_pair))
