@@ -53,9 +53,8 @@ CLOSED: [2026-04-16 Thu 18:21]
 CLOSED: [2026-04-16 Thu 17:44]
       - /// A blinded signature, based on the 'values', etc., given in a TODO -- what's this?
 
-*** TODO src/vca/interfaces/types.rs:396                       - HolderID does not need to be OpaqueMaterial
-      - // TODO: this does not need to be OpaqueMaterial, String will suffice.  It is not specific to an underlying ZKP library.
-      - But a HolderID(String) type will disambiguate from other Strings
+*** DONE src/vca/interfaces/types.rs:396                       - HolderID does not need to be OpaqueMaterial
+      - HolderID now wraps String with Debug/serde/jsonschema derives; more portable and readable
 
 ** Assess whether still needed, remove or update
 *** TODO src/vca/impl/to_from_api.rs:40                        - check status of dependency bug

@@ -392,11 +392,8 @@ pub struct AccumulatorWitnessUpdateInfo(pub OpaqueMaterial);
 impl_Debug_for_OpaqueMaterial_wrapper! { AccumulatorWitnessUpdateInfo }
 
 /// Used to identify the Holder associated with a value added to an accumulator, to enable sending its new witness.  Note: can be ephemeral: used only to enable Revocation Manager to add an element and provide Issuer with means to associate new witness with intended Holder.
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema)]
-// TODO: this does not need to be OpaqueMaterial, String will suffice.  It is not specific to an underlying ZKP library.  Nonetheless,
-// perhaps it is useful to be able to display a truncated version for debugging.
-pub struct HolderID(pub OpaqueMaterial);
-impl_Debug_for_OpaqueMaterial_wrapper! { HolderID }
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema)]
+pub struct HolderID(pub String);
 
 /// Contains the AccumulatorData and the Accumulator.
 #[derive(Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
