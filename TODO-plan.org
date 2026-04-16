@@ -57,7 +57,7 @@ CLOSED: [2026-04-16 Thu 17:44]
       - HolderID now wraps String with Debug/serde/jsonschema derives; more portable and readable
 
 ** Assess whether still needed, remove or update
-*** TODO src/vca/impl/to_from_api.rs:40                        - check status of dependency bug
+*** TODO src/vca/impl/to_from_api.rs:86                        - check status of dependency bug
       - // TODO: remove these when possible.  These should not be needed, but currently are, due to a
       - // serialization bug in bulletproofs; see tests/vca/range_proof_serialization_test.rs
       - Check if bulletproofs serialization bug has been fixed.  Did we file an issue?
