@@ -15,8 +15,8 @@
 *** DONE src/vca/impl/general/presentation_request_setup.rs:82 - improved out-of-bounds error message
       - lookup_throw_if_out_of_bounds now reports label, index, and schema length
 
-*** TODO src/vca/impl/util.rs:732                              - refine error message
-      - // TODO: add something to s to indicate outer map with key k1 present
+*** DONE src/vca/impl/util.rs:732                              - refined error context
+      - insert_throw_if_present_3_lvl now appends the outer key to the context passed to inner lookups
 
 
 ** Propose to eliminate by simplifying aspirations that are more trouble than they're worth

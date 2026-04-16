@@ -729,8 +729,9 @@ pub fn insert_throw_if_present_3_lvl<'a,
     -> Result<(),E> {
     match m.get_mut(k1) {
         Some(m1) => {
-            // TODO: add something to s to indicate outer map with key k1 present
-            insert_throw_if_present_2_lvl(k2, k3, v, m1, mk_e, s)
+            let mut ctx = s.to_vec();
+            ctx.push(format!("outer_key_present={:?}", k1));
+            insert_throw_if_present_2_lvl(k2, k3, v, m1, mk_e, &ctx)
         },
         None => {
             m.insert(k1.clone(),
