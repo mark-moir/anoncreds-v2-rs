@@ -71,15 +71,27 @@ mod check_equalities_have_same_claim_types {
         pres_reqs: &HashMap<CredentialLabel, CredentialReqs>,
         shared_params: &HashMap<SharedParamKey, SharedParamValue>,
         (c_lbl, a_idx): (CredentialLabel, CredAttrIndex)) -> VCAResult<ClaimType> {
-        let issuer_lbl = lookup_throw_if_absent(&c_lbl, pres_reqs, Error::General,
-                                                &["TODO ERROR 1".to_string()])?
+        let issuer_lbl = lookup_throw_if_absent(
+            &c_lbl,
+            pres_reqs,
+            Error::General,
+            &[
+                "checkEqualitiesHaveSameClaimTypes: credential label missing in presentation requirements".to_string(),
+                format!("credential_label={c_lbl}"),
+            ])?
             .signer_label.clone();
         let (SignerPublicData {signer_public_schema: schema, ..}) =
             decode_from_text(
                 "Unable to decode IssuerPublic from shared parameters",
                 lookup_one_text(&issuer_lbl, shared_params)?)?;
-        lookup_throw_if_out_of_bounds(&schema, a_idx as usize, Error::General,
-                                      &["TODO ERROR 2".to_string()]).copied()
+        lookup_throw_if_out_of_bounds(
+            &schema,
+            a_idx as usize,
+            Error::General,
+            &[
+                "checkEqualitiesHaveSameClaimTypes: attribute index out of bounds for schema".to_string(),
+                format!("credential_label={c_lbl}, attr_index={a_idx}, schema_len={}", schema.len()),
+            ]).copied()
     }
 }
 

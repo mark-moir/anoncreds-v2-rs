@@ -10,10 +10,10 @@
 
 
 ** Improve error messages
-*** TODO src/vca/impl/general/presentation_request_setup.rs:75 - TODO error message
-      - &["TODO ERROR 1".to_string()])?
-*** TODO src/vca/impl/general/presentation_request_setup.rs:82 - TODO error message
-      - &["TODO ERROR 2".to_string()]).copied()
+*** DONE src/vca/impl/general/presentation_request_setup.rs:75 - improved error when credential missing
+      - lookup_throw_if_absent now reports missing credential label with context
+*** DONE src/vca/impl/general/presentation_request_setup.rs:82 - improved out-of-bounds error message
+      - lookup_throw_if_out_of_bounds now reports label, index, and schema length
 
 *** TODO src/vca/impl/util.rs:732                              - refine error message
       - // TODO: add something to s to indicate outer map with key k1 present
