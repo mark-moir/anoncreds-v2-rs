@@ -92,10 +92,12 @@ CLOSED: [2026-04-16 Thu 22:35]
       - // TODO: detect overrides used for multiple tests, report which ones
       - Not high enough priority
 
-*** TODO src/vca/impl/util.rs:706                              - unnecessary generalisation
-      - // TODO: ideally make this work for any KeyValueContainer, but only used for HashMap so far
-*** TODO src/vca/impl/util.rs:7364                              - unnecessary generalisation
-      - // TODO: ideally make this work for any KeyValueContainer, but only used for HashMap so far
+*** DROP src/vca/impl/util.rs:706                              - unnecessary generalisation
+- State "DROP"       from "DONE"       [2026-04-17 Fri 08:54]
+      - accepted HashMap-only usage; removed TODO
+*** DROP src/vca/impl/util.rs:736                              - unnecessary generalisation
+- State "DROP"       from "DONE"       [2026-04-17 Fri 08:54]
+      - accepted HashMap-only usage; removed TODO
 *** DONE src/vca/impl/util.rs:715                              - add tests
       - added unit test covering success and duplicate error with context propagation
       - // TODO: add tests

@@ -703,7 +703,8 @@ pub fn insert_throw_if_present<'a, K: Eq+Debug+Hash+Clone, V: Clone+Debug+'a, M:
     }
 }
 
-// TODO: ideally make this work for any KeyValueContainer, but only used for HashMap so far
+// Ideally this would be generalised to work for any pair of types implementing KeyValueContainer,
+// but is only used for HashMap so far
 pub fn insert_throw_if_present_2_lvl<'a,
                                      K1: Eq+Debug+Hash+Clone,
                                      K2: Eq+Debug+Hash+Clone,
@@ -733,7 +734,8 @@ pub fn insert_throw_if_present_2_lvl<'a,
     }
 }
 
-// TODO: ideally make this work for any KeyValueContainer, but only used for HashMap so far
+// Ideally this would be generalised to work for any combination of types implementing
+// KeyValueContainer, but is only used for HashMap so far
 pub fn insert_throw_if_present_3_lvl<'a,
                                      K1: Eq+Debug+Hash+Clone,
                                      K2: Eq+Debug+Hash+Clone,
