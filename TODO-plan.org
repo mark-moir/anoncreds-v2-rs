@@ -34,9 +34,7 @@
 *** SUSP the server seems to only handle requests sequentially - investigate and make parallel
     - suspended, low priority
 
-
 ** Probably unnecessary - confirm and remove TODO
-
 *** DONE src/vca/impl/to_from_api.rs:16                        - DRY
       - added impl_vca_roundtrip_json and impl_vca_roundtrip_ark macros; applied to AC2C and DNC to_from_api modules
 
@@ -55,6 +53,7 @@ CLOSED: [2026-04-16 Thu 17:44]
 
 *** DONE src/vca/interfaces/types.rs:396                       - HolderID does not need to be OpaqueMaterial
       - HolderID now wraps String with Debug/serde/jsonschema derives; more portable and readable
+
 
 ** Assess whether still needed, remove or update
 *** SUSP src/vca/impl/to_from_api.rs:86                        - check status of dependency bug
@@ -75,7 +74,9 @@ CLOSED: [2026-04-16 Thu 21:00]
       - let f = fr_from_uint8_array(x)?; // TODO true as argument
       - I (MSM) wrote this comment, and I have no idea what it means :-)
 
-*** TODO src/vca/README.org:44                                 - comment about TODOs in README
+*** DONE src/vca/README.org:44                                 - comment about TODOs in README
+CLOSED: [2026-04-17 Fri 09:27]
+- State "DONE"       from "SUSP"       [2026-04-17 Fri 09:27]
       - - There are quite a few TODOs, potentially including some that would undermine security if left
 
 
@@ -133,6 +134,8 @@ CLOSED: [2026-04-16 Thu 22:35]
 
 
 * org mode setup
+
+- eval these expressions, then reopen file
 
 #+BEGIN_SRC emacs-lisp
   (setq org-todo-keywords
