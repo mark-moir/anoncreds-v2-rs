@@ -24,19 +24,18 @@
       - [DataValue::DVText(x)] => Ok(x), // TODO: temporary workaround, or reasonable semantic change?
       - This would go away if we eliminated =SPVList=, which we never ended up using
       - suspended because it will require updating server and example workloads
-*** TODO src/vca/interfaces/types.rs:222
+*** SUSP src/vca/interfaces/types.rs:222                       - eliminate NotInAccum
       - // TODO: remove?
       - remove NotInAccum and eveything related to it
       - check that "cargo test 000" still passes
-
+      - suspended because it will require updating server and example workloads
 
 ** Server and example clients
 *** TODO the server seems to only handle requests sequentially - investigate and make parallel
 
-
 ** Probably unnecessary - confirm and remove TODO
 
-*** TODO src/vca/impl/to_from_api.rs:12                        - not sure what the point was
+*** TODO src/vca/impl/to_from_api.rs:12                        - DRY
       - // TODO: create and use macro for common patterns such as to/from_opaque_json
 
 *** TODO src/vca/zkp_backends/dnc/accumulators.rs:137          - already done, remove TODO
