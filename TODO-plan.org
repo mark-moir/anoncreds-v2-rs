@@ -62,10 +62,15 @@ CLOSED: [2026-04-16 Thu 17:44]
       - // serialization bug in bulletproofs; see tests/vca/range_proof_serialization_test.rs
       - Check if bulletproofs serialization bug has been fixed.  Did we file an issue?
 
-*** TODO src/vca/README.md:92                                  - comment about TODOs in README
+*** DROP src/vca/README.md:92                                  - comment about TODOs in README
+CLOSED: [2026-04-16 Thu 21:01]
+- State "DROP"       from "TODO"       [2026-04-16 Thu 21:01]
       - -   There are quite a few TODOs, potentially including some that would undermine security if left
+      - This is about README.md, which is generated from README.org, nothing to do
 
-*** TODO src/vca/zkp_backends/dnc/reversible_encoding.rs:21    - don't remember/understand reason for TODO
+*** DROP src/vca/zkp_backends/dnc/reversible_encoding.rs:21    - don't remember/understand reason for TODO
+CLOSED: [2026-04-16 Thu 21:00]
+- State "DROP"       from "TODO"       [2026-04-16 Thu 21:00]
       - let f = fr_from_uint8_array(x)?; // TODO true as argument
       - I (MSM) wrote this comment, and I have no idea what it means :-)
 
