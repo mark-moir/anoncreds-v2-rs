@@ -45,7 +45,7 @@ pub fn specific_prover_dnc() -> SpecificProver {
     Arc::new(|prf_instrs, eqs, sigs_and_related_data, nonce| {
         let (WarningsAndResult { warnings, result: (proof_spec, maybe_witnesses)}, _) =
             proof_spec_from(true, &prf_instrs.to_vec(), eqs, Some(sigs_and_related_data))?;
-        let mut rng = StdRng::seed_from_u64(0); // TODO: real seed
+        let mut rng = StdRng::from_entropy();
         if let Some(witnesses) = maybe_witnesses {
             let (proof, _commitment_randomness) = ProofG1::new::<StdRng, Blake2b512>(
                 &mut rng, proof_spec, witnesses, Some(nonce.as_bytes().to_vec()), Default::default(),
@@ -61,7 +61,7 @@ pub fn specific_verifier_dnc() -> SpecificVerifier {
     Arc::new(|prf_instrs, eqs, proof_api, decr_reqs, nonce| {
         let (WarningsAndResult { warnings, result: (proof_spec, _)}, decr_req_lkups) =
             proof_spec_from(true, &prf_instrs.to_vec(), eqs, None)?;
-        let mut rng = StdRng::seed_from_u64(137); // TODO: 137
+        let mut rng = StdRng::from_entropy();
         let prf : ProofG1 = from_api(proof_api)?;
         let response = WarningsAndDecryptResponses {
             warnings,
@@ -624,4 +624,3 @@ fn partition_frs(
     }
     (unrevealed, revealed)
 }
-
