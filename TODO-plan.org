@@ -20,10 +20,10 @@
 
 
 ** Propose to eliminate by simplifying aspirations that are more trouble than they're worth
-*** TODO src/vca/impl/json/shared_params.rs:24                 - eliminate SPVList
+*** SUSP src/vca/impl/json/shared_params.rs:24                 - eliminate SPVList
       - [DataValue::DVText(x)] => Ok(x), // TODO: temporary workaround, or reasonable semantic change?
       - This would go away if we eliminated =SPVList=, which we never ended up using
-
+      - suspended because it will require updating server and example workloads
 *** TODO src/vca/interfaces/types.rs:222
       - // TODO: remove?
       - remove NotInAccum and eveything related to it
