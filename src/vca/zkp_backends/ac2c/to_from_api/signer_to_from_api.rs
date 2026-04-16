@@ -19,28 +19,6 @@ impl_vca_roundtrip_json!(Scalar => InfoForUnblinding);
 
 // Explicit impls below as our macros can't handle parameterised types
 
-// TODO: this should not be for a triple, two components of which are not AC2C-specific
-// We should only require VcaTryFrom for SignerPublicSetupData, and pass the other fields though directly
-impl<S: ShortGroupSignatureScheme> VcaTryFrom<(IssuerPublic<S>, Vec<ClaimType>, Vec<CredAttrIndex>)> for SignerPublicData {
-    fn vca_try_from((issuer_public, sch, b_idxs): (IssuerPublic<S>, Vec<ClaimType>, Vec<CredAttrIndex>))
-                    -> VCAResult<SignerPublicData> {
-         Ok(SignerPublicData {
-             signer_public_setup_data : SignerPublicSetupData(to_opaque_json(&issuer_public)?),
-             signer_public_schema     : sch,
-             signer_blinded_attr_idxs : b_idxs
-         })
-    }
-}
-impl<S: ShortGroupSignatureScheme> VcaTryFrom<&Box::<SignerPublicData>> for
-    (IssuerPublic<S>, Vec<ClaimType>, Vec<CredAttrIndex>) {
-    fn vca_try_from(x: &Box::<SignerPublicData>) -> VCAResult<(IssuerPublic<S>, Vec<ClaimType>, Vec<CredAttrIndex>)> {
-        let ip : IssuerPublic<S> = from_opaque_json(&x.signer_public_setup_data.0)?;
-        Ok((ip, x.signer_public_schema.clone(), x.signer_blinded_attr_idxs.clone()))
-    }
-}
-
-// ------------------------------------------------------------------------------
-
 impl<S: ShortGroupSignatureScheme> VcaTryFrom<IssuerPublic<S>> for SignerPublicSetupData {
     fn vca_try_from(x: IssuerPublic<S>) -> VCAResult<SignerPublicSetupData> {
         Ok(SignerPublicSetupData(to_opaque_json(&x)?))

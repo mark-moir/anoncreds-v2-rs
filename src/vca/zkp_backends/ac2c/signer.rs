@@ -52,8 +52,8 @@ pub fn sign<S: ShortGroupSignatureScheme>() -> SpecificSign {
         } = sd;
         // TODO: - make sign take schema from General, like sign_with_blinded_attributes
         //       - also refactor with sign_with_blinded_attributes
-        let (_s, sdcts, _) : (IssuerPublic<S>, Vec<ClaimType>, Vec<CredAttrIndex>) = from_api(signer_public_data)?;
-        let mut claim_data = vals_to_claim_data(&sdcts, vals)?;
+        let ip: IssuerPublic<S> = from_api(&signer_public_data.signer_public_setup_data)?;
+        let mut claim_data = vals_to_claim_data(&signer_public_data.signer_public_schema, vals)?;
         let rev_claim_data = RevocationClaim::from(UNUSED_REVOCATION_LABEL).into();
         claim_data.push(rev_claim_data);
         // This is `mut` because AC2C `sign_credential`, when it signs,
