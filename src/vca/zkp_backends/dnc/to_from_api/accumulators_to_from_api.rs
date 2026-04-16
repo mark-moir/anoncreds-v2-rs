@@ -128,7 +128,6 @@ impl VcaTryFrom<&api::Accumulator> for (PositiveAccumulator::<G1Affine>,
                                                         InMemoryState::<Fr>)> {
         let AccumulatorOpaque { acc, ims } = from_opaque_json(&x.0)?;
         let ims = from_api(&ims)?;
-        // TODO: feature gate
         print_in_memory_state(&ims);
         Ok((acc, ims))
     }

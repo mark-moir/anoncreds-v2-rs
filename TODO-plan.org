@@ -103,20 +103,27 @@ CLOSED: [2026-04-16 Thu 22:35]
       - added unit test covering success and duplicate error with context propagation
       - // TODO: add tests
 
-*** TODO src/vca/impl/util.rs:1077                             - more idiomatic Rust, possible change to eliminate clones
+*** SUSP src/vca/impl/util.rs:1077                             - more idiomatic Rust, possible change to eliminate clones
       - // TODO: rewrite in a more Rust-y style, eliminating unnecessary clones.  NOTE: this function
       - //// is called in only two places, and in both cases, the original map is not required after the
       - //// call to this function.  Thus, it may be reasonable for this function to take a &mut for m,
       - // which may help to avoid unnecessary clones.
+      - Suspended: not high enough priority
 
-*** TODO src/vca/zkp_backends/dnc/to_from_api/accumulators_to_from_api.rs:131 - feature gate in_memory_state debug output
+*** DROP src/vca/zkp_backends/dnc/to_from_api/accumulators_to_from_api.rs:131 - feature gate in_memory_state debug output
+CLOSED: [2026-04-17 Fri 09:33]
+- State "DROP"       from "TODO"       [2026-04-17 Fri 09:33]
       - // TODO: feature gate
       - Note: already feature gated on in_memory_state; TODO is to consider feature that enables
         printing; we could just remove the printing, but it would be useful for debugging, which
-        is the whole point of using in_memory_state.  We could just leave it non-optional.
+        is the whole point of using in_memory_state.
+      - Dropped: just leave it non-optional.
 
-*** TODO src/vca/zkp_backends/dnc/proof.rs:479                 - minor optimisation opportunity
-      - // TODO: avoid unnecessarily creating Witnesses in the case that sigs_mb is None.
+*** DROP src/vca/zkp_backends/dnc/proof.rs:479                 - minor optimisation opportunity
+CLOSED: [2026-04-17 Fri 09:34]
+- State "DROP"       from "TODO"       [2026-04-17 Fri 09:34]
+  - // TODO: avoid unnecessarily creating Witnesses in the case that sigs_mb is None.
+  - Dropped: not worth it
 
 
 ** No functional change, code quality only
