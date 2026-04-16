@@ -50,8 +50,6 @@ pub fn sign<S: ShortGroupSignatureScheme>() -> SpecificSign {
             signer_public_data,
             signer_secret_data,
         } = sd;
-        // TODO: - make sign take schema from General, like sign_with_blinded_attributes
-        //       - also refactor with sign_with_blinded_attributes
         let ip: IssuerPublic<S> = from_api(&signer_public_data.signer_public_setup_data)?;
         let mut claim_data = vals_to_claim_data(&signer_public_data.signer_public_schema, vals)?;
         let rev_claim_data = RevocationClaim::from(UNUSED_REVOCATION_LABEL).into();

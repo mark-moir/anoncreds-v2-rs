@@ -114,8 +114,8 @@ CLOSED: [2026-04-16 Thu 21:00]
 *** DONE src/vca/zkp_backends/ac2c/to_from_api/signer_to_from_api.rs:23 - to/from_api includes too much data
       - factored into helpers so only IssuerPublic conversion needs to go opaque; schema/indices pass through unchanged
 
-*** TODO src/vca/zkp_backends/ac2c/signer.rs:54                - unnecessary to/from_api
-      - // TODO: - make sign take schema from General, like sign_with_blinded_attributes
+*** DONE src/vca/zkp_backends/ac2c/signer.rs:54                - unnecessary to/from_api
+      - removed stale TODO; sign now directly uses schema from SignerPublicData
 
 *** TODO src/vca/zkp_backends/ac2c/signer.rs:78                - refactor for DRY
       - // TODO: DRY fail, refactor
