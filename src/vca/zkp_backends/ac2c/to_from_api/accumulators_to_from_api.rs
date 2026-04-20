@@ -1,6 +1,7 @@
 // ------------------------------------------------------------------------------
 use crate::vca::VCAResult;
 use crate::vca::r#impl::to_from_api::*;
+use crate::{impl_vca_roundtrip_json, impl_vca_roundtrip_ark};
 use crate::vca::types::*;
 // ------------------------------------------------------------------------------
 use crate::prelude::vb20;
@@ -11,25 +12,7 @@ use serde::*;
 
 // ------------------------------------------------------------------------------
 
-impl VcaTryFrom<vb20::SecretKey> for AccumulatorSecretData {
-    fn vca_try_from(x: vb20::SecretKey) -> VCAResult<AccumulatorSecretData> {
-        Ok(AccumulatorSecretData(to_opaque_json(&x)?))
-    }
-}
-
-impl VcaTryFrom<&AccumulatorSecretData> for vb20::SecretKey {
-    fn vca_try_from(x: &AccumulatorSecretData) -> VCAResult<vb20::SecretKey> {
-        from_opaque_json(&x.0)
-    }
-}
-
-// ------------------------------------------------------------------------------
-
-impl VcaTryFrom<&vb20::SecretKey> for AccumulatorSecretData {
-    fn vca_try_from(x: &vb20::SecretKey) -> VCAResult<AccumulatorSecretData> {
-        Ok(AccumulatorSecretData(to_opaque_json(&x)?))
-    }
-}
+impl_vca_roundtrip_json!(vb20::SecretKey => AccumulatorSecretData);
 
 impl VcaTryFrom<&str> for vb20::SecretKey {
     fn vca_try_from(s: &str) -> VCAResult<vb20::SecretKey> {
@@ -39,17 +22,7 @@ impl VcaTryFrom<&str> for vb20::SecretKey {
 
 // ------------------------------------------------------------------------------
 
-impl VcaTryFrom<vb20::PublicKey> for AccumulatorPublicData {
-    fn vca_try_from(x: vb20::PublicKey) -> VCAResult<AccumulatorPublicData> {
-        Ok(AccumulatorPublicData(to_opaque_json(&x)?))
-    }
-}
-
-impl VcaTryFrom<&AccumulatorPublicData> for vb20::PublicKey {
-    fn vca_try_from(x: &AccumulatorPublicData) -> VCAResult<vb20::PublicKey> {
-        from_opaque_json(&x.0)
-    }
-}
+impl_vca_roundtrip_json!(vb20::PublicKey => AccumulatorPublicData);
 
 // ------------------------------------------------------------------------------
 
@@ -74,45 +47,15 @@ impl VcaTryFrom<&AccumulatorData> for (vb20::SecretKey, vb20::PublicKey) {
 
 // ------------------------------------------------------------------------------
 
-impl VcaTryFrom<vb20::Accumulator> for Accumulator {
-    fn vca_try_from(x: vb20::Accumulator) -> VCAResult<Accumulator> {
-        Ok(Accumulator(to_opaque_json(&x)?))
-    }
-}
-
-impl VcaTryFrom<&Accumulator> for vb20::Accumulator {
-    fn vca_try_from(x: &Accumulator) -> VCAResult<vb20::Accumulator> {
-        from_opaque_json(&x.0)
-    }
-}
+impl_vca_roundtrip_json!(vb20::Accumulator => Accumulator);
 
 // ------------------------------------------------------------------------------
 
-impl VcaTryFrom<vb20::Element> for AccumulatorElement {
-    fn vca_try_from(x : vb20::Element) -> VCAResult<AccumulatorElement> {
-        Ok(AccumulatorElement(to_opaque_json(&x)?))
-    }
-}
-
-impl VcaTryFrom<&AccumulatorElement> for vb20::Element {
-    fn vca_try_from(x: &AccumulatorElement) -> VCAResult<vb20::Element> {
-        from_opaque_json(&x.0)
-    }
-}
+impl_vca_roundtrip_json!(vb20::Element => AccumulatorElement);
 
 // ------------------------------------------------------------------------------
 
-impl VcaTryFrom<vb20::MembershipWitness> for AccumulatorMembershipWitness {
-    fn vca_try_from(x : vb20::MembershipWitness) -> VCAResult<AccumulatorMembershipWitness> {
-        Ok(AccumulatorMembershipWitness(to_opaque_json(&x)?))
-    }
-}
-
-impl VcaTryFrom<&AccumulatorMembershipWitness> for vb20::MembershipWitness {
-    fn vca_try_from(x: &AccumulatorMembershipWitness) -> VCAResult<vb20::MembershipWitness> {
-        from_opaque_json(&x.0)
-    }
-}
+impl_vca_roundtrip_json!(vb20::MembershipWitness => AccumulatorMembershipWitness);
 
 // ------------------------------------------------------------------------------
 

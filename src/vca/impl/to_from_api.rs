@@ -9,9 +9,55 @@ use serde_cbor::*;
 use std::str;
 // ------------------------------------------------------------------------------
 
-// TODO: create and use macro for common patterns such as to/from_opaque_json
 pub trait VcaTryFrom<T>: Sized {
     fn vca_try_from(value: T) -> VCAResult<Self>;
+}
+
+// TODO: use this in more places, make a similar impl_vca_roundtrip_ark
+// Convenience macro to generate symmetric JSON-based VcaTryFrom implementations
+// for tuple-struct API wrappers that simply carry an opaque string.
+#[macro_export]
+macro_rules! impl_vca_roundtrip_json {
+    ($native:ty => $api:path) => {
+        impl $crate::vca::r#impl::to_from_api::VcaTryFrom<$native> for $api {
+            fn vca_try_from(value: $native) -> $crate::vca::VCAResult<$api> {
+                Ok($api($crate::vca::r#impl::to_from_api::to_opaque_json(&value)?))
+            }
+        }
+        impl $crate::vca::r#impl::to_from_api::VcaTryFrom<&$native> for $api {
+            fn vca_try_from(value: &$native) -> $crate::vca::VCAResult<$api> {
+                Ok($api($crate::vca::r#impl::to_from_api::to_opaque_json(value)?))
+            }
+        }
+        impl $crate::vca::r#impl::to_from_api::VcaTryFrom<&$api> for $native {
+            fn vca_try_from(api: &$api) -> $crate::vca::VCAResult<$native> {
+                $crate::vca::r#impl::to_from_api::from_opaque_json(&api.0)
+            }
+        }
+    };
+}
+
+// Convenience macro to generate symmetric Ark-based VcaTryFrom implementations
+// for tuple-struct API wrappers that simply carry an opaque string.
+#[macro_export]
+macro_rules! impl_vca_roundtrip_ark {
+    ($native:ty => $api:path) => {
+        impl $crate::vca::r#impl::to_from_api::VcaTryFrom<$native> for $api {
+            fn vca_try_from(value: $native) -> $crate::vca::VCAResult<$api> {
+                Ok($api($crate::vca::r#impl::to_from_api::to_opaque_ark(&value)?))
+            }
+        }
+        impl $crate::vca::r#impl::to_from_api::VcaTryFrom<&$native> for $api {
+            fn vca_try_from(value: &$native) -> $crate::vca::VCAResult<$api> {
+                Ok($api($crate::vca::r#impl::to_from_api::to_opaque_ark(value)?))
+            }
+        }
+        impl $crate::vca::r#impl::to_from_api::VcaTryFrom<&$api> for $native {
+            fn vca_try_from(api: &$api) -> $crate::vca::VCAResult<$native> {
+                $crate::vca::r#impl::to_from_api::from_opaque_ark(&api.0)
+            }
+        }
+    };
 }
 
 pub fn to_api<FROM, API: VcaTryFrom<FROM>>(from: FROM) -> VCAResult<API>

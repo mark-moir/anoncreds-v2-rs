@@ -1,6 +1,7 @@
 // ------------------------------------------------------------------------------
 use crate::vca::{Error, VCAResult};
 use crate::vca::r#impl::to_from_api::*;
+use crate::{impl_vca_roundtrip_json, impl_vca_roundtrip_ark};
 use crate::vca::interfaces::types as api;
 use crate::vca::zkp_backends::dnc::types::*;
 // ------------------------------------------------------------------------------
@@ -12,6 +13,7 @@ use bbs_plus::prelude::SignatureParamsG1;
 // ------------------------------------------------------------------------------
 use ark_bls12_381::{Bls12_381, Fr, G1Affine};
 use ark_ec::pairing::Pairing;
+use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 // ------------------------------------------------------------------------------
 
 // ------------------------------------------------------------------------------
@@ -65,31 +67,11 @@ impl VcaTryFrom<&api::Signature> for SignatureG1::<Bls12_381> {
 
 // ------------------------------------------------------------------------------
 
-impl VcaTryFrom<G1Affine> for api::BlindInfoForSigner {
-    fn vca_try_from(x: G1Affine) -> VCAResult<api::BlindInfoForSigner> {
-        Ok(api::BlindInfoForSigner(to_opaque_ark(&x)?))
-    }
-}
-
-impl VcaTryFrom<&api::BlindInfoForSigner> for G1Affine {
-    fn vca_try_from(x: &api::BlindInfoForSigner) -> VCAResult<G1Affine> {
-        from_opaque_ark(&x.0)
-    }
-}
+impl_vca_roundtrip_ark!(G1Affine => api::BlindInfoForSigner);
 
 // ------------------------------------------------------------------------------
 
-impl VcaTryFrom<Fr> for api::InfoForUnblinding {
-    fn vca_try_from(x: Fr) -> VCAResult<api::InfoForUnblinding> {
-        Ok(api::InfoForUnblinding(to_opaque_ark(&x)?))
-    }
-}
-
-impl VcaTryFrom<&api::InfoForUnblinding> for Fr {
-    fn vca_try_from(x: &api::InfoForUnblinding) -> VCAResult<Fr> {
-        from_opaque_ark(&x.0)
-    }
-}
+impl_vca_roundtrip_ark!(Fr => api::InfoForUnblinding);
 
 // ------------------------------------------------------------------------------
 

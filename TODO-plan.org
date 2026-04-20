@@ -37,10 +37,8 @@
 
 ** Probably unnecessary - confirm and remove TODO
 
-*** TODO src/vca/impl/to_from_api.rs:12                        - DRY
-      - // TODO: create and use macro for common patterns such as to/from_opaque_json
-      - search all files ending with _to_from_api.rs under all zkp_backends
-      - hopefully as many explicit (pairs of) VcaTryFrom instances as possible will be replaced by macro invocations
+*** DONE src/vca/impl/to_from_api.rs:16                        - DRY
+      - added impl_vca_roundtrip_json and impl_vca_roundtrip_ark macros; applied to AC2C and DNC to_from_api modules
 
 *** DONE src/vca/zkp_backends/dnc/accumulators.rs:137          - already done, remove TODO
 CLOSED: [2026-04-16 Thu 18:21]
