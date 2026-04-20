@@ -51,6 +51,8 @@ zeroize = "1"
 # ----- docknetwork crypto
 bbs_plus = "0.24.0"
 legogroth16 = "0.17.0"
+dock_crypto_utils = "0.23.0"
+dock_merlin = "3.0.0"
 proof_system = "0.33.0"
 saver = "0.20.0"
 vb_accumulator = "0.28.0"

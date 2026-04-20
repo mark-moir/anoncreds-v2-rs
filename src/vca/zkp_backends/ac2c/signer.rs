@@ -81,7 +81,8 @@ pub fn specific_create_blind_signing_info<S: ShortGroupSignatureScheme>()
             .map_err(|e| Error::General(ic_semi(&str_vec_from!("specific_create_blind_signing_info",
                                                                "BlindCredentialRequest::new",
                                                                format!("{e:?}")))))?;
-        // TODO: create and include PoK of blinder
+        // NOTE: it is not necessary to explicitly create a proof of knowledge of the
+        // blinders used; see comment in specific_sign_with_blinded_attributes below.
         Ok(BlindSigningInfo {blind_info_for_signer: to_api(blind_credential_request)?,
                              blinded_attributes: blind_attrs.to_vec(),
                              info_for_unblinding: to_api(blinder)?})
@@ -102,7 +103,14 @@ pub fn specific_sign_with_blinded_attributes<S: ShortGroupSignatureScheme>(
         let mut issuer : Issuer<S> = from_api(signer_secret_data)?;
         // cannot use get_location_and_backtrace_on_panic! (in its current form) here because
         // the type `&mut issuer::Issuer` may not be safely transferred across an unwind boundary
-        let sig = issuer.blind_sign_credential(&from_api(bifs)?, &claims)
+
+        // NOTE: it is not necessary to explicitly verify a proof of knowledge of the blinders used
+        // because it is included in BlindSignatureContext, which is included in
+        // BlindCredentialRequest.  The blind_sign_credential impls for both BBS and PS signature
+        // schemes verify this, as confirmed by the blind_sign_request_tamper_fails tests in
+        // tests/flow.rs.
+        let blind_credential_request: BlindCredentialRequest<S> = from_api(bifs)?;
+        let sig = issuer.blind_sign_credential(&blind_credential_request, &claims)
             .map_err(|e| convert_to_crypto_library_error("AC2C", "sign_with_blinded_attributes", e))?;
         to_api(sig)
     })

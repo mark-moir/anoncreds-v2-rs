@@ -463,7 +463,7 @@ dependencies = [
  "ark-serialize",
  "ark-std",
  "digest",
- "dock_crypto_utils",
+ "dock_crypto_utils 0.22.0",
  "itertools 0.12.1",
  "oblivious_transfer_protocols",
  "rayon",
@@ -630,7 +630,7 @@ dependencies = [
  "ark-serialize",
  "ark-std",
  "digest",
- "dock_crypto_utils",
+ "dock_crypto_utils 0.22.0",
  "rayon",
  "serde",
  "serde_with",
@@ -811,7 +811,7 @@ dependencies = [
  "ark-serialize",
  "ark-std",
  "digest",
- "dock_crypto_utils",
+ "dock_crypto_utils 0.22.0",
  "itertools 0.12.1",
  "rayon",
  "schnorr_pok",
@@ -995,6 +995,8 @@ dependencies = [
  "blsful",
  "bulletproofs-bls",
  "chrono",
+ "dock_crypto_utils 0.23.0",
+ "dock_merlin",
  "elliptic-curve",
  "elliptic-curve-tools 0.2.0",
  "env_logger",
@@ -1293,6 +1295,30 @@ dependencies = [
  "dock_merlin",
  "hkdf",
  "itertools 0.12.1",
+ "num",
+ "rayon",
+ "serde",
+ "serde_with",
+ "sha2",
+ "zeroize",
+]
+
+[[package]]
+name = "dock_crypto_utils"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4d4d284b7d0449d718e1740be2b1919f0f7da188c30f620ba74e7d33c070ad4d"
+dependencies = [
+ "aead",
+ "ark-ec",
+ "ark-ff",
+ "ark-poly",
+ "ark-serialize",
+ "ark-std",
+ "digest",
+ "dock_merlin",
+ "hkdf",
+ "itertools 0.14.0",
  "num",
  "rayon",
  "serde",
@@ -2124,6 +2150,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "itertools"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
+dependencies = [
+ "either",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2184,7 +2219,7 @@ dependencies = [
  "ark-serialize",
  "ark-std",
  "digest",
- "dock_crypto_utils",
+ "dock_crypto_utils 0.22.0",
  "itertools 0.12.1",
  "rayon",
  "schnorr_pok",
@@ -2225,7 +2260,7 @@ dependencies = [
  "ark-serialize",
  "ark-snark",
  "ark-std",
- "dock_crypto_utils",
+ "dock_crypto_utils 0.22.0",
  "fnv",
  "log",
  "num-bigint",
@@ -2606,7 +2641,7 @@ dependencies = [
  "cc",
  "cipher",
  "digest",
- "dock_crypto_utils",
+ "dock_crypto_utils 0.22.0",
  "itertools 0.12.1",
  "rayon",
  "schnorr_pok",
@@ -2862,7 +2897,7 @@ dependencies = [
  "chacha20poly1305",
  "coconut-crypto",
  "digest",
- "dock_crypto_utils",
+ "dock_crypto_utils 0.22.0",
  "dock_merlin",
  "itertools 0.12.1",
  "kvac",
@@ -3395,7 +3430,7 @@ dependencies = [
  "ark-serialize",
  "ark-std",
  "digest",
- "dock_crypto_utils",
+ "dock_crypto_utils 0.22.0",
  "dock_merlin",
  "legogroth16",
  "rayon",
@@ -3440,7 +3475,7 @@ dependencies = [
  "ark-serialize",
  "ark-std",
  "digest",
- "dock_crypto_utils",
+ "dock_crypto_utils 0.22.0",
  "rayon",
  "serde",
  "serde_with",
@@ -3485,7 +3520,7 @@ dependencies = [
  "ark-serialize",
  "ark-std",
  "digest",
- "dock_crypto_utils",
+ "dock_crypto_utils 0.22.0",
  "rayon",
  "schnorr_pok",
  "serde",
@@ -3698,7 +3733,7 @@ dependencies = [
  "ark-serialize",
  "ark-std",
  "digest",
- "dock_crypto_utils",
+ "dock_crypto_utils 0.22.0",
  "oblivious_transfer_protocols",
  "rayon",
  "schnorr_pok",
@@ -3759,7 +3794,7 @@ dependencies = [
  "ark-serialize",
  "ark-std",
  "digest",
- "dock_crypto_utils",
+ "dock_crypto_utils 0.22.0",
  "rayon",
  "schnorr_pok",
  "short_group_sig",
@@ -4361,7 +4396,7 @@ dependencies = [
  "ark-serialize",
  "ark-std",
  "digest",
- "dock_crypto_utils",
+ "dock_crypto_utils 0.22.0",
  "kvac",
  "oblivious_transfer_protocols",
  "rayon",
@@ -4394,7 +4429,7 @@ dependencies = [
  "ark-serialize",
  "ark-std",
  "digest",
- "dock_crypto_utils",
+ "dock_crypto_utils 0.22.0",
  "itertools 0.12.1",
  "rayon",
  "secret_sharing_and_dkg",

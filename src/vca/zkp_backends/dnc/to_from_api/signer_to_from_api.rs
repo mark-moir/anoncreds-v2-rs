@@ -4,6 +4,7 @@ use crate::vca::r#impl::to_from_api::*;
 use crate::{impl_vca_roundtrip_json, impl_vca_roundtrip_ark};
 use crate::vca::interfaces::types as api;
 use crate::vca::zkp_backends::dnc::types::*;
+use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 // ------------------------------------------------------------------------------
 use bbs_plus::prelude::KeypairG2;
 use bbs_plus::prelude::PublicKeyG2;
@@ -13,7 +14,6 @@ use bbs_plus::prelude::SignatureParamsG1;
 // ------------------------------------------------------------------------------
 use ark_bls12_381::{Bls12_381, Fr, G1Affine};
 use ark_ec::pairing::Pairing;
-use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 // ------------------------------------------------------------------------------
 
 // ------------------------------------------------------------------------------
@@ -68,6 +68,10 @@ impl VcaTryFrom<&api::Signature> for SignatureG1::<Bls12_381> {
 // ------------------------------------------------------------------------------
 
 impl_vca_roundtrip_ark!(G1Affine => api::BlindInfoForSigner);
+
+// ------------------------------------------------------------------------------
+
+impl_vca_roundtrip_ark!(BlindInfoForSignerPayload => api::BlindInfoForSigner);
 
 // ------------------------------------------------------------------------------
 
