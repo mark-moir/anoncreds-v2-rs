@@ -1,55 +1,56 @@
-<!--- DO NOT EDIT.  GENERATED FROM README.org --->
+<!--- DO NOT EDIT. GENERATED FROM README.org --->
+
 
 # Table of Contents
 
-1.  [Introduction](#orge81d445)
-2.  [Caveats](#orge440a8e)
-3.  [User abstraction](#orgeec1e9b)
-4.  [Running tests](#org3f80190)
-5.  [The test framework](#orgde0c45b)
-    1.  [JSON test file naming and contents](#org0543b0d)
-    2.  [Overview of test framework](#orgb9423de)
-    3.  [An example](#orgb1d1752)
-    4.  [TestSteps](#orgca66941)
-        1.  [CreateIssuer](#org7802df1)
-        2.  [CreateAccumulators](#orgc9616eb)
-        3.  [SignCredential](#orgc06bffb)
-        4.  [CreateBlindSigningInfo](#orgb5dcef8)
-        5.  [SignCredentialWithBlinding](#orgb0691a2)
-        6.  [AccumulatorAddRemove](#orgc31966c)
-        7.  [UpdateAccumulatorWitness](#orgc8e1fd6)
-        8.  [Reveal](#org1881a39)
-        9.  [InRange](#org9c59f44)
-        10. [InAccum](#org869fc3f)
-        11. [Equality](#org11416f7)
-        12. [CreateAndVerifyProof](#org3ed724b)
-        13. [CreateAuthority](#orgb18a0e6)
-        14. [EncryptFor](#org420dbb1)
-        15. [Decrypt](#orgf7daf62)
-        16. [VerifyDecryption](#orgdb7abf3)
-    5.  [Overriding tests](#org88d226a)
-    6.  [Test framework files](#orgd2ece7f)
-6.  [The VCA architecture](#orga429cef)
-    1.  [General](#org9ba7ded)
-    2.  [Specific](#orgda0bb66)
-7.  [Guide to `src/vca` code](#org260bbb3)
-    1.  [Directory structure](#org1462116)
-    2.  [Example of connecting a specific ZKP library to `VcaApi`](#orgf8c20e7)
-    3.  [Creating an Issuer's public and secret data (e.g., keys)](#org75f2af0)
-    4.  [Issuer signing a credential](#org144fc9c)
-    5.  [Unblinding a blinded signature](#org8976013)
-    6.  [Creating a proof](#org878dcfd)
-    7.  [Verifying a proof](#org0839c8b)
-    8.  [Proofs with revealed values](#orge8c3b21)
-    9.  [Proofs with range proofs](#org8cd0218)
-    10. [Proofs with verifiable encryption](#org4dabdb3)
-    11. [Proofs with equalities between attributes](#org79a27bc)
-    12. [Proofs with accumulators](#org4171918)
-    13. [Accumulator functions](#org30892fc)
+1.  [Introduction](#org30e0244)
+2.  [Caveats](#orgdbe393d)
+3.  [User abstraction](#orgfaa31ea)
+4.  [Running tests](#orgdd65cd2)
+5.  [The test framework](#org4336a22)
+    1.  [JSON test file naming and contents](#org2ac0262)
+    2.  [Overview of test framework](#org47e7167)
+    3.  [An example](#orgb3212e7)
+    4.  [TestSteps](#org18cae80)
+        1.  [CreateIssuer](#orga6fdf4c)
+        2.  [CreateAccumulators](#org23babad)
+        3.  [SignCredential](#org180a938)
+        4.  [CreateBlindSigningInfo](#orgad6a2d3)
+        5.  [SignCredentialWithBlinding](#org6b1ea2e)
+        6.  [AccumulatorAddRemove](#org87de202)
+        7.  [UpdateAccumulatorWitness](#orgd65eb8e)
+        8.  [Reveal](#org70beaac)
+        9.  [InRange](#org7558c93)
+        10. [InAccum](#orgf84724a)
+        11. [Equality](#org4e6ee00)
+        12. [CreateAndVerifyProof](#orgc3f983c)
+        13. [CreateAuthority](#orgde9212b)
+        14. [EncryptFor](#org3a5ac26)
+        15. [Decrypt](#orgc853d4a)
+        16. [VerifyDecryption](#orgbe1d5d5)
+    5.  [Overriding tests](#orgabbcfe6)
+    6.  [Test framework files](#orgf57a951)
+6.  [The VCA architecture](#orgab69c62)
+    1.  [General](#org777fb94)
+    2.  [Specific](#org160acd6)
+7.  [Guide to `src/vca` code](#org4ca8842)
+    1.  [Directory structure](#org0b2d2b5)
+    2.  [Example of connecting a specific ZKP library to `VcaApi`](#orgce2146b)
+    3.  [Creating an Issuer's public and secret data (e.g., keys)](#orga4eec49)
+    4.  [Issuer signing a credential](#org8f3adb8)
+    5.  [Unblinding a blinded signature](#org41649c7)
+    6.  [Creating a proof](#org80dede2)
+    7.  [Verifying a proof](#orgef8d6a8)
+    8.  [Proofs with revealed values](#org15ba81a)
+    9.  [Proofs with range proofs](#org8c5ede2)
+    10. [Proofs with verifiable encryption](#orgd2188c3)
+    11. [Proofs with equalities between attributes](#org75480d3)
+    12. [Proofs with accumulators](#org84e016f)
+    13. [Accumulator functions](#orgd11aa89)
 
 
 
-<a id="orge81d445"></a>
+<a id="org30e0244"></a>
 
 # Introduction
 
@@ -73,7 +74,7 @@ This work is by [Harold Carr](https://github.com/haroldcarr) and [Mark Moir](htt
 of the University of Maryland at College Park, during his Summer 2024 internship at Oracle Labs.
 
 
-<a id="orge440a8e"></a>
+<a id="orgdbe393d"></a>
 
 # Caveats
 
@@ -89,14 +90,13 @@ exploration.  In particular,
     Labs mentors at different times during their Rust learning process.  Therefore, different styles,
     tastes, and levels of expertise are evident in different parts of the code.  While we have made
     progress towards more consistent styles throughout, this is not complete.
--   There are quite a few TODOs, potentially including some that would undermine security if left
-    undone before this code were used in a practical application.
+-   Some TODOs remain
 -   While we hope to eventually contribute to [Hyperledger AnonCreds, v2](https://github.com/hyperledger/anoncreds-v2-rs) based on this work, we are not
     raising a Pull Request at this stage. Rather, we have made this work public in order to facilitate
     feedback and engagement towards something that we can offer as a contribution.
 
 
-<a id="orgeec1e9b"></a>
+<a id="orgfaa31ea"></a>
 
 # User abstraction
 
@@ -105,7 +105,7 @@ From an application/user perspective, our abstraction is defined by the
 
 -   By using the `implement_vca_api_using` function in [./api_utils.rs](./api_utils.rs) and providing an instance of
     `CryptoInterface`, such as `CRYPTO_INTERFACE_AC2C` (defined in [./zkp_backends/ac2c/crypto_interface.rs](./zkp_backends/ac2c/crypto_interface.rs)) and calling
-    its methods directly.  See [7.1](#org70c99f1) for more details.
+    its methods directly.  See [7.1](#org35244ca) for more details.
 -   By accessing the functionality via a Swagger/OpenAPI interface. We have built an HTTP/REST
     server serving such an interface.  See [../../server/README.org](../../server/README.org).
 -   Via our test framework, described below.  We recommend this approach as the easiest way to get
@@ -120,7 +120,7 @@ are less general, more historic, less well organised, etc.  We recommend focusin
 that are run by the test framework.
 
 
-<a id="org3f80190"></a>
+<a id="orgdd65cd2"></a>
 
 # Running tests
 
@@ -130,11 +130,11 @@ described in the next section.
 
 The [../../Makefile](../../Makefile) supports a number of `make` targets for running/skipping tests according to various
 criteria.  The two most important are `make test` and `make test-all`.  The former skips tests that are
-overridden to fail (see Section [5.4.16.3](#org77a4156)), so that unexpected failures are not masked by
+overridden to fail (see Section [5.4.16.3](#org3dc2645)), so that unexpected failures are not masked by
 those tests.  The latter runs these tests as well, so that the failures can be seen.
 
 
-<a id="orgde0c45b"></a>
+<a id="org4336a22"></a>
 
 # The test framework
 
@@ -166,7 +166,7 @@ handful of Makefile targets enable by using `cargo test` directly.  Here are som
     cargo test --features=ignore_slow_slow dnc::run_json_zkp_functionality_tests
 
 
-<a id="org0543b0d"></a>
+<a id="org2ac0262"></a>
 
 ## JSON test file naming and contents
 
@@ -193,7 +193,7 @@ to run only the test described in the next section:
     cargo test example_single_issuer_and_credential_in_accum_no_update
 
 
-<a id="orgb9423de"></a>
+<a id="org47e7167"></a>
 
 ## Overview of test framework
 
@@ -212,7 +212,7 @@ We make the simplifying assumption that each Holder can possess at most one cred
 each Issuer. This enables referring to credentials by the label of the Issuer that signed them.
 
 
-<a id="orgb1d1752"></a>
+<a id="orgb3212e7"></a>
 
 ## An example
 
@@ -263,7 +263,7 @@ as the one signed in the relevant credential, and (in examples involving decrypt
 decrypted values match the original signed values.
 
 
-<a id="orgca66941"></a>
+<a id="org18cae80"></a>
 
 ## TestSteps
 
@@ -275,7 +275,7 @@ enabling testing the behaviour of the underlying library with erroneous input th
 rejected by the "General" checks.
 
 
-<a id="org7802df1"></a>
+<a id="orga6fdf4c"></a>
 
 ### CreateIssuer
 
@@ -295,7 +295,7 @@ rejected by the "General" checks.
     -   `create_signer_data`
 
 
-<a id="orgc9616eb"></a>
+<a id="org23babad"></a>
 
 ### CreateAccumulators
 
@@ -312,7 +312,7 @@ rejected by the "General" checks.
     -   `create_accumulator_data` (once for each created accumulator)
 
 
-<a id="orgc06bffb"></a>
+<a id="org180a938"></a>
 
 ### SignCredential
 
@@ -341,7 +341,7 @@ rejected by the "General" checks.
     -   `sign`
 
 
-<a id="orgb5dcef8"></a>
+<a id="orgad6a2d3"></a>
 
 ### CreateBlindSigningInfo
 
@@ -363,7 +363,7 @@ rejected by the "General" checks.
     -   `create_blind_signing_info`
 
 
-<a id="orgb0691a2"></a>
+<a id="org6b1ea2e"></a>
 
 ### SignCredentialWithBlinding
 
@@ -393,7 +393,7 @@ rejected by the "General" checks.
     -   `unblind_blinded_signature`
 
 
-<a id="orgc31966c"></a>
+<a id="org87de202"></a>
 
 ### AccumulatorAddRemove
 
@@ -421,7 +421,7 @@ rejected by the "General" checks.
     -   `accumulator_add_remove`
 
 
-<a id="orgc8e1fd6"></a>
+<a id="orgd65eb8e"></a>
 
 ### UpdateAccumulatorWitness
 
@@ -464,7 +464,7 @@ rejected by the "General" checks.
     -   `update_accumulator_witness`, potentially multiple times as described above
 
 
-<a id="org1881a39"></a>
+<a id="org70beaac"></a>
 
 ### Reveal
 
@@ -489,7 +489,7 @@ rejected by the "General" checks.
     -   none
 
 
-<a id="org9c59f44"></a>
+<a id="org7558c93"></a>
 
 ### InRange
 
@@ -527,7 +527,7 @@ rejected by the "General" checks.
     -   none
 
 
-<a id="org869fc3f"></a>
+<a id="orgf84724a"></a>
 
 ### InAccum
 
@@ -551,7 +551,7 @@ rejected by the "General" checks.
     -   none
 
 
-<a id="org11416f7"></a>
+<a id="org4e6ee00"></a>
 
 ### Equality
 
@@ -581,7 +581,7 @@ rejected by the "General" checks.
     -   none
 
 
-<a id="org3ed724b"></a>
+<a id="orgc3f983c"></a>
 
 ### CreateAndVerifyProof
 
@@ -625,7 +625,7 @@ rejected by the "General" checks.
     -   `verify_proof`
 
 
-<a id="orgb18a0e6"></a>
+<a id="orgde9212b"></a>
 
 ### CreateAuthority
 
@@ -640,7 +640,7 @@ rejected by the "General" checks.
     -   `create_authority_data`
 
 
-<a id="org420dbb1"></a>
+<a id="org3a5ac26"></a>
 
 ### EncryptFor
 
@@ -662,7 +662,7 @@ rejected by the "General" checks.
     -   none
 
 
-<a id="orgf7daf62"></a>
+<a id="orgc853d4a"></a>
 
 ### Decrypt
 
@@ -683,7 +683,7 @@ rejected by the "General" checks.
     -   none
 
 
-<a id="orgdb7abf3"></a>
+<a id="orgbe1d5d5"></a>
 
 ### VerifyDecryption
 
@@ -701,10 +701,10 @@ rejected by the "General" checks.
 
     -   `verify_decryption`
     
-    <a id="org77a4156"></a>
+    <a id="org3dc2645"></a>
 
 
-<a id="org88d226a"></a>
+<a id="orgabbcfe6"></a>
 
 ## Overriding tests
 
@@ -754,7 +754,7 @@ We would like to improve the override system.  In the meantime, it is documented
 [../../generate-tests-from-json/src/lib.rs](../../generate-tests-from-json/src/lib.rs).
 
 
-<a id="orgd2ece7f"></a>
+<a id="orgf57a951"></a>
 
 ## Test framework files
 
@@ -803,7 +803,7 @@ Located in [../../tests/vca/](../../tests/vca/):
 Note: the other tests located in [tests/vca](../../tests/vca) (various unit tests) can be ignored.
 
 
-<a id="orga429cef"></a>
+<a id="orgab69c62"></a>
 
 # The VCA architecture
 
@@ -853,7 +853,7 @@ VCA is comprised of three main parts
         verify) for a specific underlying ZKP library
 
 
-<a id="org9ba7ded"></a>
+<a id="org777fb94"></a>
 
 ## General
 
@@ -879,7 +879,7 @@ Both the general `create_proof` and `verify_proof` then pass that info to "speci
 create and verify.  The AC2C versions are shown in the above diagram.
 
 
-<a id="orgda0bb66"></a>
+<a id="org160acd6"></a>
 
 ## Specific
 
@@ -898,12 +898,12 @@ along with disclosed values.
 to verify the proof.
 
 
-<a id="org260bbb3"></a>
+<a id="org4ca8842"></a>
 
 # Guide to `src/vca` code
 
 
-<a id="org1462116"></a>
+<a id="org0b2d2b5"></a>
 
 ## Directory structure
 
@@ -1001,10 +1001,10 @@ The directory structure for the DNC implementation of `CryptoInterface` is:
     
             types.rs                      : Type aliases used in the DNC implementation
 
-<a id="org70c99f1"></a>
+<a id="org35244ca"></a>
 
 
-<a id="orgf8c20e7"></a>
+<a id="orgce2146b"></a>
 
 ## Example of connecting a specific ZKP library to `VcaApi`
 
@@ -1023,7 +1023,7 @@ An example of making this connection can be seen in the `run_json_test_ac2c` fun
 [../../tests/vca/zkp_functionality_tests/test_definitions.rs](../../tests/vca/zkp_functionality_tests/test_definitions.rs).
 
 
-<a id="org75f2af0"></a>
+<a id="orga4eec49"></a>
 
 ## Creating an Issuer's public and secret data (e.g., keys)
 
@@ -1039,7 +1039,7 @@ It takes
 -   a list of indices indicating which indices in the list of `ClaimType` are to have their values blinded
 
 Assuming the AC2C implementation of primitives are connected to `VcaApi`,
-as described in <a id="orgf13b265"></a>,
+as described in <a id="org3b4fdb2"></a>,
 then `create_signer_data` (in [./zkp_backends/ac2c/signer.rs](./zkp_backends/ac2c/signer.rs)) is invoked.
 
 The `create_signer_data` implementation
@@ -1059,7 +1059,7 @@ The `create_signer_data` implementation
 An Issuer would securely store the private data and make the public data available.
 
 
-<a id="org144fc9c"></a>
+<a id="org8f3adb8"></a>
 
 ## Issuer signing a credential
 
@@ -1097,8 +1097,18 @@ with
 `creater_blind_signing_data` returns `BlindInfoForSigner`
 (the commitment to the attribute values), which is given to `sign_with_blinded_attributes` (above).
 
-The AC2C implementation of `sign_with_blinded_attributes` is in [./zkp_backends/ac2c/signer.rs](./zkp_backends/ac2c/signer.rs).
+Note that ZKP backends must include in `BlindInfoForSigner` a proof of knowledge of the blinding
+factors used when committing to attribute values, which must be verified by the ZKP backend
+implementation of `sign_with_blinded_attributes`.  A possible future enhancement to VCA would be to
+explicitly surface these proofs in the API.  In that case, for example, an implementation of
+AnonCreds (v1) over VCA could populate the [Blinded Link Secret Correctness
+Proof](<https://anoncreds.github.io/anoncreds-spec/#the-blinded-link-secret-correctness-proof>) with
+such a proof.  Our prototype implementation of AnonCreds over VCA (not yet publicly available, but
+hopefully soon) populates it with dummy data to comply with the AnonCreds interface, knowing that
+the required proving and verifying is done by the ZKP backend in `create_blind_signing_info` and
+`sign_with_blinded_attributes`, respectively.
 
+The AC2C implementation of `sign_with_blinded_attributes` is in [./zkp_backends/ac2c/signer.rs](./zkp_backends/ac2c/signer.rs).
 The `sign_with_blinded_attributes` implementation
 
 -   converts each VCA non-blinded `DataValue` to an AC2C claim
@@ -1106,8 +1116,20 @@ The `sign_with_blinded_attributes` implementation
     and the secret data from `SignerData`
 -   returns a `BlindSignature` (an opaque representation of an AC2C `BlindCredentialBundle`)
 
+AC2C requires implementations of `BlindSignatureContext` to include a proof of knowledge of blinding
+factors, which is verified by `blind_sign`.  Thus the VCA backend for AC2C does not need to explicitly
+do so.
 
-<a id="org8976013"></a>
+The DNC implementation of `sign_with_blinded_attributes` in [./zkp_backends/dnc/signer.rs](./zkp_backends/ac2c/signer.rs) is
+similar to the one for AC2C, using DNC's types instead.  In contrast to AC2C, DNC's blind signing
+mechanism does not include proving and verifying knowledge of the blinding factors used
+(see comment [here](<https://github.com/docknetwork/crypto/blob/224f195bb8babc2d0de5256135120e0aca9fbd19/bbs_plus/src/signature.rs#L46>)).  For that
+reason, the DNC backend does so explicitly via `create_blind_info_correctness_proof`, which is called
+by `specific_create_blind_signing_info`, and `verify_blind_info_correctness_proof`, which is called
+by `specific_sign_with_blinded_attributes`.
+
+
+<a id="org41649c7"></a>
 
 ## Unblinding a blinded signature
 
@@ -1118,7 +1140,7 @@ to obtain a `Signature` ([./interfaces/types.rs](./interfaces/types.rs)), which 
 (specifically, the "proof-of-knowledge" of a signature).
 
 
-<a id="org878dcfd"></a>
+<a id="org80dede2"></a>
 
 ## Creating a proof
 
@@ -1173,7 +1195,7 @@ The AC2C `specific_prover` (named `specific_prover_ac2c` in [./zkp_backends/ac2c
 -   returns `DataForVerifier` that contains the VCA proof and any warnings
 
 
-<a id="org0839c8b"></a>
+<a id="orgef8d6a8"></a>
 
 ## Verifying a proof
 
@@ -1200,7 +1222,7 @@ converts the VCA information and data into formats used by AC2C, and then calls
 the AC2C `Presentation:verify` to verify the proof.
 
 
-<a id="orge8c3b21"></a>
+<a id="org15ba81a"></a>
 
 ## Proofs with revealed values
 
@@ -1256,7 +1278,7 @@ In the `specific_verifier_ac2c` case, it calls `anoncreds-v2-rs` `Presentation::
 the `PresentationSchema` to verify the proof.
 
 
-<a id="org8cd0218"></a>
+<a id="org8c5ede2"></a>
 
 ## Proofs with range proofs
 
@@ -1293,7 +1315,7 @@ which creates two `anoncreds-v2-rs` statements:
 Those statements are then used to create and verify proofs
 
 
-<a id="org4dabdb3"></a>
+<a id="orgd2188c3"></a>
 
 ## Proofs with verifiable encryption
 
@@ -1320,7 +1342,7 @@ which creates a `anoncreds-v2-rs` `VerifiableEncryptionStatement`
 NOTE: AC2C does not yet support decryption.
 
 
-<a id="org79a27bc"></a>
+<a id="org75480d3"></a>
 
 ## Proofs with equalities between attributes
 
@@ -1345,7 +1367,7 @@ where each `EqualityReq` is a list of pairs that point to values that should be 
 `EqualityStatement` for each equality.
 
 
-<a id="org4171918"></a>
+<a id="org84e016f"></a>
 
 ## Proofs with accumulators
 
@@ -1374,7 +1396,7 @@ The AC2C implementation then transforms that `ResolvedRequirement` into
 which creates a `anoncreds-v2-rs` `MembershipStatement`
 
 
-<a id="org30892fc"></a>
+<a id="orgd11aa89"></a>
 
 ## Accumulator functions
 

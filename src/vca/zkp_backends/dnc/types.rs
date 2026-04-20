@@ -10,8 +10,9 @@ use proof_system::prelude::Proof;
 use saver::prelude::*;
 use vb_accumulator::prelude::MembershipWitness;
 // ------------------------------------------------------------------------------
-use ark_bls12_381::{Bls12_381,G1Affine};
+use ark_bls12_381::{Bls12_381, Fr, G1Affine};
 use ark_ec::pairing::Pairing;
+use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 // ------------------------------------------------------------------------------
 use serde::*;
 use std::collections::HashMap;
@@ -36,3 +37,17 @@ pub struct AuthorityPublicSetupData {
     pub snark_proving_key : saver::saver_groth16::ProvingKey::<Bls12_381>,
 }
 
+#[derive(CanonicalSerialize, CanonicalDeserialize, Clone, Debug)]
+pub struct BlindInfoCorrectnessProof {
+    pub u_tilde: G1Affine,
+    pub v_dash_cap: Fr,
+    pub m_caps: Vec<(usize, Fr)>,
+}
+
+#[derive(CanonicalSerialize, CanonicalDeserialize, Clone, Debug)]
+pub struct BlindInfoForSignerPayload {
+    pub blinding_info: G1Affine,
+    pub blinding_info_correctness_proof: BlindInfoCorrectnessProof,
+}
+
+// ------------------------------------------------------------------------------

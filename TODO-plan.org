@@ -2,6 +2,9 @@
 
 * TODOs
 
+** BlindSigningCorrectnessProof related
+*** TODO src/vca/zkp_backends/dnc/signer.rs:63                 - abstraction fail?
+
 ** Security - must do
 *** DONE src/vca/zkp_backends/dnc/proof.rs:48                  - use real seed
       - let mut rng = StdRng::from_entropy();

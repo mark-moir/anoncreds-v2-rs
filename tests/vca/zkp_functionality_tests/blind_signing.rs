@@ -1,4 +1,4 @@
-use ark_bls12_381::G1Affine as DncBlindInfo;
+use ark_bls12_381::{G1Affine as DncBlindInfo, G1Projective};
 use blsful::inner_types::Scalar as BlsScalar;
 use credx::blind::BlindCredentialRequest;
 use credx::knox::bbs::BbsScheme;
@@ -10,7 +10,6 @@ use credx::vca::r#impl::to_from_api::{from_api, to_api};
 use credx::vca::types as api;
 use credx::vca::VCAResult;
 use credx::vca::Error;
-use ark_bls12_381::{G1Affine, G1Projective};
 use ark_ec::{AffineRepr, CurveGroup, Group};
 use credx::vca::zkp_backends::ac2c::crypto_interface::{
     CRYPTO_INTERFACE_AC2C_BBS, CRYPTO_INTERFACE_AC2C_PS,
@@ -240,6 +239,7 @@ macro_rules! gen_tests {
 gen_tests!(
     ac2c_bbs, &CRYPTO_INTERFACE_AC2C_BBS, BlindCredentialRequest<BbsScheme>, do_not_tamper, from_api_ac2c_bbs, to_api_ac2c_bbs, None;
     ac2c_ps,  &CRYPTO_INTERFACE_AC2C_PS,  BlindCredentialRequest<PsScheme>,  do_not_tamper, from_api_ac2c_ps,  to_api_ac2c_ps,  None;
+    // Now dnc_tamper (below) passes, but the happy path test here fails because the concrete type associated with BlindInfoforSigner by DNC has changed
     dnc,      &CRYPTO_INTERFACE_DNC,      DncBlindInfo,                      do_not_tamper, from_api_dnc,      to_api_dnc,      None;
 );
 
@@ -249,6 +249,5 @@ gen_tests!(
     ac2c_bbs_tamper_proof, &CRYPTO_INTERFACE_AC2C_BBS, BlindCredentialRequest<BbsScheme>, ac2c_tamper_proof_bbs,  from_api_ac2c_bbs, to_api_ac2c_bbs, Some(expect_invalid_signing);
     ac2c_ps_tamper,        &CRYPTO_INTERFACE_AC2C_PS,  BlindCredentialRequest<PsScheme>,  ac2c_tamper_commitment, from_api_ac2c_ps,  to_api_ac2c_ps,  Some(expect_invalid_signing);
     ac2c_ps_tamper_proof,  &CRYPTO_INTERFACE_AC2C_PS,  BlindCredentialRequest<PsScheme>,  ac2c_tamper_proof_ps,   from_api_ac2c_ps,  to_api_ac2c_ps,  Some(expect_invalid_signing);
-    // Try replacing the commitment with an alternative one, accept any failure.  Test fails because DNC does not create/verify proof of knowledge of blinder, so signing succeeds.
     dnc_tamper,            &CRYPTO_INTERFACE_DNC,      DncBlindInfo,                      alternative_tamper,     from_api_dnc,      to_api_dnc,      Some(any_failure_will_do);
 );
