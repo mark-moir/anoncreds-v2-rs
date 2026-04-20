@@ -96,6 +96,7 @@ pub fn succeeds_with_mode (proof_mode: ProofMode) ->
         )]
     }
 
+#[allow(dead_code)]
 pub fn proof_fails_with_mode (proof_mode: ProofMode, l: Vec<String>) ->
     Vec<tf::TestStep> {
         vec![tf::TestStep::CreateAndVerifyProof(
@@ -105,6 +106,7 @@ pub fn proof_fails_with_mode (proof_mode: ProofMode, l: Vec<String>) ->
         )]
     }
 
+#[allow(dead_code)]
 pub fn proof_fails_with (l: Vec<String>) ->
     Vec<tf::TestStep> {
         proof_fails_with_mode(Strict,l)
@@ -164,6 +166,7 @@ lazy_static! {
 }
 
 // This is here to satisfy type requirements but will need to be updated for real tests
+#[allow(dead_code)]
 pub const SOME_SEQUENCE_NUMBER: api::AccumulatorBatchSeqNo = 99;
 
 lazy_static! {
@@ -753,10 +756,12 @@ macro_rules! expect_privacy_warnings {
 #[macro_export]
 macro_rules! look_at_warnings_test {
     ($vca_api: expr, $lib_spec: expr) => {
+        #[allow(dead_code)]
         fn all_indices<T>(cts: Vec<T>) -> Vec<u64> {
             (0..cts.len() as u64).collect()
         }
 
+        #[allow(dead_code)]
         fn minus_vec<T: PartialEq>(v1: Vec<T>, v2: &[T]) -> Vec<T> {
             v1.into_iter().filter(|x| !v2.contains(x)).collect()
         }
