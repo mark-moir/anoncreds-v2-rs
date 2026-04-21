@@ -583,6 +583,7 @@ fn add_pok_witness_new(
     wits.add(PoKSignatureBBSG1Wit::new_as_witness(sig.clone(), unrevealed));
 }
 
+// TODO: change RangeProof SupportedRequirement to use RangeCheckBpp instead of legogroth16
 #[derive(Debug)]
 enum SupportedRequirement {
     PoKofSignature(Box<SignatureParamsG1<Bls12_381>>,
