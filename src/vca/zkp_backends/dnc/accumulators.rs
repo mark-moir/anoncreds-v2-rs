@@ -134,7 +134,6 @@ pub fn get_accumulator_witness() -> GetAccumulatorWitness {
         let (_, kp): (VbaSetupParams::<Bls12_381>, VbaKeypair::<Bls12_381>)
                      = from_api(accumulator_data)?;
         let e : Fr   = from_api(element)?;
-        // TODO: feature gate - use compute_membership_witness if InMemoryState not available
         #[cfg(not(feature="in_memory_state"))]
         let wit      = pa.compute_membership_witness(&e, &kp.secret_key);
         #[cfg(feature="in_memory_state")]

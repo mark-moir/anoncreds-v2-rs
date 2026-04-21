@@ -41,8 +41,7 @@ exploration.  In particular,
   Labs mentors at different times during their Rust learning process.  Therefore, different styles,
   tastes, and levels of expertise are evident in different parts of the code.  While we have made
   progress towards more consistent styles throughout, this is not complete.
-- There are quite a few TODOs, potentially including some that would undermine security if left
-  undone before this code were used in a practical application.
+- Some TODOs remain
 - While we hope to eventually contribute to [[https://github.com/hyperledger/anoncreds-v2-rs][Hyperledger AnonCreds, v2]] based on this work, we are not
   raising a Pull Request at this stage. Rather, we have made this work public in order to facilitate
   feedback and engagement towards something that we can offer as a contribution.

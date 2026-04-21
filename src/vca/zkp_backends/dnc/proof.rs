@@ -39,13 +39,15 @@ use ark_std::rand::rngs::StdRng;
 use blake2::Blake2b512;
 // ------------------------------------------------------------------------------
 use std::sync::Arc;
+use std::sync::OnceLock;
+use std::env;
 // ------------------------------------------------------------------------------
 
 pub fn specific_prover_dnc() -> SpecificProver {
     Arc::new(|prf_instrs, eqs, sigs_and_related_data, nonce| {
         let (WarningsAndResult { warnings, result: (proof_spec, maybe_witnesses)}, _) =
             proof_spec_from(true, &prf_instrs.to_vec(), eqs, Some(sigs_and_related_data))?;
-        let mut rng = StdRng::seed_from_u64(0); // TODO: real seed
+        let mut rng = StdRng::from_entropy();
         if let Some(witnesses) = maybe_witnesses {
             let (proof, _commitment_randomness) = ProofG1::new::<StdRng, Blake2b512>(
                 &mut rng, proof_spec, witnesses, Some(nonce.as_bytes().to_vec()), Default::default(),
@@ -61,7 +63,7 @@ pub fn specific_verifier_dnc() -> SpecificVerifier {
     Arc::new(|prf_instrs, eqs, proof_api, decr_reqs, nonce| {
         let (WarningsAndResult { warnings, result: (proof_spec, _)}, decr_req_lkups) =
             proof_spec_from(true, &prf_instrs.to_vec(), eqs, None)?;
-        let mut rng = StdRng::seed_from_u64(137); // TODO: 137
+        let mut rng = StdRng::from_entropy();
         let prf : ProofG1 = from_api(proof_api)?;
         let response = WarningsAndDecryptResponses {
             warnings,
@@ -181,10 +183,26 @@ fn verify_decryption_response(
 }
 
 // This should be 0 for normal operation, but can be set to emulate a dishonest prover that lies
-// about the value; see usage below for RangeProof case, also in Direct tests, which differ
-// depending on how this is set.  TODO: think about how to enable configuring this at runtime;
-// probably thread something akin to Loose/Strict through to here.
-const RANGE_PROOF_CHEAT_OFFSET : u64 = 0;
+// about the value; configurable at runtime via env RANGE_PROOF_CHEAT_OFFSET (default 0).
+// For example, the following tests fail (as they should) when the prover cheats:
+//
+// RANGE_PROOF_CHEAT_OFFSET=1 cargo test range
+//
+// failures:
+//    vca::zkp_backends::dnc::run_json_zkp_functionality_tests::test_015_SLOW_verifies_with_small_range_below_signed_value
+//    vca::zkp_backends::dnc::run_json_zkp_functionality_tests::test_016_SLOW_verifies_with_small_range_above_signed_value
+//    vca::zkp_backends::dnc::run_json_zkp_functionality_tests::test_031_SLOWSLOWrange_max_max
+//    vca::zkp_backends::dnc::run_zkp_functionality_tests::spec::sign_create_verify::range_proofs::slowslow_in_range
+
+fn range_proof_cheat_offset() -> u64 {
+    static OFFSET: OnceLock<u64> = OnceLock::new();
+    *OFFSET.get_or_init(|| {
+        env::var("RANGE_PROOF_CHEAT_OFFSET")
+            .ok()
+            .and_then(|s| s.parse::<u64>().ok())
+            .unwrap_or(0)
+    })
+}
 
 #[allow(clippy::type_complexity)]
 fn add_statement_and_maybe_witness(
@@ -266,13 +284,13 @@ fn add_statement_and_maybe_witness(
                 let val_p               = match val {
                     // rangeProofCheatOffset enables emulating cheating Prover; see comment at definition
                     DataValue::DVInt(v) =>
-                        DataValue::DVInt(v + RANGE_PROOF_CHEAT_OFFSET),
+                        DataValue::DVInt(v + range_proof_cheat_offset()),
                     x                   =>
                         return Err(Error::General(format!(
                             "add_statement_and_maybe_witness; RangeProof is only for DVInt; {x}"))),
                 };
-                if (RANGE_PROOF_CHEAT_OFFSET != 0) {
-                    println!("WARNING: Prover is offsetting value for range proof by {RANGE_PROOF_CHEAT_OFFSET}");
+                if (range_proof_cheat_offset() != 0) {
+                    println!("WARNING: Prover is offsetting value for range proof by {}", range_proof_cheat_offset());
                 }
                 witnesses.add(Witness::BoundCheckLegoGroth16(generate_fr_from_val_and_ct((&ClaimType::CTInt, &val_p))?));
             }
@@ -565,6 +583,7 @@ fn add_pok_witness_new(
     wits.add(PoKSignatureBBSG1Wit::new_as_witness(sig.clone(), unrevealed));
 }
 
+// TODO: change RangeProof SupportedRequirement to use RangeCheckBpp instead of legogroth16
 #[derive(Debug)]
 enum SupportedRequirement {
     PoKofSignature(Box<SignatureParamsG1<Bls12_381>>,
@@ -624,4 +643,3 @@ fn partition_frs(
     }
     (unrevealed, revealed)
 }
-

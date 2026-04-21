@@ -105,7 +105,7 @@ fn catch_unwind_test() -> VCAResult<()> {
             let bt = format!("{:?}", backtrace);
             if PRINT_ENABLED { println!("{:?}", bt) };
             assert!(bt.contains(LOCATION_STRING));
-            assert!(bt.contains("indexmap::map::IndexMap<K,V,S>"));
+            assert!(bt.contains("indexmap::map::IndexMap<i32, i32>"));
         },
         e => assert_eq!(format!("{:?} is not as expected", e), "")
     }

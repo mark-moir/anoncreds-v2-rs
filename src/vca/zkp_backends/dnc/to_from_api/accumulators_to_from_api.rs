@@ -1,6 +1,7 @@
 // ------------------------------------------------------------------------------
 use crate::vca::{Error, VCAResult};
 use crate::vca::r#impl::to_from_api::*;
+use crate::{impl_vca_roundtrip_json, impl_vca_roundtrip_ark};
 use crate::vca::interfaces::types as api;
 use crate::vca::zkp_backends::dnc::in_memory_state::test::*;
 use crate::vca::zkp_backends::dnc::types::*;
@@ -23,17 +24,7 @@ type AccumWitnessesAPI  = HashMap<api::CredAttrIndex, api::AccumulatorMembership
 
 // ------------------------------------------------------------------------------
 
-impl VcaTryFrom<Fr> for api::AccumulatorElement {
-    fn vca_try_from(x: Fr) -> VCAResult<api::AccumulatorElement> {
-        Ok(api::AccumulatorElement(to_opaque_ark(&x)?))
-    }
-}
-
-impl VcaTryFrom<&api::AccumulatorElement> for Fr {
-    fn vca_try_from(x: &api::AccumulatorElement) -> VCAResult<Fr> {
-        from_opaque_ark(&x.0)
-    }
-}
+impl_vca_roundtrip_ark!(Fr => api::AccumulatorElement);
 
 // ------------------------------------------------------------------------------
 
@@ -51,6 +42,7 @@ impl VcaTryFrom<&Vec<String>> for Vec<Fr> {
 
 // ------------------------------------------------------------------------------
 
+// Tuple (Omega, adds, rms) is encoded explicitly; not a single opaque wrapper, so we keep bespoke impls.
 impl VcaTryFrom<(Omega::<G1>, Vec<Fr>, Vec<Fr>)> for api::AccumulatorWitnessUpdateInfo {
     fn vca_try_from((o,a,r): (Omega::<G1>, Vec<Fr>, Vec<Fr>)) -> VCAResult<api::AccumulatorWitnessUpdateInfo> {
         let ap : Vec<String> = to_api(a)?;
@@ -70,17 +62,7 @@ impl VcaTryFrom<&api::AccumulatorWitnessUpdateInfo> for (Omega::<G1>, Vec<Fr>, V
 
 // ------------------------------------------------------------------------------
 
-impl VcaTryFrom<VbaMembershipProvingKey::<G1>> for api::MembershipProvingKey {
-    fn vca_try_from(x: VbaMembershipProvingKey::<G1>) -> VCAResult<api::MembershipProvingKey> {
-        Ok(api::MembershipProvingKey(to_opaque_json(&x)?))
-    }
-}
-
-impl VcaTryFrom<&api::MembershipProvingKey> for VbaMembershipProvingKey::<G1> {
-    fn vca_try_from(x: &api::MembershipProvingKey) -> VCAResult<VbaMembershipProvingKey::<G1>> {
-        from_opaque_json(&x.0)
-    }
-}
+impl_vca_roundtrip_json!(VbaMembershipProvingKey::<G1> => api::MembershipProvingKey);
 
 // ------------------------------------------------------------------------------
 
@@ -146,7 +128,6 @@ impl VcaTryFrom<&api::Accumulator> for (PositiveAccumulator::<G1Affine>,
                                                         InMemoryState::<Fr>)> {
         let AccumulatorOpaque { acc, ims } = from_opaque_json(&x.0)?;
         let ims = from_api(&ims)?;
-        // TODO: feature gate
         print_in_memory_state(&ims);
         Ok((acc, ims))
     }

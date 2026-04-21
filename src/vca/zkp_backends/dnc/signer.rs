@@ -64,8 +64,10 @@ pub fn specific_create_blind_signing_info() -> SpecificCreateBlindSigningInfo {
         let blind_credential_commitment = sp.commit_to_messages(committed_messages, &blinder)
             .map_err(|e| Error::General(ic_semi(&str_vec_from!(
                 "specific_create_blind_signing_info", format!("{e:?}")))))?;
+        // TODO: create and include PoK of blinder
+        let blind_info_for_signer = to_api(blind_credential_commitment)?;
         Ok(BlindSigningInfo {
-            blind_info_for_signer: to_api(blind_credential_commitment)?,
+            blind_info_for_signer,
             blinded_attributes: blind_attrs.to_vec(),
             info_for_unblinding: to_api(blinder)?})
     })

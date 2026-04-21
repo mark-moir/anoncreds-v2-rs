@@ -50,10 +50,8 @@ pub fn sign<S: ShortGroupSignatureScheme>() -> SpecificSign {
             signer_public_data,
             signer_secret_data,
         } = sd;
-        // TODO: - make sign take schema from General, like sign_with_blinded_attributes
-        //       - also refactor with sign_with_blinded_attributes
-        let (_s, sdcts, _) : (IssuerPublic<S>, Vec<ClaimType>, Vec<CredAttrIndex>) = from_api(signer_public_data)?;
-        let mut claim_data = vals_to_claim_data(&sdcts, vals)?;
+        let ip: IssuerPublic<S> = from_api(&signer_public_data.signer_public_setup_data)?;
+        let mut claim_data = vals_to_claim_data(&signer_public_data.signer_public_schema, vals)?;
         let rev_claim_data = RevocationClaim::from(UNUSED_REVOCATION_LABEL).into();
         claim_data.push(rev_claim_data);
         // This is `mut` because AC2C `sign_credential`, when it signs,
@@ -74,7 +72,6 @@ pub fn specific_create_blind_signing_info<S: ShortGroupSignatureScheme>()
 -> SpecificCreateBlindSigningInfo {
     Arc::new(|_rng_seed, spsd, schema, blind_attrs| {
         let issuer_public: IssuerPublic<S> = from_api(spsd)?;
-        // TODO: DRY fail, refactor
         let blind_claims: BTreeMap<String,ClaimData> = blind_attrs
             .iter()
             .map(|idx_val_pair| create_label_claim_pair("create_blind_signing_info, AC2C", schema, idx_val_pair))
@@ -84,6 +81,7 @@ pub fn specific_create_blind_signing_info<S: ShortGroupSignatureScheme>()
             .map_err(|e| Error::General(ic_semi(&str_vec_from!("specific_create_blind_signing_info",
                                                                "BlindCredentialRequest::new",
                                                                format!("{e:?}")))))?;
+        // TODO: create and include PoK of blinder
         Ok(BlindSigningInfo {blind_info_for_signer: to_api(blind_credential_request)?,
                              blinded_attributes: blind_attrs.to_vec(),
                              info_for_unblinding: to_api(blinder)?})
@@ -93,7 +91,6 @@ pub fn specific_create_blind_signing_info<S: ShortGroupSignatureScheme>()
 pub fn specific_sign_with_blinded_attributes<S: ShortGroupSignatureScheme>(
 ) -> SpecificSignWithBlindedAttributes {
     Arc::new(|_rng_seed, schema, non_blinded_attrs, bifs, _, signer_secret_data| {
-        // TODO: refactor, DRY fail with sign
         let mut claims: BTreeMap<String,ClaimData> = non_blinded_attrs
             .iter()
             .map(|idx_val_pair| create_label_claim_pair("sign_with_blinded_attributes, AC2C", schema, idx_val_pair))

@@ -18,7 +18,7 @@ use zeroize::Zeroize;
 fn field_element_as_bytes(x : &mut Vec<u8>)
     -> VCAResult<Fr>
 {
-    let f = fr_from_uint8_array(x)?; // TODO true as argument
+    let f = fr_from_uint8_array(x)?;
     let mut bytes = vec![];
     f.serialize_compressed(&mut bytes)
         .map_err(|e| Error::General(format!("field_element_as_bytes {:?}", e)))?;

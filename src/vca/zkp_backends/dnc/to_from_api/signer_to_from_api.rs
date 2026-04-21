@@ -1,6 +1,7 @@
 // ------------------------------------------------------------------------------
 use crate::vca::{Error, VCAResult};
 use crate::vca::r#impl::to_from_api::*;
+use crate::{impl_vca_roundtrip_json, impl_vca_roundtrip_ark};
 use crate::vca::interfaces::types as api;
 use crate::vca::zkp_backends::dnc::types::*;
 // ------------------------------------------------------------------------------
@@ -12,19 +13,27 @@ use bbs_plus::prelude::SignatureParamsG1;
 // ------------------------------------------------------------------------------
 use ark_bls12_381::{Bls12_381, Fr, G1Affine};
 use ark_ec::pairing::Pairing;
+use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 // ------------------------------------------------------------------------------
 
 // ------------------------------------------------------------------------------
+
+#[derive(Clone, CanonicalSerialize, CanonicalDeserialize)]
+pub struct DncSignerPublicSetupData {
+    pub sig_params: SignatureParamsG1::<Bls12_381>,
+    pub pk: PublicKeyG2<Bls12_381>,
+}
 
 impl VcaTryFrom<(SignatureParamsG1::<Bls12_381>, PublicKeyG2<Bls12_381>)> for api::SignerPublicSetupData {
     fn vca_try_from((sp, pk): (SignatureParamsG1::<Bls12_381>, PublicKeyG2<Bls12_381>)) -> VCAResult<api::SignerPublicSetupData> {
-        Ok(api::SignerPublicSetupData(to_opaque_json(&(sp, pk.clone()))?)) // TODO no clone
+        Ok(api::SignerPublicSetupData(to_opaque_ark(&DncSignerPublicSetupData { sig_params: sp, pk })?))
     }
 }
 
 impl VcaTryFrom<&api::SignerPublicSetupData> for (SignatureParamsG1::<Bls12_381>, PublicKeyG2<Bls12_381>) {
     fn vca_try_from(x: &api::SignerPublicSetupData) -> VCAResult<(SignatureParamsG1::<Bls12_381>, PublicKeyG2<Bls12_381>)> {
-        from_opaque_json(&x.0)
+        let inner: DncSignerPublicSetupData = from_opaque_ark(&x.0)?;
+        Ok((inner.sig_params, inner.pk))
     }
 }
 
@@ -58,31 +67,11 @@ impl VcaTryFrom<&api::Signature> for SignatureG1::<Bls12_381> {
 
 // ------------------------------------------------------------------------------
 
-impl VcaTryFrom<G1Affine> for api::BlindInfoForSigner {
-    fn vca_try_from(x: G1Affine) -> VCAResult<api::BlindInfoForSigner> {
-        Ok(api::BlindInfoForSigner(to_opaque_ark(&x)?))
-    }
-}
-
-impl VcaTryFrom<&api::BlindInfoForSigner> for G1Affine {
-    fn vca_try_from(x: &api::BlindInfoForSigner) -> VCAResult<G1Affine> {
-        from_opaque_ark(&x.0)
-    }
-}
+impl_vca_roundtrip_ark!(G1Affine => api::BlindInfoForSigner);
 
 // ------------------------------------------------------------------------------
 
-impl VcaTryFrom<Fr> for api::InfoForUnblinding {
-    fn vca_try_from(x: Fr) -> VCAResult<api::InfoForUnblinding> {
-        Ok(api::InfoForUnblinding(to_opaque_ark(&x)?))
-    }
-}
-
-impl VcaTryFrom<&api::InfoForUnblinding> for Fr {
-    fn vca_try_from(x: &api::InfoForUnblinding) -> VCAResult<Fr> {
-        from_opaque_ark(&x.0)
-    }
-}
+impl_vca_roundtrip_ark!(Fr => api::InfoForUnblinding);
 
 // ------------------------------------------------------------------------------
 

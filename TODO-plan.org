@@ -3,122 +3,149 @@
 * TODOs
 
 ** Security - must do
-*** TODO src/vca/zkp_backends/dnc/proof.rs:48                  - use real seed
-      - let mut rng = StdRng::seed_from_u64(0); // TODO: real seed
-*** TODO src/vca/zkp_backends/dnc/proof.rs:64                  - use real seed
-      - let mut rng = StdRng::seed_from_u64(137); // TODO: 137
- 
+*** DONE src/vca/zkp_backends/dnc/proof.rs:48                  - use real seed
+      - let mut rng = StdRng::from_entropy();
+*** DONE src/vca/zkp_backends/dnc/proof.rs:64                  - use real seed
+      - let mut rng = StdRng::from_entropy();
+
+
+** Failing test(s)
+*** DONE tests/vca/impl/catch_unwind_test.rs:105               - wrong test expectation
 
 ** Improve error messages
-*** TODO src/vca/impl/general/presentation_request_setup.rs:75 - TODO error message
-      - &["TODO ERROR 1".to_string()])?
-*** TODO src/vca/impl/general/presentation_request_setup.rs:82 - TODO error message
-      - &["TODO ERROR 2".to_string()]).copied()
+*** DONE src/vca/impl/general/presentation_request_setup.rs:75 - improved error when credential missing
+      - lookup_throw_if_absent now reports missing credential label with context
+*** DONE src/vca/impl/general/presentation_request_setup.rs:82 - improved out-of-bounds error message
+      - lookup_throw_if_out_of_bounds now reports label, index, and schema length
 
-*** TODO src/vca/impl/util.rs:732                              - refine error message
-      - // TODO: add something to s to indicate outer map with key k1 present
+*** DONE src/vca/impl/util.rs:732                              - refined error context
+      - insert_throw_if_present_3_lvl now appends the outer key to the context passed to inner lookups
 
 
 ** Propose to eliminate by simplifying aspirations that are more trouble than they're worth
-*** TODO src/vca/impl/json/shared_params.rs:24                 - eliminate SPVList
+*** SUSP src/vca/impl/json/shared_params.rs:24                 - eliminate SPVList
       - [DataValue::DVText(x)] => Ok(x), // TODO: temporary workaround, or reasonable semantic change?
       - This would go away if we eliminated =SPVList=, which we never ended up using
-
-*** TODO src/vca/interfaces/types.rs:219
+      - suspended because it will require updating server and example workloads
+*** SUSP src/vca/interfaces/types.rs:222                       - eliminate NotInAccum
       - // TODO: remove?
-
+      - remove NotInAccum and eveything related to it
+      - check that "cargo test 000" still passes
+      - suspended because it will require updating server and example workloads
 
 ** Server and example clients
-*** TODO the server seems to only handle requests sequentially - investigate and make parallel
+*** SUSP the server seems to only handle requests sequentially - investigate and make parallel
+    - suspended, low priority
 
 ** Probably unnecessary - confirm and remove TODO
+*** DONE src/vca/impl/to_from_api.rs:16                        - DRY
+      - added impl_vca_roundtrip_json and impl_vca_roundtrip_ark macros; applied to AC2C and DNC to_from_api modules
 
-*** TODO src/vca/impl/to_from_api.rs:12                        - not sure what the point was
-      - // TODO: create and use macro for common patterns such as to/from_opaque_json
-
-*** TODO src/vca/zkp_backends/dnc/accumulators.rs:137          - already done, remove TODO
+*** DONE src/vca/zkp_backends/dnc/accumulators.rs:137          - already done, remove TODO
+CLOSED: [2026-04-16 Thu 18:21]
+- State "DONE"       from "TODO"       [2026-04-16 Thu 18:21]
       - // TODO: feature gate - use compute_membership_witness if InMemoryState not available
       - This was already done, it seems
 
-*** TODO src/vca/zkp_backends/dnc/proof.rs:185                 - set RANGE_PROOF_CHEAT_OFFSET at runtime
-      - //// This should be 0 for normal operation, but can be set to emulate a dishonest prover that lies
-      - //// about the value; see usage below for RangeProof case, also in Direct tests, which differ
-      - //// depending on how this is set.  TODO: think about how to enable configuring this at runtime;
-      - // probably thread something akin to Loose/Strict through to here.
-      - const RANGE_PROOF_CHEAT_OFFSET : u64 = 0;
+*** DONE src/vca/zkp_backends/dnc/proof.rs:187                 - set RANGE_PROOF_CHEAT_OFFSET at runtime
+      - cheat offset now read once from env RANGE_PROOF_CHEAT_OFFSET (default 0) via OnceLock; applied in prover path
 
-*** TODO src/vca/interfaces/types.rs:140                       - comment incomplete?, seems historical
+*** DONE src/vca/interfaces/types.rs:143                       - comment incomplete?, seems historical
+CLOSED: [2026-04-16 Thu 17:44]
       - /// A blinded signature, based on the 'values', etc., given in a TODO -- what's this?
 
-*** TODO src/vca/interfaces/types.rs:393                       - HolderID does not need to be OpaqueMaterial
-      - // TODO: this does not need to be OpaqueMaterial, String will suffice.  It is not specific to an underlying ZKP library.  Nonetheless,
+*** DONE src/vca/interfaces/types.rs:396                       - HolderID does not need to be OpaqueMaterial
+      - HolderID now wraps String with Debug/serde/jsonschema derives; more portable and readable
 
 
 ** Assess whether still needed, remove or update
-*** TODO src/vca/impl/to_from_api.rs:40                        - check status of dependency bug
+*** SUSP src/vca/impl/to_from_api.rs:86                        - check status of dependency bug
       - // TODO: remove these when possible.  These should not be needed, but currently are, due to a
       - // serialization bug in bulletproofs; see tests/vca/range_proof_serialization_test.rs
       - Check if bulletproofs serialization bug has been fixed.  Did we file an issue?
+      - Suspended: As of 2026-04-16, bulletproofs-bls is still on v4.0.0 and the problem remains
 
-*** TODO src/vca/README.md:92                                  - comment about TODOs in README
+*** DROP src/vca/README.md:92                                  - comment about TODOs in README
+CLOSED: [2026-04-16 Thu 21:01]
+- State "DROP"       from "TODO"       [2026-04-16 Thu 21:01]
       - -   There are quite a few TODOs, potentially including some that would undermine security if left
+      - This is about README.md, which is generated from README.org, nothing to do
 
-*** TODO src/vca/zkp_backends/dnc/to_from_api/signer_to_from_api.rs:21 - clone unnecessary?
-      - Ok(api::SignerPublicSetupData(to_opaque_json(&(sp, pk.clone()))?)) // TODO no clone
-
-*** TODO src/vca/zkp_backends/dnc/reversible_encoding.rs:21    - don't remember/understand reason for TODO
+*** DROP src/vca/zkp_backends/dnc/reversible_encoding.rs:21    - don't remember/understand reason for TODO
+CLOSED: [2026-04-16 Thu 21:00]
+- State "DROP"       from "TODO"       [2026-04-16 Thu 21:00]
       - let f = fr_from_uint8_array(x)?; // TODO true as argument
       - I (MSM) wrote this comment, and I have no idea what it means :-)
 
-*** TODO src/vca/README.org:44                                 - comment about TODOs in README
+*** DONE src/vca/README.org:44                                 - comment about TODOs in README
+CLOSED: [2026-04-17 Fri 09:27]
+- State "DONE"       from "SUSP"       [2026-04-17 Fri 09:27]
       - - There are quite a few TODOs, potentially including some that would undermine security if left
 
 
 ** Nice to have - consider leaving comment, removing "TODO"
-*** TODO generate-tests-from-json/src/lib.rs:84                - refine how "slowness" is expressed
-      - ///      TODO: revisit "slowness" handling; replace NotSoSlow with (something like) Slowness(n), and enable skipping all tests
+*** DROP generate-tests-from-json/src/lib.rs:84                - refine how "slowness" is expressed
+CLOSED: [2026-04-16 Thu 22:34]
+- State "DROP"       from "TODO"       [2026-04-16 Thu 22:34]
+  - ///      TODO: revisit "slowness" handling; replace NotSoSlow with (something like) Slowness(n), and enable skipping all tests
+  - not high enough priority
 
-*** TODO generate-tests-from-json/src/lib.rs:239               - report overrides that match multiple tests
+*** DROP generate-tests-from-json/src/lib.rs:239               - report overrides that match multiple tests
+CLOSED: [2026-04-16 Thu 22:35]
+- State "DROP"       from "TODO"       [2026-04-16 Thu 22:35]
       - // TODO: detect overrides used for multiple tests, report which ones
+      - Not high enough priority
 
-*** TODO src/vca/impl/util.rs:684                              - unnecessary generalisation
-      - // TODO: ideally make this work for any KeyValueContainer, but only used for HashMap so far
-*** TODO src/vca/impl/util.rs:714                              - unnecessary generalisation
-      - // TODO: ideally make this work for any KeyValueContainer, but only used for HashMap so far
-*** TODO src/vca/impl/util.rs:715                              - add tests
+*** DROP src/vca/impl/util.rs:706                              - unnecessary generalisation
+- State "DROP"       from "DONE"       [2026-04-17 Fri 08:54]
+      - accepted HashMap-only usage; removed TODO
+*** DROP src/vca/impl/util.rs:736                              - unnecessary generalisation
+- State "DROP"       from "DONE"       [2026-04-17 Fri 08:54]
+      - accepted HashMap-only usage; removed TODO
+*** DONE src/vca/impl/util.rs:715                              - add tests
+      - added unit test covering success and duplicate error with context propagation
       - // TODO: add tests
 
-*** TODO src/vca/impl/util.rs:1077                             - more idiomatic Rust, possible change to eliminate clones
+*** SUSP src/vca/impl/util.rs:1077                             - more idiomatic Rust, possible change to eliminate clones
       - // TODO: rewrite in a more Rust-y style, eliminating unnecessary clones.  NOTE: this function
       - //// is called in only two places, and in both cases, the original map is not required after the
       - //// call to this function.  Thus, it may be reasonable for this function to take a &mut for m,
       - // which may help to avoid unnecessary clones.
+      - Suspended: not high enough priority
 
-*** TODO src/vca/zkp_backends/dnc/to_from_api/accumulators_to_from_api.rs:149 - feature gate in_memory_state debug output
+*** DROP src/vca/zkp_backends/dnc/to_from_api/accumulators_to_from_api.rs:131 - feature gate in_memory_state debug output
+CLOSED: [2026-04-17 Fri 09:33]
+- State "DROP"       from "TODO"       [2026-04-17 Fri 09:33]
       - // TODO: feature gate
       - Note: already feature gated on in_memory_state; TODO is to consider feature that enables
         printing; we could just remove the printing, but it would be useful for debugging, which
-        is the whole point of using in_memory_state.  We could just leave it non-optional.
+        is the whole point of using in_memory_state.
+      - Dropped: just leave it non-optional.
 
-*** TODO src/vca/zkp_backends/dnc/proof.rs:479                 - minor optimisation opportunity
-      - // TODO: avoid unnecessarily creating Witnesses in the case that sigs_mb is None.
+*** DROP src/vca/zkp_backends/dnc/proof.rs:479                 - minor optimisation opportunity
+CLOSED: [2026-04-17 Fri 09:34]
+- State "DROP"       from "TODO"       [2026-04-17 Fri 09:34]
+  - // TODO: avoid unnecessarily creating Witnesses in the case that sigs_mb is None.
+  - Dropped: not worth it
 
 
 ** No functional change, code quality only
-*** TODO src/vca/zkp_backends/ac2c/to_from_api/signer_to_from_api.rs:17 - to/from_api includes too much data
-      - // TODO: this should not be for a triple, two components of which are not AC2C-specific
+*** DONE src/vca/zkp_backends/ac2c/to_from_api/signer_to_from_api.rs:23 - to/from_api includes too much data
+      - factored into helpers so only IssuerPublic conversion needs to go opaque; schema/indices pass through unchanged
 
-*** TODO src/vca/zkp_backends/ac2c/signer.rs:53                - unnecessary to/from_api
-      - // TODO: - make sign take schema from General, like sign_with_blinded_attributes
+*** DONE src/vca/zkp_backends/ac2c/signer.rs:54                - unnecessary to/from_api
+      - removed stale TODO; sign now directly uses schema from SignerPublicData
 
-*** TODO src/vca/zkp_backends/ac2c/signer.rs:77                - refactor for DRY
-      - // TODO: DRY fail, refactor
+*** DONE src/vca/zkp_backends/ac2c/signer.rs:78                - refactor for DRY
+      - removed stale DRY comments; code paths already minimal for blind signing helpers
 
-*** TODO src/vca/zkp_backends/ac2c/signer.rs:96                - refactor for DRY
-      - // TODO: refactor, DRY fail with sign
+*** DONE src/vca/zkp_backends/ac2c/signer.rs:107               - refactor for DRY
+      - removed stale DRY comments; pattern matches standard sign_with_blinded_attributes flow
 
 
 * org mode setup
+
+- eval these expressions, then reopen file
 
 #+BEGIN_SRC emacs-lisp
   (setq org-todo-keywords
