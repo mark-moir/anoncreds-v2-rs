@@ -838,7 +838,6 @@ components:
       - CTEncryptableText
       - CTInt
       - CTAccumulatorMember
-      - CTTextOrInt
       type: string
     SignerSecretData:
       description: A Signer's secret keys.
@@ -1782,7 +1781,7 @@ components:
         dataForVerifier:
           allOf:
           - $ref: '#/components/schemas/DataForVerifier'
-          description: See Proof.
+          description: See DataForVerifier.
         decryptionKeys:
           additionalProperties:
             $ref: '#/components/schemas/AuthorityDecryptionKey'

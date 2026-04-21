@@ -21,8 +21,7 @@ export const ClaimType = {
     CtText: 'CTText',
     CtEncryptableText: 'CTEncryptableText',
     CtInt: 'CTInt',
-    CtAccumulatorMember: 'CTAccumulatorMember',
-    CtTextOrInt: 'CTTextOrInt'
+    CtAccumulatorMember: 'CTAccumulatorMember'
 } as const;
 export type ClaimType = typeof ClaimType[keyof typeof ClaimType];
 

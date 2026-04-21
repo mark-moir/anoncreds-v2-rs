@@ -147,7 +147,7 @@ public class VerifyDecryptionRequest {
   }
 
   /**
-   * See Proof.
+   * See DataForVerifier.
    * @return dataForVerifier
    */
   @javax.annotation.Nonnull

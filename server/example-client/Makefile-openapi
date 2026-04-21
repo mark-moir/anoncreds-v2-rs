@@ -24,7 +24,7 @@ MODEL_PACKAGE_WITH_SLASH   = $(CLIENT)/model
 get-vca-server-swagger:
 	rm    -f $(SWAGGER_FILE)
 	mkdir -p $(SWAGGER_DIR)
-	curl http://localhost:8080/openapi.json -o $(SWAGGER_FILE)
+	curl http://127.0.0.1:8080/openapi.json -o $(SWAGGER_FILE)
 
 .PHONEY: install-openapi-cli
 install-openapi-cli:

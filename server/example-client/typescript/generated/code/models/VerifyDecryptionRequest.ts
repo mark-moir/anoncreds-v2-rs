@@ -61,7 +61,7 @@ export interface VerifyDecryptionRequest {
      */
     sharedParams: { [key: string]: SharedParamValue; };
     /**
-     * See Proof.
+     * See DataForVerifier.
      * @type {DataForVerifier}
      * @memberof VerifyDecryptionRequest
      */

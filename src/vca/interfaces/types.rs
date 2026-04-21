@@ -7,17 +7,23 @@ use std::collections::BTreeMap;
 use std::collections::HashMap;
 // ------------------------------------------------------------------------------
 
+/// Implements a `Debug` instance for a tuple struct wrapping `OpaqueMaterial`,
+/// showing the wrapper name and a short preview of the underlying string.
 #[macro_export]
 macro_rules! impl_Debug_for_OpaqueMaterial_wrapper {
     ($ty: ident) => {
         impl std::fmt::Debug for $ty {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                const PREVIEW_LEN: usize = 32;
+                let preview: String = self
+                    .0
+                    .chars()
+                    .take(PREVIEW_LEN)
+                    .collect();
+                let suffix = if self.0.chars().count() > PREVIEW_LEN { "…" } else { "" };
+
                 f.debug_tuple(stringify!($ty))
-                // Sometimes, this shrink_to(16) results in showing just ().  Weird.
-                // shrink_to does not seem to make sense -- it shrinks capacity, not the string itself:
-                // https://doc.rust-lang.org/std/string/struct.String.html#method.shrink_to
-//                    .field(&format!("{:?}...", self.0).shrink_to(16))
-                    .field(&format!("{:?}...", self.0))
+                    .field(&format!("{preview}{suffix}"))
                     .finish()
             }
         }
@@ -90,9 +96,7 @@ pub enum ClaimType {
     #[serde(rename = "CTInt")]
     CTInt,
     #[serde(rename = "CTAccumulatorMember")]
-    CTAccumulatorMember,
-    #[serde(rename = "CTTextOrInt")]
-    CTTextOrInt,
+    CTAccumulatorMember
 }
 
 impl fmt::Display for ClaimType {
@@ -101,8 +105,7 @@ impl fmt::Display for ClaimType {
             ClaimType::CTText              => write!(f, "CTText"),
             ClaimType::CTEncryptableText   => write!(f, "CTEncryptableText"),
             ClaimType::CTInt               => write!(f, "CTInt"),
-            ClaimType::CTAccumulatorMember => write!(f, "CTAccumulatorMember"),
-            ClaimType::CTTextOrInt         => write!(f, "CTTextOrInt"),
+            ClaimType::CTAccumulatorMember => write!(f, "CTAccumulatorMember")
         }
     }
 }
