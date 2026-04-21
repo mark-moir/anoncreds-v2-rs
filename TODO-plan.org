@@ -9,6 +9,9 @@
       - let mut rng = StdRng::from_entropy();
 
 
+** Failing test(s)
+*** DONE tests/vca/impl/catch_unwind_test.rs:105               - wrong test expectation
+
 ** Improve error messages
 *** DONE src/vca/impl/general/presentation_request_setup.rs:75 - improved error when credential missing
       - lookup_throw_if_absent now reports missing credential label with context
