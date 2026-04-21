@@ -35,7 +35,7 @@ pub fn create_accumulator_data() -> CreateAccumulatorData {
         let kp      = VbaKeypair::<Bls12_381>::generate_using_rng(&mut rng, &sp);
         let pk      = &kp.public_key;
         let acc     = PositiveAccumulator::initialize(&sp);
-        let ad      = to_api_accumulator_data(&sp, &kp)?;
+        let ad      = to_api((&sp, &kp))?;
         #[cfg(not(feature="in_memory_state"))]
         let accumulator : api::Accumulator
                     = to_api(&acc)?;
@@ -71,42 +71,49 @@ pub fn create_accumulator_element() -> CreateAccumulatorElement {
 
 pub fn accumulator_add_remove() -> AccumulatorAddRemove {
     Arc::new(|ad, acc, adds, rms| {
-        let (sp, kp)              = from_api_accumulator_data(ad)?;
+        // Get HolderID-Fr pairs to add
+        let frs_to_add_with_holder_ids =
+            adds.iter().map(|(k, e)| Ok((k, from_api(e)?))).collect::<VCAResult<Vec<(&HolderID, Fr)>>>()?;
+        // Get Frs pairs to remove
+        let frs_to_remove =
+            rms.iter().map(from_api).collect::<VCAResult<Vec<Fr>>>()?;
+
+        let (_, kp): (VbaSetupParams::<Bls12_381>, VbaKeypair::<Bls12_381>) = from_api(ad)?;
 
         #[cfg(not(feature="in_memory_state"))]
         let pa1: PositiveAccumulator<_> = from_api(acc)?;
         #[cfg(feature="in_memory_state")]
         let (pa1, mut ims)        = from_api(acc)?;
 
-        let afl                   = adds.iter().map(|(_,e)| from_api(e)).collect::<VCAResult<Vec<Fr>>>()?;
-        let rfl                   = rms .iter().map(        from_api)   .collect::<VCAResult<Vec<Fr>>>()?;
-
-        let o                     = Omega::new(&afl, &rfl, pa1.value(), &kp.secret_key);
-        // The 'afl.clone() is necessary because of the docknetwork/crypto 'add_batch' definition.
-        // TODO : is it technically possible to change docknetwork/crypto to take a reference?
+        let frs_to_add = frs_to_add_with_holder_ids.iter().map(|(_,v)| *v).collect::<Vec<_>>();
         #[cfg(not(feature="in_memory_state"))]
-        let pa2                   = PositiveAccumulator(pa1.compute_new_post_add_batch(&afl.clone(), &kp.secret_key));
+        let pa2                   = PositiveAccumulator(pa1.compute_new_post_add_batch(&frs_to_add, &kp.secret_key));
         #[cfg(feature="in_memory_state")]
-        let pa2                   = pa1.add_batch(   afl.clone(), &kp.secret_key, &mut ims)
+        // The clone() is necessary because of the docknetwork/crypto 'add_batch' definition.
+        // Couldn't DNC's add_batch accept a reference?
+        let pa2                   = pa1.add_batch(frs_to_add.clone(), &kp.secret_key, &mut ims)
             .map_err(|e| Error::General(format!("DNC accumulator_add_remove add {:?}", e)))?;
 
         #[cfg(not(feature="in_memory_state"))]
-        let pa3                   = PositiveAccumulator(pa2.compute_new_post_remove_batch(&rfl,      &kp.secret_key));
+        let pa3                   = PositiveAccumulator(pa2.compute_new_post_remove_batch(&frs_to_remove, &kp.secret_key));
         #[cfg(feature="in_memory_state")]
-        let pa3                   = pa2.remove_batch(&rfl,        &kp.secret_key, &mut ims)
+        let pa3                   = pa2.remove_batch(&frs_to_remove,        &kp.secret_key, &mut ims)
             .map_err(|e| Error::General(format!("DNC accumulator_add_remove rm  {:?}", e)))?;
 
         let mut witnesses_for_new = HashMap::<HolderID, api::AccumulatorMembershipWitness>::new();
-        for ((k,_),v) in zip(adds, &afl) {
+        for (k,v) in frs_to_add_with_holder_ids {
             #[cfg(not(feature="in_memory_state"))]
-            let wit = pa3.compute_membership_witness(v, &kp.secret_key);
+            let wit = pa3.compute_membership_witness(&v, &kp.secret_key);
             #[cfg(feature="in_memory_state")]
-            let wit = pa3.get_membership_witness(v, &kp.secret_key, &ims)
+            let wit = pa3.get_membership_witness(&v, &kp.secret_key, &ims)
                 .map_err(|e| Error::General(format!("DNC accumulator_add_remove gmw {:?}", e)))?;
-            // The 'k.clone' is necessary because the key needs to live in two maps : 'afl' and 'witnesses_for_new'.
+            // The 'k.clone' is necessary because the key needs to live in two maps :
+            // 'frs_to_add_with_holder_ids' and 'witnesses_for_new'.
             witnesses_for_new.insert(k.clone(), to_api(wit)?);
         }
-        let witness_update_info : AccumulatorWitnessUpdateInfo = to_api( (o, afl, rfl) )?;
+
+        let o = Omega::new(&frs_to_add, &frs_to_remove, pa1.value(), &kp.secret_key);
+        let witness_update_info : AccumulatorWitnessUpdateInfo = to_api( (o, frs_to_add, frs_to_remove) )?;
         #[cfg(not(feature="in_memory_state"))]
         let accumulator           = to_api(&pa3)?;
         #[cfg(feature="in_memory_state")]
@@ -124,7 +131,8 @@ pub fn get_accumulator_witness() -> GetAccumulatorWitness {
         let pa: PositiveAccumulator::<G1Affine> = from_api(accumulator)?;
         #[cfg(feature="in_memory_state")]
         let (pa, ims_a): (PositiveAccumulator::<G1Affine>, InMemoryState::<Fr>) = from_api(accumulator)?;
-        let (sp, kp) = from_api_accumulator_data(accumulator_data)?;
+        let (_, kp): (VbaSetupParams::<Bls12_381>, VbaKeypair::<Bls12_381>)
+                     = from_api(accumulator_data)?;
         let e : Fr   = from_api(element)?;
         // TODO: feature gate - use compute_membership_witness if InMemoryState not available
         #[cfg(not(feature="in_memory_state"))]
