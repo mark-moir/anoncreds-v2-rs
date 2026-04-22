@@ -1,4 +1,3 @@
-use ark_bls12_381::{G1Affine as DncBlindInfo, G1Projective};
 use blsful::inner_types::Scalar as BlsScalar;
 use credx::blind::BlindCredentialRequest;
 use credx::knox::bbs::BbsScheme;
@@ -10,12 +9,11 @@ use credx::vca::r#impl::to_from_api::{from_api, to_api};
 use credx::vca::types as api;
 use credx::vca::VCAResult;
 use credx::vca::Error;
-use ark_ec::{AffineRepr, CurveGroup, Group};
 use credx::vca::zkp_backends::ac2c::crypto_interface::{
     CRYPTO_INTERFACE_AC2C_BBS, CRYPTO_INTERFACE_AC2C_PS,
 };
 use credx::vca::zkp_backends::dnc::crypto_interface::CRYPTO_INTERFACE_DNC;
-
+use credx::vca::zkp_backends::dnc::types::BlindInfoForSignerPayload as DncBlindInfo;
 
 // Simple fixtures for a single-blinded attribute schema.
 fn schema() -> Vec<api::ClaimType> {
@@ -85,8 +83,6 @@ fn build_blind_infos(
 
 fn do_not_tamper<T>(g: T, _a: T) -> T { g }
 
-fn alternative_tamper<T>(_g: T, a: T) -> T { a }
-
 fn ac2c_tamper_commitment<S: Clone + ShortGroupSignatureScheme>(
     good: BlindCredentialRequest<S>,
     alt: BlindCredentialRequest<S>,
@@ -123,14 +119,23 @@ fn ac2c_tamper_proof_ps(
     good
 }
 
-fn any_failure_will_do(_e: &Error) -> bool {
-    true
+fn dnc_tamper_commitment(good: DncBlindInfo, alt: DncBlindInfo) -> DncBlindInfo {
+    let mut tampered = good;
+    tampered.blinding_info = alt.blinding_info;
+    tampered.blinding_info_correctness_proof.u_tilde = alt.blinding_info;
+    tampered
 }
 
 fn dnc_tamper_proof(good: DncBlindInfo, _alt: DncBlindInfo) -> DncBlindInfo {
-    let mut g1: G1Projective = good.into_group();
-    g1 += G1Projective::generator();
-    g1.into_affine()
+    let mut tampered = good;
+    let (_, mcap) = tampered
+        .blinding_info_correctness_proof
+        .m_caps
+        .get_mut(0)
+        .expect("expected at least one m_cap entry");
+    // Mutate the first scalar; add a small constant
+    *mcap += ark_bls12_381::Fr::from(3u128);
+    tampered
 }
 
 fn expect_invalid_signing(e: &Error) -> bool {
@@ -239,7 +244,6 @@ macro_rules! gen_tests {
 gen_tests!(
     ac2c_bbs, &CRYPTO_INTERFACE_AC2C_BBS, BlindCredentialRequest<BbsScheme>, do_not_tamper, from_api_ac2c_bbs, to_api_ac2c_bbs, None;
     ac2c_ps,  &CRYPTO_INTERFACE_AC2C_PS,  BlindCredentialRequest<PsScheme>,  do_not_tamper, from_api_ac2c_ps,  to_api_ac2c_ps,  None;
-    // Now dnc_tamper (below) passes, but the happy path test here fails because the concrete type associated with BlindInfoforSigner by DNC has changed
     dnc,      &CRYPTO_INTERFACE_DNC,      DncBlindInfo,                      do_not_tamper, from_api_dnc,      to_api_dnc,      None;
 );
 
@@ -249,5 +253,6 @@ gen_tests!(
     ac2c_bbs_tamper_proof, &CRYPTO_INTERFACE_AC2C_BBS, BlindCredentialRequest<BbsScheme>, ac2c_tamper_proof_bbs,  from_api_ac2c_bbs, to_api_ac2c_bbs, Some(expect_invalid_signing);
     ac2c_ps_tamper,        &CRYPTO_INTERFACE_AC2C_PS,  BlindCredentialRequest<PsScheme>,  ac2c_tamper_commitment, from_api_ac2c_ps,  to_api_ac2c_ps,  Some(expect_invalid_signing);
     ac2c_ps_tamper_proof,  &CRYPTO_INTERFACE_AC2C_PS,  BlindCredentialRequest<PsScheme>,  ac2c_tamper_proof_ps,   from_api_ac2c_ps,  to_api_ac2c_ps,  Some(expect_invalid_signing);
-    dnc_tamper,            &CRYPTO_INTERFACE_DNC,      DncBlindInfo,                      alternative_tamper,     from_api_dnc,      to_api_dnc,      Some(any_failure_will_do);
+    dnc_tamper      ,      &CRYPTO_INTERFACE_DNC,      DncBlindInfo,                      dnc_tamper_commitment,  from_api_dnc,      to_api_dnc,      Some(expect_blind_info_failure);
+    dnc_tamper_proof,      &CRYPTO_INTERFACE_DNC,      DncBlindInfo,                      dnc_tamper_proof,       from_api_dnc,      to_api_dnc,      Some(expect_blind_info_failure);
 );
