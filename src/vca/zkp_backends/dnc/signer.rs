@@ -69,6 +69,15 @@ pub fn sign() -> SpecificSign {
 // being left to the Issuer (see this comment:
 //
 //   https://github.com/docknetwork/crypto/blob/224f195bb8babc2d0de5256135120e0aca9fbd19/bbs_plus/src/signature.rs#L46
+//
+// Feedback from Lovesh.  Just do this via the proof system (which also solves the "abstraction fail"
+// mentioned above).  See verify function here:
+//
+//   https://github.com/docknetwork/crypto-wasm-ts/blob/master/src/anonymous-credentials/blinded-credential-request.ts#L29
+//
+// and example workflow here:
+//
+//   https://github.com/docknetwork/crypto-wasm-ts/blob/master/src/anonymous-credentials/README.md#blinded-credentials
 
 /// Create a proof of knowledge of the blinder used to blind some messages.
 fn create_blind_info_correctness_proof(
