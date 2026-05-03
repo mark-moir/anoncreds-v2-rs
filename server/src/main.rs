@@ -5,16 +5,16 @@
 // ------------------------------------------------------------------------------
 use credx::vca::interfaces::types::*;
 // ------------------------------------------------------------------------------
-use rocket::{get,post};
 use rocket::data::{ByteUnit, Limits};
 use rocket::http::Status;
 use rocket::serde::json::Json;
+use rocket::{get, post};
 use rocket_okapi::okapi::schemars;
 use rocket_okapi::okapi::schemars::JsonSchema;
-use rocket_okapi::settings::UrlObject;
-use rocket_okapi::{openapi, openapi_get_routes};
 use rocket_okapi::rapidoc::*;
+use rocket_okapi::settings::UrlObject;
 use rocket_okapi::swagger_ui::*;
+use rocket_okapi::{openapi, openapi_get_routes};
 // ------------------------------------------------------------------------------
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -30,12 +30,11 @@ use query_param_guards::*;
 /// Supplies the schema and the (possibly empty) indices of attributes to be blinded.
 #[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
 struct CreateSignerDataRequest {
-
     /// The schema.
-    claimTypes              : Vec<ClaimType>,
+    claimTypes: Vec<ClaimType>,
 
     /// The attributes to be blinded.
-    blindedAttributeIndices : Vec<CredAttrIndex>,
+    blindedAttributeIndices: Vec<CredAttrIndex>,
 }
 
 /// # Create the secret and public data used to sign and verify credentials.
@@ -45,17 +44,22 @@ struct CreateSignerDataRequest {
 #[openapi()]
 #[post("/vca/createSignerData?<rng_and_zkp..>", data = "<dat>")]
 fn createSignerData(
-    rng_and_zkp : RngSeedAndZkpLibQueryParams,
-    dat         : crate::DataResult<'_, CreateSignerDataRequest>,
+    rng_and_zkp: RngSeedAndZkpLibQueryParams,
+    dat: crate::DataResult<'_, CreateSignerDataRequest>,
 ) -> Result<Json<SignerData>, (Status, Json<Error>)> {
     let (seed, api) = getSeedAndApi(rng_and_zkp, "createSignerData")?;
-    let dat         = dat.map_or_else(
+    let dat = dat.map_or_else(
         |e| err(format!("{:?}", e), "createSignerData"),
-        |v| Ok(v.into_inner()))?;
-    let op          = api.create_signer_data;
-    op(seed, &dat.claimTypes, &dat.blindedAttributeIndices, ProofMode::Strict).map_or_else(
-        |e| vcaErr(e, "createSignerData"),
-        |v| Ok(Json(v)))
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.create_signer_data;
+    op(
+        seed,
+        &dat.claimTypes,
+        &dat.blindedAttributeIndices,
+        ProofMode::Strict,
+    )
+    .map_or_else(|e| vcaErr(e, "createSignerData"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -64,12 +68,11 @@ fn createSignerData(
 /// The indices must match the indices given to createSignerData.
 #[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
 struct CreateBlindSigningInfoRequest {
-
     /// See SignerPublicData.
-    signerPublicData        : SignerPublicData,
+    signerPublicData: SignerPublicData,
 
     /// The values to be blind signed.
-    blindedIndicesAndValues : Vec<CredAttrIndexAndDataValue>,
+    blindedIndicesAndValues: Vec<CredAttrIndexAndDataValue>,
 }
 
 /// # Create BlindSigningInfo
@@ -79,17 +82,22 @@ struct CreateBlindSigningInfoRequest {
 #[openapi()]
 #[post("/vca/createBlindSigningInfo?<rng_and_zkp..>", data = "<dat>")]
 fn createBlindSigningInfo(
-    rng_and_zkp : RngSeedAndZkpLibQueryParams,
-    dat         : crate::DataResult<'_, CreateBlindSigningInfoRequest>,
+    rng_and_zkp: RngSeedAndZkpLibQueryParams,
+    dat: crate::DataResult<'_, CreateBlindSigningInfoRequest>,
 ) -> Result<Json<BlindSigningInfo>, (Status, Json<Error>)> {
     let (seed, api) = getSeedAndApi(rng_and_zkp, "createBlindSigningInfo")?;
-    let dat         = dat.map_or_else(
+    let dat = dat.map_or_else(
         |e| err(format!("{:?}", e), "createBlindSigningInfo"),
-        |v| Ok(v.into_inner()))?;
-    let op          = api.create_blind_signing_info;
-    op(seed, &dat.signerPublicData, &dat.blindedIndicesAndValues, ProofMode::Strict).map_or_else(
-        |e| vcaErr(e, "createBlindSigningInfo"),
-        |v| Ok(Json(v)))
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.create_blind_signing_info;
+    op(
+        seed,
+        &dat.signerPublicData,
+        &dat.blindedIndicesAndValues,
+        ProofMode::Strict,
+    )
+    .map_or_else(|e| vcaErr(e, "createBlindSigningInfo"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -97,12 +105,11 @@ fn createBlindSigningInfo(
 /// Sign the given values using the secret data, setup data and claim types (i.e., schema) in the given SignerData.
 #[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
 struct SignRequest {
-
     /// The values to be signed.
-    values     : Vec<DataValue>,
+    values: Vec<DataValue>,
 
     /// See SignerData.
-    signerData : SignerData,
+    signerData: SignerData,
 }
 
 /// # Create a signature from the given values and SignerData.
@@ -112,17 +119,14 @@ struct SignRequest {
 #[openapi()]
 #[post("/vca/sign?<rng_and_zkp..>", data = "<dat>")]
 fn sign(
-    rng_and_zkp : RngSeedAndZkpLibQueryParams,
-    dat         : crate::DataResult<'_, SignRequest>,
+    rng_and_zkp: RngSeedAndZkpLibQueryParams,
+    dat: crate::DataResult<'_, SignRequest>,
 ) -> Result<Json<Signature>, (Status, Json<misc::Error>)> {
     let (seed, api) = getSeedAndApi(rng_and_zkp, "sign")?;
-    let dat         = dat.map_or_else(
-        |e| err(format!("{:?}", e), "sign"),
-        |v| Ok(v.into_inner()))?;
+    let dat = dat.map_or_else(|e| err(format!("{:?}", e), "sign"), |v| Ok(v.into_inner()))?;
     let op = api.sign;
-    op(seed, &dat.values, &dat.signerData, ProofMode::Strict).map_or_else(
-        |e| vcaErr(e, "sign"),
-        |v| Ok(Json(v)))
+    op(seed, &dat.values, &dat.signerData, ProofMode::Strict)
+        .map_or_else(|e| vcaErr(e, "sign"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -130,14 +134,13 @@ fn sign(
 /// Supplies non-blinded attributes and a commitment (BlindInfoForSigner) to the blinded attributes.
 #[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
 struct SignWithBlindedAttributesRequest {
-
     /// The values to be signed.
-    nonBlindedAttributes : Vec<CredAttrIndexAndDataValue>,
+    nonBlindedAttributes: Vec<CredAttrIndexAndDataValue>,
 
-    blindInfoForSigner   : BlindInfoForSigner,
+    blindInfoForSigner: BlindInfoForSigner,
 
     /// See SignerData.
-    signerData : SignerData,
+    signerData: SignerData,
 }
 
 /// # Create a BlindSignature from the given non-blinded values, blinding info and SignerData.
@@ -147,17 +150,23 @@ struct SignWithBlindedAttributesRequest {
 #[openapi()]
 #[post("/vca/signWithBlindedAttributes?<rng_and_zkp..>", data = "<dat>")]
 fn signWithBlindedAttributes(
-    rng_and_zkp : RngSeedAndZkpLibQueryParams,
-    dat         : crate::DataResult<'_, SignWithBlindedAttributesRequest>,
+    rng_and_zkp: RngSeedAndZkpLibQueryParams,
+    dat: crate::DataResult<'_, SignWithBlindedAttributesRequest>,
 ) -> Result<Json<BlindSignature>, (Status, Json<misc::Error>)> {
     let (seed, api) = getSeedAndApi(rng_and_zkp, "signWithBlindedAttributes")?;
-    let dat         = dat.map_or_else(
+    let dat = dat.map_or_else(
         |e| err(format!("{:?}", e), "signWithBlindedAttributes"),
-        |v| Ok(v.into_inner()))?;
+        |v| Ok(v.into_inner()),
+    )?;
     let op = api.sign_with_blinded_attributes;
-    op(seed, &dat.nonBlindedAttributes, &dat.blindInfoForSigner, &dat.signerData, ProofMode::Strict).map_or_else(
-        |e| vcaErr(e, "signWithBlindedAttributes"),
-        |v| Ok(Json(v)))
+    op(
+        seed,
+        &dat.nonBlindedAttributes,
+        &dat.blindInfoForSigner,
+        &dat.signerData,
+        ProofMode::Strict,
+    )
+    .map_or_else(|e| vcaErr(e, "signWithBlindedAttributes"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -165,18 +174,17 @@ fn signWithBlindedAttributes(
 /// Supplies blinded attributes, InfoForUnblinding and the BlindSignature to be unblinded.
 #[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
 struct UnblindBlindedSignatureRequest {
-
     /// The schema.
-    claimTypes : Vec<ClaimType>,
+    claimTypes: Vec<ClaimType>,
 
     /// Blinded attributes. Same as used for CreateBlindSigningInfoRequest.
-    blindedIndicesAndValues : Vec<CredAttrIndexAndDataValue>,
+    blindedIndicesAndValues: Vec<CredAttrIndexAndDataValue>,
 
     /// The signature to be unblinded.
-    blindSignature : BlindSignature,
+    blindSignature: BlindSignature,
 
     /// See InfoForUnblinding.
-    infoForUnblinding : InfoForUnblinding
+    infoForUnblinding: InfoForUnblinding,
 }
 
 /// # Unblinded a blinded signature.
@@ -186,17 +194,23 @@ struct UnblindBlindedSignatureRequest {
 #[openapi()]
 #[post("/vca/unblindBlindedSignature?<rng_and_zkp..>", data = "<dat>")]
 fn unblindBlindedSignature(
-    rng_and_zkp : RngSeedAndZkpLibQueryParams,
-    dat         : crate::DataResult<'_, UnblindBlindedSignatureRequest>,
+    rng_and_zkp: RngSeedAndZkpLibQueryParams,
+    dat: crate::DataResult<'_, UnblindBlindedSignatureRequest>,
 ) -> Result<Json<Signature>, (Status, Json<misc::Error>)> {
-    let (_seed,api) = getSeedAndApi(rng_and_zkp, "unblindBlindedSignature")?;
-    let dat         = dat.map_or_else(
+    let (_seed, api) = getSeedAndApi(rng_and_zkp, "unblindBlindedSignature")?;
+    let dat = dat.map_or_else(
         |e| err(format!("{:?}", e), "unblindBlindedSignature"),
-        |v| Ok(v.into_inner()))?;
+        |v| Ok(v.into_inner()),
+    )?;
     let op = api.unblind_blinded_signature;
-    op(&dat.claimTypes, &dat.blindedIndicesAndValues, &dat.blindSignature, &dat.infoForUnblinding,  ProofMode::Strict).map_or_else(
-        |e| vcaErr(e, "unblindBlindedSignature"),
-        |v| Ok(Json(v)))
+    op(
+        &dat.claimTypes,
+        &dat.blindedIndicesAndValues,
+        &dat.blindSignature,
+        &dat.infoForUnblinding,
+        ProofMode::Strict,
+    )
+    .map_or_else(|e| vcaErr(e, "unblindBlindedSignature"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -208,13 +222,11 @@ fn unblindBlindedSignature(
 #[openapi()]
 #[post("/vca/createAccumulatorData?<rng_and_zkp..>")]
 fn createAccumulatorData(
-    rng_and_zkp : RngSeedAndZkpLibQueryParams,
+    rng_and_zkp: RngSeedAndZkpLibQueryParams,
 ) -> Result<Json<CreateAccumulatorResponse>, (Status, Json<Error>)> {
     let (seed, api) = getSeedAndApi(rng_and_zkp, "createAccumulatorData")?;
-    let op          = api.create_accumulator_data;
-    op(seed).map_or_else(
-        |e| vcaErr(e, "createAccumulatorData"),
-        |v| Ok(Json(v)))
+    let op = api.create_accumulator_data;
+    op(seed).map_or_else(|e| vcaErr(e, "createAccumulatorData"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -226,17 +238,16 @@ fn createAccumulatorData(
 #[openapi()]
 #[post("/vca/createAccumulatorElement?<zkp..>", data = "<text>")]
 fn createAccumulatorElement(
-    zkp  : ZkpLibQueryParam,
-    text : crate::DataResult<'_, String>,
+    zkp: ZkpLibQueryParam,
+    text: crate::DataResult<'_, String>,
 ) -> Result<Json<AccumulatorElement>, (Status, Json<misc::Error>)> {
     let api = getApiFromQP(zkp, "createAccumulatorElement")?;
     let dat = text.map_or_else(
         |e| err(format!("{:?}", e), "createAccumulatorElement"),
-        |v| Ok(v.into_inner()))?;
-    let op  = api.create_accumulator_element;
-    op(dat).map_or_else(
-        |e| vcaErr(e, "createAccumulatorElement"),
-        |v| Ok(Json(v)))
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.create_accumulator_element;
+    op(dat).map_or_else(|e| vcaErr(e, "createAccumulatorElement"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -244,18 +255,17 @@ fn createAccumulatorElement(
 /// Elements (if any) to be added to, and elements (if any) to be removed from an accumulator.
 #[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
 struct AccumulatorAddRemoveRequest {
-
     /// See Accumulator Data.
-    accumulatorData : AccumulatorData,
+    accumulatorData: AccumulatorData,
 
     /// See Accumulator.
-    accumulator     : Accumulator,
+    accumulator: Accumulator,
 
     /// Elements to be added. This is a map associating each element to be added with an (ephemeral) ID that can be used by the requester (e.g., Signer/Issuer) to determine who should receive the returned witness.
-    additions       : HashMap<HolderID, AccumulatorElement>,
+    additions: HashMap<HolderID, AccumulatorElement>,
 
     /// Elements to be removed.
-    removals        : Vec<AccumulatorElement>
+    removals: Vec<AccumulatorElement>,
 }
 
 /// # Add and/or remove elements from an accumulator.
@@ -265,17 +275,22 @@ struct AccumulatorAddRemoveRequest {
 #[openapi()]
 #[post("/vca/accumulatorAddRemove?<zkp..>", data = "<dat>")]
 fn accumulatorAddRemove(
-    zkp : ZkpLibQueryParam,
-    dat : crate::DataResult<'_, AccumulatorAddRemoveRequest>,
+    zkp: ZkpLibQueryParam,
+    dat: crate::DataResult<'_, AccumulatorAddRemoveRequest>,
 ) -> Result<Json<AccumulatorAddRemoveResponse>, (Status, Json<misc::Error>)> {
     let api = getApiFromQP(zkp, "accumulatorAddRemove")?;
     let dat = dat.map_or_else(
         |e| err(format!("{:?}", e), "accumulatorAddRemove"),
-        |v| Ok(v.into_inner()))?;
-    let op  = api.accumulator_add_remove;
-    op(&dat.accumulatorData, &dat.accumulator, &dat.additions, &dat.removals).map_or_else(
-        |e| vcaErr(e, "accumulatorAddRemove"),
-        |v| Ok(Json(v)))
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.accumulator_add_remove;
+    op(
+        &dat.accumulatorData,
+        &dat.accumulator,
+        &dat.additions,
+        &dat.removals,
+    )
+    .map_or_else(|e| vcaErr(e, "accumulatorAddRemove"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -283,15 +298,14 @@ fn accumulatorAddRemove(
 /// Used to update an existing witness after additions and/or removals from an accumulator.
 #[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
 struct UpdateAccumulatorWitnessRequest {
-
     /// The existing witness before the update.
-    witness           : AccumulatorMembershipWitness,
+    witness: AccumulatorMembershipWitness,
 
     /// The element used to create the existing witness.
-    element           : AccumulatorElement,
+    element: AccumulatorElement,
 
     /// Data returned from accumulatorAddRemove.
-    witnessUpdateInfo : AccumulatorWitnessUpdateInfo
+    witnessUpdateInfo: AccumulatorWitnessUpdateInfo,
 }
 
 /// # Update an accumulator witness.
@@ -301,17 +315,17 @@ struct UpdateAccumulatorWitnessRequest {
 #[openapi()]
 #[post("/vca/updateAccumulatorWitness?<zkp..>", data = "<dat>")]
 fn updateAccumulatorWitness(
-    zkp : ZkpLibQueryParam,
-    dat : crate::DataResult<'_, UpdateAccumulatorWitnessRequest>,
+    zkp: ZkpLibQueryParam,
+    dat: crate::DataResult<'_, UpdateAccumulatorWitnessRequest>,
 ) -> Result<Json<AccumulatorMembershipWitness>, (Status, Json<misc::Error>)> {
     let api = getApiFromQP(zkp, "updateAccumulatorWitness")?;
     let dat = dat.map_or_else(
         |e| err(format!("{:?}", e), "updateAccumulatorWitness"),
-        |v| Ok(v.into_inner()))?;
-    let op  = api.update_accumulator_witness;
-    op(&dat.witness, &dat.element, &dat.witnessUpdateInfo).map_or_else(
-        |e| vcaErr(e, "updateAccumulatorWitness"),
-        |v| Ok(Json(v)))
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.update_accumulator_witness;
+    op(&dat.witness, &dat.element, &dat.witnessUpdateInfo)
+        .map_or_else(|e| vcaErr(e, "updateAccumulatorWitness"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -321,15 +335,14 @@ fn updateAccumulatorWitness(
 /// It does NOT check.
 #[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
 struct GetAccumulatorWitnessRequest {
-
     /// Public/secret info.
-    accumulatorData    : AccumulatorData,
+    accumulatorData: AccumulatorData,
 
     /// The accumulator.
-    accumulator        : Accumulator,
+    accumulator: Accumulator,
 
     /// The element.
-    accumulatorElement : AccumulatorElement,
+    accumulatorElement: AccumulatorElement,
 }
 
 /// # Get an accumulator witness for an element that already exists in the accumulator.
@@ -339,17 +352,21 @@ struct GetAccumulatorWitnessRequest {
 #[openapi()]
 #[post("/vca/getAccumulatorWitness?<zkp..>", data = "<dat>")]
 fn getAccumulatorWitness(
-    zkp : ZkpLibQueryParam,
-    dat : crate::DataResult<'_, GetAccumulatorWitnessRequest>,
+    zkp: ZkpLibQueryParam,
+    dat: crate::DataResult<'_, GetAccumulatorWitnessRequest>,
 ) -> Result<Json<AccumulatorMembershipWitness>, (Status, Json<Error>)> {
     let api = getApiFromQP(zkp, "getAccumlatorWitness")?;
     let dat = dat.map_or_else(
         |e| err(format!("{:?}", e), "getAccumulatorWitness"),
-        |v| Ok(v.into_inner()))?;
-    let op  = api.get_accumulator_witness;
-    op(&dat.accumulatorData, &dat.accumulator, &dat.accumulatorElement).map_or_else(
-        |e| vcaErr(e, "createMembershipProvingKey"),
-        |v| Ok(Json(v)))
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.get_accumulator_witness;
+    op(
+        &dat.accumulatorData,
+        &dat.accumulator,
+        &dat.accumulatorElement,
+    )
+    .map_or_else(|e| vcaErr(e, "createMembershipProvingKey"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -361,13 +378,11 @@ fn getAccumulatorWitness(
 #[openapi()]
 #[post("/vca/createMembershipProvingKey?<rng_and_zkp..>")]
 fn createMembershipProvingKey(
-    rng_and_zkp : RngSeedAndZkpLibQueryParams,
+    rng_and_zkp: RngSeedAndZkpLibQueryParams,
 ) -> Result<Json<MembershipProvingKey>, (Status, Json<Error>)> {
     let (seed, api) = getSeedAndApi(rng_and_zkp, "createMembershipProvingKey")?;
-    let op          = api.create_membership_proving_key;
-    op(seed).map_or_else(
-        |e| vcaErr(e, "createMembershipProvingKey"),
-        |v| Ok(Json(v)))
+    let op = api.create_membership_proving_key;
+    op(seed).map_or_else(|e| vcaErr(e, "createMembershipProvingKey"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -379,13 +394,11 @@ fn createMembershipProvingKey(
 #[openapi()]
 #[post("/vca/createRangeProofProvingKey?<rng_and_zkp..>")]
 fn createRangeProofProvingKey(
-    rng_and_zkp : RngSeedAndZkpLibQueryParams,
+    rng_and_zkp: RngSeedAndZkpLibQueryParams,
 ) -> Result<Json<RangeProofProvingKey>, (Status, Json<Error>)> {
     let (seed, api) = getSeedAndApi(rng_and_zkp, "createRangeProofProvingKey")?;
-    let op          = api.create_range_proof_proving_key;
-    op(seed).map_or_else(
-        |e| vcaErr(e, "createRangeProofProvingKey"),
-        |v| Ok(Json(v)))
+    let op = api.create_range_proof_proving_key;
+    op(seed).map_or_else(|e| vcaErr(e, "createRangeProofProvingKey"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -396,11 +409,9 @@ fn createRangeProofProvingKey(
 // #[openapi(tag = "Verifier")]
 #[openapi()]
 #[get("/vca/getRangeProofMaxValue?<zkp..>")]
-fn getRangeProofMaxValue(
-    zkp : ZkpLibQueryParam,
-) -> Result<Json<u64>, (Status, Json<Error>)> {
+fn getRangeProofMaxValue(zkp: ZkpLibQueryParam) -> Result<Json<u64>, (Status, Json<Error>)> {
     let api = getApiFromQP(zkp, "getRangeProofMaxValue")?;
-    let op  = api.get_range_proof_max_value;
+    let op = api.get_range_proof_max_value;
     Ok(Json(op()))
 }
 
@@ -413,13 +424,11 @@ fn getRangeProofMaxValue(
 #[openapi()]
 #[post("/vca/createAuthorityData?<rng_and_zkp..>")]
 fn createAuthorityData(
-    rng_and_zkp : RngSeedAndZkpLibQueryParams,
+    rng_and_zkp: RngSeedAndZkpLibQueryParams,
 ) -> Result<Json<AuthorityData>, (Status, Json<Error>)> {
     let (seed, api) = getSeedAndApi(rng_and_zkp, "createAuthorityData")?;
-    let op          = api.create_authority_data;
-    op(seed).map_or_else(
-        |e| vcaErr(e, "createAuthorityData"),
-        |v| Ok(Json(v)))
+    let op = api.create_authority_data;
+    op(seed).map_or_else(|e| vcaErr(e, "createAuthorityData"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -427,20 +436,18 @@ fn createAuthorityData(
 /// Information used for creating a proof.
 #[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
 struct CreateProofRequest {
-
     /// Proof requirements as specified by the Verifier.
-    proofReqs          : HashMap<CredentialLabel, CredentialReqs>,
+    proofReqs: HashMap<CredentialLabel, CredentialReqs>,
 
     /// A map of parameter names to values (e.g., public keys).
-    sharedParams       : HashMap<SharedParamKey, SharedParamValue>,
+    sharedParams: HashMap<SharedParamKey, SharedParamValue>,
 
     /// A map of credential labels to SignatureAndRelatedData.
-    sigsAndRelatedData : HashMap<CredentialLabel, SignatureAndRelatedData>,
+    sigsAndRelatedData: HashMap<CredentialLabel, SignatureAndRelatedData>,
 
     //looseOrStrict      : Option<ProofMode>,
-
     /// Arbitrary text.
-    nonce              : String, // API.Nonce
+    nonce: String, // API.Nonce
 }
 
 /// # Create a proof with respect to proof requirements from a Verifier.
@@ -450,18 +457,23 @@ struct CreateProofRequest {
 #[openapi()]
 #[post("/vca/createProof?<zkp..>", data = "<dat>")]
 fn createProof(
-    zkp : ZkpLibQueryParam,
-    dat : crate::DataResult<'_, CreateProofRequest>,
+    zkp: ZkpLibQueryParam,
+    dat: crate::DataResult<'_, CreateProofRequest>,
 ) -> Result<Json<WarningsAndDataForVerifier>, (Status, Json<misc::Error>)> {
     let api = getApiFromQP(zkp, "createProof")?;
     let dat = dat.map_or_else(
         |e| err(format!("{:?}", e), "createProof"),
-        |v| Ok(v.into_inner()))?;
-    let op  = api.create_proof;
-    op(&dat.proofReqs, &dat.sharedParams, &dat.sigsAndRelatedData,
-       ProofMode::Strict, Some(dat.nonce)).map_or_else(
-        |e| vcaErr(e, "createProof"),
-        |v| Ok(Json(v)))
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.create_proof;
+    op(
+        &dat.proofReqs,
+        &dat.sharedParams,
+        &dat.sigsAndRelatedData,
+        ProofMode::Strict,
+        Some(dat.nonce),
+    )
+    .map_or_else(|e| vcaErr(e, "createProof"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -469,24 +481,21 @@ fn createProof(
 /// Information (including the proof) to verify a proof.
 #[derive(Serialize, Eq, PartialEq, Deserialize, Clone, Debug, JsonSchema)]
 struct VerifyProofRequest {
-
     /// Agreed proof requirements.
-    proofReqs       : HashMap<CredentialLabel, CredentialReqs>,
+    proofReqs: HashMap<CredentialLabel, CredentialReqs>,
 
     /// A map from parameter labels to associated parameter values.
-    sharedParams    : HashMap<SharedParamKey, SharedParamValue>,
+    sharedParams: HashMap<SharedParamKey, SharedParamValue>,
 
     /// See DataForVerifier.
-    dataForVerifier : DataForVerifier,
+    dataForVerifier: DataForVerifier,
 
     /// A map from credential label to a map of credential attributed index to DecryptRequest.
-    decryptRequests : HashMap<CredentialLabel,
-                              HashMap<CredAttrIndex,
-                                      HashMap<SharedParamKey, DecryptRequest>>>,
+    decryptRequests:
+        HashMap<CredentialLabel, HashMap<CredAttrIndex, HashMap<SharedParamKey, DecryptRequest>>>,
     //looseOrStrict      : Option<ProofMode>,
-
     /// Arbitrary text.
-    nonce           : String, // API.Nonce
+    nonce: String, // API.Nonce
 }
 
 /// # Verify a proof with respect to proof requirments.
@@ -496,18 +505,24 @@ struct VerifyProofRequest {
 #[openapi()]
 #[post("/vca/verifyProof?<zkp..>", data = "<dat>")]
 fn verifyProof(
-    zkp : ZkpLibQueryParam,
-    dat : crate::DataResult<'_, VerifyProofRequest>,
+    zkp: ZkpLibQueryParam,
+    dat: crate::DataResult<'_, VerifyProofRequest>,
 ) -> Result<Json<WarningsAndDecryptResponses>, (Status, Json<misc::Error>)> {
     let api = getApiFromQP(zkp, "verifyProof")?;
     let dat = dat.map_or_else(
         |e| err(format!("{:?}", e), "verifyProof"),
-        |v| Ok(v.into_inner()))?;
-    let op  = api.verify_proof;
-    op(&dat.proofReqs, &dat.sharedParams, &dat.dataForVerifier, &dat.decryptRequests,
-       ProofMode::Strict, Some(dat.nonce)).map_or_else(
-        |e| vcaErr(e, "verifyProof"),
-        |v| Ok(Json(v)))
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.verify_proof;
+    op(
+        &dat.proofReqs,
+        &dat.sharedParams,
+        &dat.dataForVerifier,
+        &dat.decryptRequests,
+        ProofMode::Strict,
+        Some(dat.nonce),
+    )
+    .map_or_else(|e| vcaErr(e, "verifyProof"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
@@ -515,27 +530,24 @@ fn verifyProof(
 /// Verify that each decrypted value is correct.
 #[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
 struct VerifyDecryptionRequest {
-
     /// Agreed proof requirements.
-    proofReqs        : HashMap<CredentialLabel, CredentialReqs>,
+    proofReqs: HashMap<CredentialLabel, CredentialReqs>,
 
     /// A map from parameter labels to associated parameter values.
-    sharedParams     : HashMap<SharedParamKey, SharedParamValue>,
+    sharedParams: HashMap<SharedParamKey, SharedParamValue>,
 
     /// See DataForVerifier.
-    dataForVerifier  : DataForVerifier,
+    dataForVerifier: DataForVerifier,
 
     /// Map from Authority label to decryption key.
-    decryptionKeys   : HashMap<SharedParamKey, AuthorityDecryptionKey>,
+    decryptionKeys: HashMap<SharedParamKey, AuthorityDecryptionKey>,
 
     /// Map from credential label to credential attribute index to DecryptResponse.
-    decryptResponses : HashMap<CredentialLabel,
-                               HashMap<CredAttrIndex,
-                                       HashMap<SharedParamKey, DecryptResponse>>>,
+    decryptResponses:
+        HashMap<CredentialLabel, HashMap<CredAttrIndex, HashMap<SharedParamKey, DecryptResponse>>>,
     //looseOrStrict      : Option<ProofMode>,
-
     /// Arbitrary text.
-    nonce            : String, // API.Nonce
+    nonce: String, // API.Nonce
 }
 
 /// # Verify a decryption.
@@ -545,33 +557,42 @@ struct VerifyDecryptionRequest {
 #[openapi()]
 #[post("/vca/verifyDecryption?<zkp..>", data = "<dat>")]
 fn verifyDecryption(
-    zkp : ZkpLibQueryParam,
-    dat : crate::DataResult<'_, VerifyDecryptionRequest>,
+    zkp: ZkpLibQueryParam,
+    dat: crate::DataResult<'_, VerifyDecryptionRequest>,
 ) -> Result<Json<Vec<Warning>>, (Status, Json<misc::Error>)> {
     let api = getApiFromQP(zkp, "verifyDecryption")?;
     let dat = dat.map_or_else(
         |e| err(format!("{:?}", e), "verifyDecryption"),
-        |v| Ok(v.into_inner()))?;
-    let op  = api.verify_decryption;
-    op(&dat.proofReqs, &dat.sharedParams, &dat.dataForVerifier, &dat.decryptionKeys, &dat.decryptResponses,
-       ProofMode::Strict, Some(dat.nonce)).map_or_else(
-        |e| vcaErr(e, "verifyDecryption"),
-        |v| Ok(Json(v)))
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.verify_decryption;
+    op(
+        &dat.proofReqs,
+        &dat.sharedParams,
+        &dat.dataForVerifier,
+        &dat.decryptionKeys,
+        &dat.decryptResponses,
+        ProofMode::Strict,
+        Some(dat.nonce),
+    )
+    .map_or_else(|e| vcaErr(e, "verifyDecryption"), |v| Ok(Json(v)))
 }
 
 // ------------------------------------------------------------------------------
 
-const PORT               : usize = 8080;
-const OPENAPI_JSON_ROUTE : &str  = "../openapi.json";
+const PORT: usize = 8080;
+const OPENAPI_JSON_ROUTE: &str = "../openapi.json";
 
 #[rocket::main]
 async fn main() {
     let one_gib: ByteUnit = "1GiB".parse().unwrap();
-    let launch_result     = rocket::build()
-        .configure(rocket::Config::figment()
-                   .merge(("address", "0.0.0.0"))
-                   .merge(("port"   , PORT))
-                   .merge(("limits" , Limits::new().limit("json", one_gib))))
+    let launch_result = rocket::build()
+        .configure(
+            rocket::Config::figment()
+                .merge(("address", "0.0.0.0"))
+                .merge(("port", PORT))
+                .merge(("limits", Limits::new().limit("json", one_gib))),
+        )
         .mount(
             "/",
             openapi_get_routes![
@@ -619,7 +640,7 @@ async fn main() {
         .launch()
         .await;
     match launch_result {
-        Ok(_)    => println!("VCA server shut down gracefully."),
+        Ok(_) => println!("VCA server shut down gracefully."),
         Err(err) => println!("VCA server had an error: {}", err),
     };
 }

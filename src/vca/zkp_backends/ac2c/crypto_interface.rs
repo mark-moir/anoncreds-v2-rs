@@ -1,14 +1,14 @@
 // ------------------------------------------------------------------------------
-use crate::vca::VCAResult;
 use crate::vca::interfaces::crypto_interface::*;
 use crate::vca::zkp_backends::ac2c::accumulators::*;
 use crate::vca::zkp_backends::ac2c::authority::*;
 use crate::vca::zkp_backends::ac2c::proof::*;
 use crate::vca::zkp_backends::ac2c::range_proof::*;
 use crate::vca::zkp_backends::ac2c::signer::*;
+use crate::vca::VCAResult;
 // ------------------------------------------------------------------------------
-use crate::knox::ps::PsScheme;
 use crate::knox::bbs::BbsScheme;
+use crate::knox::ps::PsScheme;
 use crate::knox::short_group_sig_core::short_group_traits::ShortGroupSignatureScheme;
 // ------------------------------------------------------------------------------
 use lazy_static::lazy_static;
@@ -44,4 +44,3 @@ macro_rules! define_crypto_interface_with {
 
 define_crypto_interface_with!(PS, PsScheme);
 define_crypto_interface_with!(BBS, BbsScheme);
-

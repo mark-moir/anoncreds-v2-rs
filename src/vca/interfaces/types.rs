@@ -15,12 +15,12 @@ macro_rules! impl_Debug_for_OpaqueMaterial_wrapper {
         impl std::fmt::Debug for $ty {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 const PREVIEW_LEN: usize = 32;
-                let preview: String = self
-                    .0
-                    .chars()
-                    .take(PREVIEW_LEN)
-                    .collect();
-                let suffix = if self.0.chars().count() > PREVIEW_LEN { "…" } else { "" };
+                let preview: String = self.0.chars().take(PREVIEW_LEN).collect();
+                let suffix = if self.0.chars().count() > PREVIEW_LEN {
+                    "…"
+                } else {
+                    ""
+                };
 
                 f.debug_tuple(stringify!($ty))
                     .field(&format!("{preview}{suffix}"))
@@ -36,7 +36,6 @@ macro_rules! impl_Debug_for_OpaqueMaterial_wrapper {
 /// Contains a Signer's secret and public data.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct SignerData {
-
     #[serde(rename = "signerPublicData")]
     pub signer_public_data: Box<SignerPublicData>,
 
@@ -45,16 +44,22 @@ pub struct SignerData {
 }
 
 impl SignerData {
-    pub fn new(signer_public_data: SignerPublicData,
-               signer_secret_data: SignerSecretData) -> SignerData {
-        SignerData { signer_public_data: Box::new(signer_public_data), signer_secret_data }
+    pub fn new(
+        signer_public_data: SignerPublicData,
+        signer_secret_data: SignerSecretData,
+    ) -> SignerData {
+        SignerData {
+            signer_public_data: Box::new(signer_public_data),
+            signer_secret_data,
+        }
     }
 }
 
 /// A Signer's public keys and setup data.
-#[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema)]
+#[derive(
+    Clone, Debug, Eq, PartialEq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema,
+)]
 pub struct SignerPublicData {
-
     #[serde(rename = "signerPublicSetupData")]
     pub signer_public_setup_data: SignerPublicSetupData,
 
@@ -66,10 +71,16 @@ pub struct SignerPublicData {
 }
 
 impl SignerPublicData {
-    pub fn new(signer_public_setup_data: SignerPublicSetupData,
-               signer_public_schema: Vec<ClaimType>,
-               signer_blinded_attr_idxs: Vec<CredAttrIndex>) -> SignerPublicData {
-        SignerPublicData { signer_public_schema, signer_public_setup_data, signer_blinded_attr_idxs}
+    pub fn new(
+        signer_public_setup_data: SignerPublicSetupData,
+        signer_public_schema: Vec<ClaimType>,
+        signer_blinded_attr_idxs: Vec<CredAttrIndex>,
+    ) -> SignerPublicData {
+        SignerPublicData {
+            signer_public_schema,
+            signer_public_setup_data,
+            signer_blinded_attr_idxs,
+        }
     }
 }
 
@@ -87,7 +98,9 @@ impl_Debug_for_OpaqueMaterial_wrapper! { SignerSecretData }
 // values to sign and how to encode them
 
 /// How values are handled (e.g., accumulator member, encryptable text, text, int).
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize, JsonSchema)]
+#[derive(
+    Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize, JsonSchema,
+)]
 pub enum ClaimType {
     #[serde(rename = "CTText")]
     CTText,
@@ -96,16 +109,16 @@ pub enum ClaimType {
     #[serde(rename = "CTInt")]
     CTInt,
     #[serde(rename = "CTAccumulatorMember")]
-    CTAccumulatorMember
+    CTAccumulatorMember,
 }
 
 impl fmt::Display for ClaimType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            ClaimType::CTText              => write!(f, "CTText"),
-            ClaimType::CTEncryptableText   => write!(f, "CTEncryptableText"),
-            ClaimType::CTInt               => write!(f, "CTInt"),
-            ClaimType::CTAccumulatorMember => write!(f, "CTAccumulatorMember")
+            ClaimType::CTText => write!(f, "CTText"),
+            ClaimType::CTEncryptableText => write!(f, "CTEncryptableText"),
+            ClaimType::CTInt => write!(f, "CTInt"),
+            ClaimType::CTAccumulatorMember => write!(f, "CTAccumulatorMember"),
         }
     }
 }
@@ -117,7 +130,9 @@ impl Default for ClaimType {
 }
 
 /// An int or text value.
-#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize, JsonSchema)]
+#[derive(
+    Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize, JsonSchema,
+)]
 #[serde(content = "contents", tag = "tag")]
 pub enum DataValue {
     DVInt(u64),
@@ -173,7 +188,6 @@ pub struct BlindSigningInfo {
 /// Proof requirements for a specific credential.
 #[derive(Clone, Eq, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct CredentialReqs {
-
     /// A key into SharedParams to obtain the Signer's public data.
     #[serde(rename = "signerLabel")]
     pub signer_label: SharedParamKey,
@@ -204,10 +218,24 @@ pub struct CredentialReqs {
 }
 
 impl CredentialReqs {
-    pub fn new(signer_label: SharedParamKey,  disclosed: Disclosed, in_accum: InAccum,
-               not_in_accum: NotInAccum, in_range: InRange,
-               encrypted_for: EncryptedFor, equal_to: EqualTo,) -> CredentialReqs {
-        CredentialReqs {signer_label, disclosed, in_accum, not_in_accum, in_range, encrypted_for, equal_to }
+    pub fn new(
+        signer_label: SharedParamKey,
+        disclosed: Disclosed,
+        in_accum: InAccum,
+        not_in_accum: NotInAccum,
+        in_range: InRange,
+        encrypted_for: EncryptedFor,
+        equal_to: EqualTo,
+    ) -> CredentialReqs {
+        CredentialReqs {
+            signer_label,
+            disclosed,
+            in_accum,
+            not_in_accum,
+            in_range,
+            encrypted_for,
+            equal_to,
+        }
     }
 }
 
@@ -239,7 +267,6 @@ pub struct EqualTo(pub Vec<EqInfo>);
 /// An index-label pair.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct IndexAndLabel {
-
     /// An index specifying an attribute.
     #[serde(rename = "index")]
     pub index: RawIndex,
@@ -258,7 +285,6 @@ impl IndexAndLabel {
 /// Information specifying equalities between values in different credentials.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct EqInfo {
-
     /// The index of the attribute in this credential that must be proved equal to another attribute (usually in another credential).
     #[serde(rename = "fromIndex")]
     pub from_index: RawIndex,
@@ -273,15 +299,18 @@ pub struct EqInfo {
 }
 
 impl EqInfo {
-    pub fn new(from_index: RawIndex, to_label: CredentialLabel, to_index: RawIndex, ) -> EqInfo {
-        EqInfo { from_index, to_label, to_index }
+    pub fn new(from_index: RawIndex, to_label: CredentialLabel, to_index: RawIndex) -> EqInfo {
+        EqInfo {
+            from_index,
+            to_label,
+            to_index,
+        }
     }
 }
 
 /// Information for range proof requirements.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct InRangeInfo {
-
     /// Specifies the index of the attribute to be proved to be within a specified range.
     #[serde(rename = "index")]
     pub index: RawIndex,
@@ -300,16 +329,24 @@ pub struct InRangeInfo {
 }
 
 impl InRangeInfo {
-    pub fn new(index: RawIndex, min_label: SharedParamKey,
-               max_label: SharedParamKey, range_proving_key_label: SharedParamKey) -> InRangeInfo {
-        InRangeInfo { index, max_label, min_label, range_proving_key_label }
+    pub fn new(
+        index: RawIndex,
+        min_label: SharedParamKey,
+        max_label: SharedParamKey,
+        range_proving_key_label: SharedParamKey,
+    ) -> InRangeInfo {
+        InRangeInfo {
+            index,
+            max_label,
+            min_label,
+            range_proving_key_label,
+        }
     }
 }
 
 /// Used to prove accumulator membership.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct InAccumInfo {
-
     /// Indicates which attribute is to be proved present in an accumulator.
     #[serde(rename = "index")]
     pub index: RawIndex,
@@ -332,10 +369,20 @@ pub struct InAccumInfo {
 }
 
 impl InAccumInfo {
-    pub fn new(index: RawIndex, accumulator_public_data_label: SharedParamKey,
-               membership_proving_key_label: SharedParamKey, accumulator_label: SharedParamKey,
-               accumulator_seq_num_label: SharedParamKey) -> InAccumInfo {
-        InAccumInfo { index, accumulator_public_data_label, membership_proving_key_label, accumulator_label, accumulator_seq_num_label }
+    pub fn new(
+        index: RawIndex,
+        accumulator_public_data_label: SharedParamKey,
+        membership_proving_key_label: SharedParamKey,
+        accumulator_label: SharedParamKey,
+        accumulator_seq_num_label: SharedParamKey,
+    ) -> InAccumInfo {
+        InAccumInfo {
+            index,
+            accumulator_public_data_label,
+            membership_proving_key_label,
+            accumulator_label,
+            accumulator_seq_num_label,
+        }
     }
 }
 
@@ -355,7 +402,6 @@ impl_Debug_for_OpaqueMaterial_wrapper! { MembershipProvingKey }
 /// Contains an accumulator's secret and public data.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct AccumulatorData {
-
     #[serde(rename = "accumulatorPublicData")]
     pub accumulator_public_data: AccumulatorPublicData,
 
@@ -392,22 +438,23 @@ pub struct AccumulatorWitnessUpdateInfo(pub OpaqueMaterial);
 impl_Debug_for_OpaqueMaterial_wrapper! { AccumulatorWitnessUpdateInfo }
 
 /// Used to identify the Holder associated with a value added to an accumulator, to enable sending its new witness.  Note: can be ephemeral: used only to enable Revocation Manager to add an element and provide Issuer with means to associate new witness with intended Holder.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema)]
+#[derive(
+    Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema,
+)]
 pub struct HolderID(pub String);
 
 /// Contains the AccumulatorData and the Accumulator.
 #[derive(Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
-pub struct CreateAccumulatorResponse  {
+pub struct CreateAccumulatorResponse {
     #[serde(rename = "accumulatorData")]
-    pub accumulator_data  : AccumulatorData,
+    pub accumulator_data: AccumulatorData,
     #[serde(rename = "accumulator")]
-    pub accumulator       : Accumulator,
+    pub accumulator: Accumulator,
 }
 
 /// Response from call to AccumulatorAddRemove, including data to update witnesses, witnesses for added elements, and updated accumlator data and value.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct AccumulatorAddRemoveResponse {
-
     /// Data to use to update existing witnesses.
     #[serde(rename = "witnessUpdateInfo")]
     pub witness_update_info: AccumulatorWitnessUpdateInfo,
@@ -450,7 +497,6 @@ impl_Debug_for_OpaqueMaterial_wrapper! { AuthorityDecryptionKey }
 /// Contains an Authority's secret, public, and decryption keys.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct AuthorityData {
-
     /// An Authority's public key.
     #[serde(rename = "authorityPublicData")]
     pub authority_public_data: AuthorityPublicData,
@@ -465,10 +511,16 @@ pub struct AuthorityData {
 }
 
 impl AuthorityData {
-    pub fn new(authority_public_data: AuthorityPublicData,
-               authority_secret_data: AuthoritySecretData,
-               authority_decryption_key: AuthorityDecryptionKey) -> AuthorityData {
-        AuthorityData { authority_public_data, authority_secret_data, authority_decryption_key }
+    pub fn new(
+        authority_public_data: AuthorityPublicData,
+        authority_secret_data: AuthoritySecretData,
+        authority_decryption_key: AuthorityDecryptionKey,
+    ) -> AuthorityData {
+        AuthorityData {
+            authority_public_data,
+            authority_secret_data,
+            authority_decryption_key,
+        }
     }
 }
 
@@ -482,14 +534,14 @@ impl_Debug_for_OpaqueMaterial_wrapper! { Proof }
 
 pub type AccumulatorBatchSeqNo = u64;
 
-pub type AllAccumulatorWitnesses = HashMap<CredAttrIndex,BTreeMap<AccumulatorBatchSeqNo,AccumulatorMembershipWitness>>;
+pub type AllAccumulatorWitnesses =
+    HashMap<CredAttrIndex, BTreeMap<AccumulatorBatchSeqNo, AccumulatorMembershipWitness>>;
 
 pub type AccumulatorWitnesses = HashMap<CredAttrIndex, AccumulatorMembershipWitness>;
 
 /// A Signature and other related data, including attribute values signed and witnesses for accumlators.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct SignatureAndRelatedData {
-
     #[serde(rename = "signature")]
     /// The signature from a Signer signing data values.
     pub signature: Signature,
@@ -504,9 +556,16 @@ pub struct SignatureAndRelatedData {
 }
 
 impl SignatureAndRelatedData {
-    pub fn new(signature: Signature, values: Vec<DataValue>,
-               accumulator_witnesses: AccumulatorWitnesses) -> SignatureAndRelatedData {
-        SignatureAndRelatedData { signature, values, accumulator_witnesses }
+    pub fn new(
+        signature: Signature,
+        values: Vec<DataValue>,
+        accumulator_witnesses: AccumulatorWitnesses,
+    ) -> SignatureAndRelatedData {
+        SignatureAndRelatedData {
+            signature,
+            values,
+            accumulator_witnesses,
+        }
     }
 }
 
@@ -516,7 +575,6 @@ impl SignatureAndRelatedData {
 /// Keys for decryption.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct DecryptRequest {
-
     /// Authority secret data.
     #[serde(rename = "authoritySecretData")]
     pub authority_secret_data: AuthoritySecretData,
@@ -532,28 +590,35 @@ pub struct DecryptionProof(pub OpaqueMaterial);
 impl_Debug_for_OpaqueMaterial_wrapper! { DecryptionProof }
 
 impl DecryptRequest {
-    pub fn new(authority_secret_data: AuthoritySecretData,
-               authority_decryption_key: AuthorityDecryptionKey) -> DecryptRequest {
-        DecryptRequest { authority_secret_data, authority_decryption_key }
+    pub fn new(
+        authority_secret_data: AuthoritySecretData,
+        authority_decryption_key: AuthorityDecryptionKey,
+    ) -> DecryptRequest {
+        DecryptRequest {
+            authority_secret_data,
+            authority_decryption_key,
+        }
     }
 }
 
 /// Decrypted values.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct DecryptResponse {
-
     /// The decrypted value.
     #[serde(rename = "value")]
     pub value: String,
 
     /// A proof that the value is correctly decrypted from proof created by Prover.
     #[serde(rename = "decryptionProof")]
-    pub decryption_proof: DecryptionProof
+    pub decryption_proof: DecryptionProof,
 }
 
 impl DecryptResponse {
     pub fn new(value: String, decryption_proof: DecryptionProof) -> DecryptResponse {
-        DecryptResponse { value, decryption_proof }
+        DecryptResponse {
+            value,
+            decryption_proof,
+        }
     }
 }
 
@@ -570,7 +635,6 @@ pub enum SharedParamValue {
 
 #[derive(Clone, Eq, Debug, PartialEq, PartialOrd, Ord, Serialize, Deserialize, JsonSchema)]
 pub struct CredAttrIndexAndDataValue {
-
     #[serde(rename = "index")]
     pub index: CredAttrIndex,
 
@@ -587,7 +651,6 @@ impl CredAttrIndexAndDataValue {
 /// Data returned from 'createProof'.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct DataForVerifier {
-
     /// Data values disclosed by (two-level map keyed by CredentialLabel and CredAttrIndex).
     #[serde(rename = "revealedIdxsAndVals")]
     pub revealed_idxs_and_vals: HashMap<CredentialLabel, HashMap<CredAttrIndex, DataValue>>,
@@ -600,53 +663,64 @@ pub struct DataForVerifier {
 impl DataForVerifier {
     pub fn new(
         revealed_idxs_and_vals: HashMap<CredentialLabel, HashMap<CredAttrIndex, DataValue>>,
-        proof: Proof
+        proof: Proof,
     ) -> DataForVerifier {
-        DataForVerifier { revealed_idxs_and_vals, proof }
+        DataForVerifier {
+            revealed_idxs_and_vals,
+            proof,
+        }
     }
 }
 
 /// Warnings and DataForVerifier.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct WarningsAndDataForVerifier {
-
     /// A list of warnings.
     #[serde(rename = "warnings")]
     pub warnings: Vec<Warning>,
 
     /// Data to be sent to Verifier.
     #[serde(rename = "dataForVerifier")]
-    pub data_for_verifier: DataForVerifier
+    pub data_for_verifier: DataForVerifier,
 }
 
 impl WarningsAndDataForVerifier {
-    pub fn new(warnings: Vec<Warning>, data_for_verifier: DataForVerifier) -> WarningsAndDataForVerifier {
-        WarningsAndDataForVerifier { warnings, data_for_verifier }
+    pub fn new(
+        warnings: Vec<Warning>,
+        data_for_verifier: DataForVerifier,
+    ) -> WarningsAndDataForVerifier {
+        WarningsAndDataForVerifier {
+            warnings,
+            data_for_verifier,
+        }
     }
 }
 
 /// Returned from 'verifyProof' if the given proof is valid.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct WarningsAndDecryptResponses {
-
     /// Warnings, e.g., unsupported features, potentially unintended requests, etc.
     #[serde(rename = "warnings")]
     pub warnings: Vec<Warning>,
 
     /// Data values decrypted (three-level map keyed by CredentialLabel, CredAttrIndex and AuthorityLabel).
     #[serde(rename = "decryptResponses")]
-    pub decrypt_responses: HashMap<CredentialLabel,
-                                   HashMap<CredAttrIndex,
-                                           HashMap<AuthorityLabel, DecryptResponse>>>,
+    pub decrypt_responses:
+        HashMap<CredentialLabel, HashMap<CredAttrIndex, HashMap<AuthorityLabel, DecryptResponse>>>,
 }
 
 impl WarningsAndDecryptResponses {
-    pub fn new(warnings: Vec<Warning>,
-               decrypt_responses: HashMap<CredentialLabel,
-                                          HashMap<CredAttrIndex,
-                                                  HashMap<AuthorityLabel, DecryptResponse>>>,
+    pub fn new(
+        warnings: Vec<Warning>,
+        decrypt_responses: HashMap<
+            CredentialLabel,
+            HashMap<CredAttrIndex, HashMap<AuthorityLabel, DecryptResponse>>,
+        >,
     ) -> WarningsAndDecryptResponses {
-        WarningsAndDecryptResponses { warnings, decrypt_responses }
+        WarningsAndDecryptResponses {
+            warnings,
+            decrypt_responses,
+        }
     }
 }
 
@@ -654,13 +728,13 @@ impl WarningsAndDecryptResponses {
 
 pub type CredentialLabel = String;
 // Used to identify the ShearedParamKey for the AuthorityPublicData
-pub type AuthorityLabel  = String;
-pub type CredAttrIndex   = u64;
-pub type Natural         = u64;
-pub type Nonce           = String;
-pub type OpaqueMaterial  = String;
-pub type RawIndex        = u64;
-pub type SharedParamKey  = String;
+pub type AuthorityLabel = String;
+pub type CredAttrIndex = u64;
+pub type Natural = u64;
+pub type Nonce = String;
+pub type OpaqueMaterial = String;
+pub type RawIndex = u64;
+pub type SharedParamKey = String;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum ProofMode {
@@ -670,12 +744,14 @@ pub enum ProofMode {
     Strict,
     // Allow warnings and also suppress errors from General, enabling testing backend calls even
     // when General would throw an error for honest provers
-    TestBackend
+    TestBackend,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize, JsonSchema)]
+#[derive(
+    Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize, JsonSchema,
+)]
 #[serde(content = "contents", tag = "tag")]
 pub enum Warning {
     UnsupportedFeature(String),
-    RevealPrivacyWarning(CredentialLabel, CredAttrIndex, String)
+    RevealPrivacyWarning(CredentialLabel, CredAttrIndex, String),
 }

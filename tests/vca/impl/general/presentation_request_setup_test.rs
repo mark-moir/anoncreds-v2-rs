@@ -1,7 +1,9 @@
 // ----------------------------------------------------------------------------
-use credx::vca::r#impl::general::presentation_request_setup::{get_proof_instructions, is_cred_resolved};
-use credx::vca::r#impl::json::util::encode_to_text;
 use credx::vca::primitives::types::*;
+use credx::vca::r#impl::general::presentation_request_setup::{
+    get_proof_instructions, is_cred_resolved,
+};
+use credx::vca::r#impl::json::util::encode_to_text;
 use credx::vca::Error;
 // ----------------------------------------------------------------------------
 use crate::vca::data_for_tests as td;
@@ -84,7 +86,7 @@ mod spec {
                     td::D_CRED_LABEL.to_owned() => hashmap!(),
                     td::S_CRED_LABEL.to_owned() => hashmap!(),
                 ),
-                ProofMode::TestBackend
+                ProofMode::TestBackend,
             )
             .unwrap();
 
@@ -164,8 +166,10 @@ mod spec {
 
     mod check_same_claim_types {
         use credx::str_vec_from;
+        use credx::vca::r#impl::{
+            general::presentation_request_setup::presentation_request_setup, util::ic_semi,
+        };
         use credx::vca::types::ProofMode::Strict;
-        use credx::vca::r#impl::{general::presentation_request_setup::presentation_request_setup, util::ic_semi};
 
         use super::*;
 
@@ -194,16 +198,21 @@ mod spec {
                 (vec![], vec![]),
                 (vec![], vec![]),
                 (vec![], vec![]),
-                (vec![EqInfo {
-                    from_index: td::D_SSN_IDX,
-                    to_label: td::S_CRED_LABEL.to_string(),
-                    to_index: td::S_SSN_IDX
-                }], vec![]),
+                (
+                    vec![EqInfo {
+                        from_index: td::D_SSN_IDX,
+                        to_label: td::S_CRED_LABEL.to_string(),
+                        to_index: td::S_SSN_IDX
+                    }],
+                    vec![]
+                ),
                 (vec![], vec![]),
             );
             static ref REVEALS: HashMap<CredentialLabel, HashMap<CredAttrIndex, DataValue>> =
-                PROOF_REQS.iter().map(|(k,_)| (k.clone(), HashMap::<_,_>::new())).collect();
-
+                PROOF_REQS
+                    .iter()
+                    .map(|(k, _)| (k.clone(), HashMap::<_, _>::new()))
+                    .collect();
         }
 
         #[test]

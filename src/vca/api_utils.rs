@@ -1,11 +1,11 @@
 // ---------------------------------------------------------------------------
-use crate::vca::{Error, VCAResult};
 use crate::vca::api::VcaApi;
 use crate::vca::crypto_interface::CryptoInterface;
-use crate::vca::r#impl::general::proof::*;
-use crate::vca::r#impl::general::signer::*;
 use crate::vca::non_primitives::*;
 use crate::vca::primitives::*;
+use crate::vca::r#impl::general::proof::*;
+use crate::vca::r#impl::general::signer::*;
+use crate::vca::{Error, VCAResult};
 // ---------------------------------------------------------------------------
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -49,6 +49,6 @@ pub fn implement_vca_api_using(
         update_accumulator_witness: ucad.clone(),
         create_proof: create_proof(sp.clone()),
         verify_proof: verify_proof(sv.clone()),
-        verify_decryption: verify_decryption(sv.clone(),svd.clone()),
+        verify_decryption: verify_decryption(sv.clone(), svd.clone()),
     }
 }

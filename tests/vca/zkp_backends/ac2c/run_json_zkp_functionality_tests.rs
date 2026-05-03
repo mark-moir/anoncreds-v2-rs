@@ -1,4 +1,3 @@
-
 mod ps {
     use credx::vca::zkp_backends::ac2c::crypto_interface::CRYPTO_INTERFACE_AC2C_PS;
     // Note: the directory path must be given statically, as it is read directly

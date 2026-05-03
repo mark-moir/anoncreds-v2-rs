@@ -1,7 +1,7 @@
 // ------------------------------------------------------------------------------
-use crate::vca::VCAResult;
 use crate::vca::r#impl::to_from_api::*;
 use crate::vca::types::*;
+use crate::vca::VCAResult;
 // ------------------------------------------------------------------------------
 use crate::prelude::blsful::{Bls12381G2Impl, SecretKey};
 // ------------------------------------------------------------------------------
@@ -31,4 +31,3 @@ impl VcaTryFrom<&AuthorityDecryptionKey> for SecretKey<Bls12381G2Impl> {
         from_opaque_json(&x.0)
     }
 }
-

@@ -21,12 +21,16 @@ macro_rules! impl_vca_roundtrip_json {
     ($native:ty => $api:path) => {
         impl $crate::vca::r#impl::to_from_api::VcaTryFrom<$native> for $api {
             fn vca_try_from(value: $native) -> $crate::vca::VCAResult<$api> {
-                Ok($api($crate::vca::r#impl::to_from_api::to_opaque_json(&value)?))
+                Ok($api($crate::vca::r#impl::to_from_api::to_opaque_json(
+                    &value,
+                )?))
             }
         }
         impl $crate::vca::r#impl::to_from_api::VcaTryFrom<&$native> for $api {
             fn vca_try_from(value: &$native) -> $crate::vca::VCAResult<$api> {
-                Ok($api($crate::vca::r#impl::to_from_api::to_opaque_json(value)?))
+                Ok($api($crate::vca::r#impl::to_from_api::to_opaque_json(
+                    value,
+                )?))
             }
         }
         impl $crate::vca::r#impl::to_from_api::VcaTryFrom<&$api> for $native {
@@ -44,12 +48,16 @@ macro_rules! impl_vca_roundtrip_ark {
     ($native:ty => $api:path) => {
         impl $crate::vca::r#impl::to_from_api::VcaTryFrom<$native> for $api {
             fn vca_try_from(value: $native) -> $crate::vca::VCAResult<$api> {
-                Ok($api($crate::vca::r#impl::to_from_api::to_opaque_ark(&value)?))
+                Ok($api($crate::vca::r#impl::to_from_api::to_opaque_ark(
+                    &value,
+                )?))
             }
         }
         impl $crate::vca::r#impl::to_from_api::VcaTryFrom<&$native> for $api {
             fn vca_try_from(value: &$native) -> $crate::vca::VCAResult<$api> {
-                Ok($api($crate::vca::r#impl::to_from_api::to_opaque_ark(value)?))
+                Ok($api($crate::vca::r#impl::to_from_api::to_opaque_ark(
+                    value,
+                )?))
             }
         }
         impl $crate::vca::r#impl::to_from_api::VcaTryFrom<&$api> for $native {
@@ -60,8 +68,7 @@ macro_rules! impl_vca_roundtrip_ark {
     };
 }
 
-pub fn to_api<FROM, API: VcaTryFrom<FROM>>(from: FROM) -> VCAResult<API>
-{
+pub fn to_api<FROM, API: VcaTryFrom<FROM>>(from: FROM) -> VCAResult<API> {
     API::vca_try_from(from)
 }
 
@@ -135,17 +142,15 @@ fn from_opaque_to_vec(s_b64: &str) -> VCAResult<Vec<u8>> {
 
 fn ark_serialize<T: CanonicalSerialize>(t: &T) -> VCAResult<Vec<u8>> {
     let mut serz = vec![];
-    match CanonicalSerialize::serialize_compressed(t, &mut serz)
-    {
+    match CanonicalSerialize::serialize_compressed(t, &mut serz) {
         Ok(()) => Ok(serz),
-        Err(e) => Err(Error::General(format!("ark_serialize: {e}")))
+        Err(e) => Err(Error::General(format!("ark_serialize: {e}"))),
     }
 }
 
-fn  ark_deserialize<T: CanonicalDeserialize>(s: &[u8]) -> VCAResult<T> {
-    match CanonicalDeserialize::deserialize_compressed(s)
-    {
+fn ark_deserialize<T: CanonicalDeserialize>(s: &[u8]) -> VCAResult<T> {
+    match CanonicalDeserialize::deserialize_compressed(s) {
         Ok(deserz) => Ok(deserz),
-        Err(e)     => Err(Error::General(format!("ark_deserialize: {e}")))
+        Err(e) => Err(Error::General(format!("ark_deserialize: {e}"))),
     }
 }

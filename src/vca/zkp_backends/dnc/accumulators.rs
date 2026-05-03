@@ -1,26 +1,26 @@
 // ------------------------------------------------------------------------------
-use crate::vca::{Error, VCAResult};
-use crate::vca::r#impl::to_from_api::*;
 use crate::vca::interfaces::crypto_interface::*;
 use crate::vca::interfaces::types as api;
+use crate::vca::r#impl::to_from_api::*;
 use crate::vca::zkp_backends::dnc::generate_frs::*;
 use crate::vca::zkp_backends::dnc::in_memory_state::test::*;
 use crate::vca::zkp_backends::dnc::signer::*;
 use crate::vca::zkp_backends::dnc::to_from_api::accumulators_to_from_api::*;
 use crate::vca::zkp_backends::dnc::types::*;
+use crate::vca::{Error, VCAResult};
 // ------------------------------------------------------------------------------
 use vb_accumulator::positive::Accumulator;
+use vb_accumulator::prelude::Keypair as VbaKeypair;
 use vb_accumulator::prelude::MembershipProvingKey as VbaMembershipProvingKey;
 use vb_accumulator::prelude::MembershipWitness;
-use vb_accumulator::prelude::PositiveAccumulator;
-use vb_accumulator::prelude::Keypair              as VbaKeypair;
 use vb_accumulator::prelude::Omega;
-use vb_accumulator::prelude::PublicKey            as VbaPublicKey;
-use vb_accumulator::prelude::SetupParams          as VbaSetupParams;
+use vb_accumulator::prelude::PositiveAccumulator;
+use vb_accumulator::prelude::PublicKey as VbaPublicKey;
+use vb_accumulator::prelude::SetupParams as VbaSetupParams;
 // ------------------------------------------------------------------------------
-use ark_bls12_381::{Bls12_381,Fr,G1Affine};
-use ark_std::rand::SeedableRng;
+use ark_bls12_381::{Bls12_381, Fr, G1Affine};
 use ark_std::rand::rngs::StdRng;
+use ark_std::rand::SeedableRng;
 // ------------------------------------------------------------------------------
 use std::iter::zip;
 use std::sync::Arc;
@@ -31,20 +31,21 @@ use std::sync::Arc;
 pub fn create_accumulator_data() -> CreateAccumulatorData {
     Arc::new(|rng_seed| {
         let mut rng = StdRng::seed_from_u64(rng_seed);
-        let sp      = VbaSetupParams::<Bls12_381>::generate_using_rng(&mut rng);
-        let kp      = VbaKeypair::<Bls12_381>::generate_using_rng(&mut rng, &sp);
-        let pk      = &kp.public_key;
-        let acc     = PositiveAccumulator::initialize(&sp);
-        let ad      = to_api((&sp, &kp))?;
-        #[cfg(not(feature="in_memory_state"))]
-        let accumulator : api::Accumulator
-                    = to_api(&acc)?;
-        #[cfg(feature="in_memory_state")]
-        let ims : InMemoryState::<Fr> = InMemoryState::<Fr>::new();
-        #[cfg(feature="in_memory_state")]
-        let accumulator : api::Accumulator
-                    = to_api((&acc, &ims))?;
-        Ok(CreateAccumulatorResponse { accumulator_data : ad, accumulator })
+        let sp = VbaSetupParams::<Bls12_381>::generate_using_rng(&mut rng);
+        let kp = VbaKeypair::<Bls12_381>::generate_using_rng(&mut rng, &sp);
+        let pk = &kp.public_key;
+        let acc = PositiveAccumulator::initialize(&sp);
+        let ad = to_api((&sp, &kp))?;
+        #[cfg(not(feature = "in_memory_state"))]
+        let accumulator: api::Accumulator = to_api(&acc)?;
+        #[cfg(feature = "in_memory_state")]
+        let ims: InMemoryState<Fr> = InMemoryState::<Fr>::new();
+        #[cfg(feature = "in_memory_state")]
+        let accumulator: api::Accumulator = to_api((&acc, &ims))?;
+        Ok(CreateAccumulatorResponse {
+            accumulator_data: ad,
+            accumulator,
+        })
     })
 }
 
@@ -53,7 +54,7 @@ pub fn create_accumulator_data() -> CreateAccumulatorData {
 pub fn create_membership_proving_key() -> CreateMembershipProvingKey {
     Arc::new(|rng_seed| {
         let mut rng = StdRng::seed_from_u64(rng_seed);
-        let mpk     = VbaMembershipProvingKey::<G1>::generate_using_rng(&mut rng);
+        let mpk = VbaMembershipProvingKey::<G1>::generate_using_rng(&mut rng);
         to_api(mpk)
     })
 }
@@ -62,7 +63,8 @@ pub fn create_membership_proving_key() -> CreateMembershipProvingKey {
 
 pub fn create_accumulator_element() -> CreateAccumulatorElement {
     Arc::new(|x| {
-        let fr = generate_fr_from_val_and_ct((&ClaimType::CTAccumulatorMember, &DataValue::DVText(x)))?;
+        let fr =
+            generate_fr_from_val_and_ct((&ClaimType::CTAccumulatorMember, &DataValue::DVText(x)))?;
         to_api(fr)
     })
 }
@@ -72,40 +74,48 @@ pub fn create_accumulator_element() -> CreateAccumulatorElement {
 pub fn accumulator_add_remove() -> AccumulatorAddRemove {
     Arc::new(|ad, acc, adds, rms| {
         // Get HolderID-Fr pairs to add
-        let frs_to_add_with_holder_ids =
-            adds.iter().map(|(k, e)| Ok((k, from_api(e)?))).collect::<VCAResult<Vec<(&HolderID, Fr)>>>()?;
+        let frs_to_add_with_holder_ids = adds
+            .iter()
+            .map(|(k, e)| Ok((k, from_api(e)?)))
+            .collect::<VCAResult<Vec<(&HolderID, Fr)>>>()?;
         // Get Frs pairs to remove
-        let frs_to_remove =
-            rms.iter().map(from_api).collect::<VCAResult<Vec<Fr>>>()?;
+        let frs_to_remove = rms.iter().map(from_api).collect::<VCAResult<Vec<Fr>>>()?;
 
-        let (_, kp): (VbaSetupParams::<Bls12_381>, VbaKeypair::<Bls12_381>) = from_api(ad)?;
+        let (_, kp): (VbaSetupParams<Bls12_381>, VbaKeypair<Bls12_381>) = from_api(ad)?;
 
-        #[cfg(not(feature="in_memory_state"))]
+        #[cfg(not(feature = "in_memory_state"))]
         let pa1: PositiveAccumulator<_> = from_api(acc)?;
-        #[cfg(feature="in_memory_state")]
-        let (pa1, mut ims)        = from_api(acc)?;
+        #[cfg(feature = "in_memory_state")]
+        let (pa1, mut ims) = from_api(acc)?;
 
-        let frs_to_add = frs_to_add_with_holder_ids.iter().map(|(_,v)| *v).collect::<Vec<_>>();
-        #[cfg(not(feature="in_memory_state"))]
-        let pa2                   = PositiveAccumulator(pa1.compute_new_post_add_batch(&frs_to_add, &kp.secret_key));
-        #[cfg(feature="in_memory_state")]
+        let frs_to_add = frs_to_add_with_holder_ids
+            .iter()
+            .map(|(_, v)| *v)
+            .collect::<Vec<_>>();
+        #[cfg(not(feature = "in_memory_state"))]
+        let pa2 = PositiveAccumulator(pa1.compute_new_post_add_batch(&frs_to_add, &kp.secret_key));
+        #[cfg(feature = "in_memory_state")]
         // The clone() is necessary because of the docknetwork/crypto 'add_batch' definition.
         // Couldn't DNC's add_batch accept a reference?
-        let pa2                   = pa1.add_batch(frs_to_add.clone(), &kp.secret_key, &mut ims)
+        let pa2 = pa1
+            .add_batch(frs_to_add.clone(), &kp.secret_key, &mut ims)
             .map_err(|e| Error::General(format!("DNC accumulator_add_remove add {:?}", e)))?;
 
-        #[cfg(not(feature="in_memory_state"))]
-        let pa3                   = PositiveAccumulator(pa2.compute_new_post_remove_batch(&frs_to_remove, &kp.secret_key));
-        #[cfg(feature="in_memory_state")]
-        let pa3                   = pa2.remove_batch(&frs_to_remove,        &kp.secret_key, &mut ims)
+        #[cfg(not(feature = "in_memory_state"))]
+        let pa3 =
+            PositiveAccumulator(pa2.compute_new_post_remove_batch(&frs_to_remove, &kp.secret_key));
+        #[cfg(feature = "in_memory_state")]
+        let pa3 = pa2
+            .remove_batch(&frs_to_remove, &kp.secret_key, &mut ims)
             .map_err(|e| Error::General(format!("DNC accumulator_add_remove rm  {:?}", e)))?;
 
         let mut witnesses_for_new = HashMap::<HolderID, api::AccumulatorMembershipWitness>::new();
-        for (k,v) in frs_to_add_with_holder_ids {
-            #[cfg(not(feature="in_memory_state"))]
+        for (k, v) in frs_to_add_with_holder_ids {
+            #[cfg(not(feature = "in_memory_state"))]
             let wit = pa3.compute_membership_witness(&v, &kp.secret_key);
-            #[cfg(feature="in_memory_state")]
-            let wit = pa3.get_membership_witness(&v, &kp.secret_key, &ims)
+            #[cfg(feature = "in_memory_state")]
+            let wit = pa3
+                .get_membership_witness(&v, &kp.secret_key, &ims)
                 .map_err(|e| Error::General(format!("DNC accumulator_add_remove gmw {:?}", e)))?;
             // The 'k.clone' is necessary because the key needs to live in two maps :
             // 'frs_to_add_with_holder_ids' and 'witnesses_for_new'.
@@ -113,13 +123,17 @@ pub fn accumulator_add_remove() -> AccumulatorAddRemove {
         }
 
         let o = Omega::new(&frs_to_add, &frs_to_remove, pa1.value(), &kp.secret_key);
-        let witness_update_info : AccumulatorWitnessUpdateInfo = to_api( (o, frs_to_add, frs_to_remove) )?;
-        #[cfg(not(feature="in_memory_state"))]
-        let accumulator           = to_api(&pa3)?;
-        #[cfg(feature="in_memory_state")]
-        let accumulator           = to_api((&pa3,&ims))?;
-        Ok(AccumulatorAddRemoveResponse { witness_update_info, witnesses_for_new,
-                                          accumulator })
+        let witness_update_info: AccumulatorWitnessUpdateInfo =
+            to_api((o, frs_to_add, frs_to_remove))?;
+        #[cfg(not(feature = "in_memory_state"))]
+        let accumulator = to_api(&pa3)?;
+        #[cfg(feature = "in_memory_state")]
+        let accumulator = to_api((&pa3, &ims))?;
+        Ok(AccumulatorAddRemoveResponse {
+            witness_update_info,
+            witnesses_for_new,
+            accumulator,
+        })
     })
 }
 
@@ -127,17 +141,19 @@ pub fn accumulator_add_remove() -> AccumulatorAddRemove {
 
 pub fn get_accumulator_witness() -> GetAccumulatorWitness {
     Arc::new(|accumulator_data, accumulator, element| {
-        #[cfg(not(feature="in_memory_state"))]
-        let pa: PositiveAccumulator::<G1Affine> = from_api(accumulator)?;
-        #[cfg(feature="in_memory_state")]
-        let (pa, ims_a): (PositiveAccumulator::<G1Affine>, InMemoryState::<Fr>) = from_api(accumulator)?;
-        let (_, kp): (VbaSetupParams::<Bls12_381>, VbaKeypair::<Bls12_381>)
-                     = from_api(accumulator_data)?;
-        let e : Fr   = from_api(element)?;
-        #[cfg(not(feature="in_memory_state"))]
-        let wit      = pa.compute_membership_witness(&e, &kp.secret_key);
-        #[cfg(feature="in_memory_state")]
-        let wit      = pa.get_membership_witness(&e, &kp.secret_key, &ims_a)
+        #[cfg(not(feature = "in_memory_state"))]
+        let pa: PositiveAccumulator<G1Affine> = from_api(accumulator)?;
+        #[cfg(feature = "in_memory_state")]
+        let (pa, ims_a): (PositiveAccumulator<G1Affine>, InMemoryState<Fr>) =
+            from_api(accumulator)?;
+        let (_, kp): (VbaSetupParams<Bls12_381>, VbaKeypair<Bls12_381>) =
+            from_api(accumulator_data)?;
+        let e: Fr = from_api(element)?;
+        #[cfg(not(feature = "in_memory_state"))]
+        let wit = pa.compute_membership_witness(&e, &kp.secret_key);
+        #[cfg(feature = "in_memory_state")]
+        let wit = pa
+            .get_membership_witness(&e, &kp.secret_key, &ims_a)
             .map_err(|e| Error::General(format!("DNC get_accumulator_witness {:?}", e)))?;
         to_api(wit)
     })
@@ -147,13 +163,14 @@ pub fn get_accumulator_witness() -> GetAccumulatorWitness {
 
 pub fn update_accumulator_witness() -> UpdateAccumulatorWitness {
     Arc::new(|witness, element, update_info| {
-        let wit : MembershipWitness::<G1> = from_api(witness)?;
-        let (omega, adds, rms)            = from_api(update_info)?;
-        let fr                            = from_api(element)?;
-        let v                             = vec!((adds.as_slice(), rms.as_slice(), &omega));
-        let uw = wit.update_using_public_info_after_multiple_batch_updates(v, &fr)
+        let wit: MembershipWitness<G1> = from_api(witness)?;
+        let (omega, adds, rms) = from_api(update_info)?;
+        let fr = from_api(element)?;
+        let v = vec![(adds.as_slice(), rms.as_slice(), &omega)];
+        let uw = wit
+            .update_using_public_info_after_multiple_batch_updates(v, &fr)
             .map_err(|e| Error::General(format!("DNC update_accumulator_witness {:?}", e)))?;
-        let uw_api                        = to_api(uw)?;
+        let uw_api = to_api(uw)?;
         Ok(uw_api)
     })
 }

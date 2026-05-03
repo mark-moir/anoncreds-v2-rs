@@ -96,30 +96,30 @@ lazy_static! {
 }
 
 lazy_static! {
-  pub static ref D_CTS_WITH_VE: Vec<ClaimType> = vec![
-    ClaimType::CTText,
-    ClaimType::CTInt,
-    ClaimType::CTEncryptableText,
-    ClaimType::CTInt,
-    ClaimType::CTAccumulatorMember
-  ];
+    pub static ref D_CTS_WITH_VE: Vec<ClaimType> = vec![
+        ClaimType::CTText,
+        ClaimType::CTInt,
+        ClaimType::CTEncryptableText,
+        ClaimType::CTInt,
+        ClaimType::CTAccumulatorMember
+    ];
 }
 
 lazy_static! {
     pub static ref S_CTS: Vec<ClaimType> = vec![
-      ClaimType::CTText,
-      ClaimType::CTAccumulatorMember,
-      ClaimType::CTInt,
-      ClaimType::CTText,
+        ClaimType::CTText,
+        ClaimType::CTAccumulatorMember,
+        ClaimType::CTInt,
+        ClaimType::CTText,
     ];
 }
 
 lazy_static! {
     pub static ref S_CTS_WITH_VE: Vec<ClaimType> = vec![
-      ClaimType::CTText,
-      ClaimType::CTAccumulatorMember,
-      ClaimType::CTInt,
-      ClaimType::CTEncryptableText,
+        ClaimType::CTText,
+        ClaimType::CTAccumulatorMember,
+        ClaimType::CTInt,
+        ClaimType::CTEncryptableText,
     ];
 }
 

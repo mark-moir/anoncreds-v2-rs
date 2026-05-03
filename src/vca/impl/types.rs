@@ -6,12 +6,14 @@ use crate::vca::types::Warning;
 /// from parametric types in API.  This is provided only as a convenience for
 /// underlying library implementers.
 pub struct WarningsAndResult<A> {
-    pub warnings : Vec<Warning>,
-    pub result   : A
+    pub warnings: Vec<Warning>,
+    pub result: A,
 }
 
 pub type Validation<T> = Result<T, Warning>;
-pub fn success<T>(t:T)    -> Validation<T> { Ok(t) }
-pub fn fail<T>(w:Warning) -> Validation<T> { Err(w) }
-
-
+pub fn success<T>(t: T) -> Validation<T> {
+    Ok(t)
+}
+pub fn fail<T>(w: Warning) -> Validation<T> {
+    Err(w)
+}

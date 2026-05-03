@@ -10,7 +10,7 @@ use crate::vca::data_for_tests as td;
 use credx::knox::bbs::BbsScheme;
 use credx::knox::ps::PsScheme;
 use credx::knox::short_group_sig_core::short_group_traits::ShortGroupSignatureScheme;
-use credx::prelude::{CredentialSchema,Issuer,IssuerPublic};
+use credx::prelude::{CredentialSchema, Issuer, IssuerPublic};
 // ------------------------------------------------------------------------------
 use paste;
 // ------------------------------------------------------------------------------
@@ -23,22 +23,24 @@ macro_rules! run_to_from_test_with {
                 to_from_test::<$scheme>()
             }
         }
-    }
+    };
 }
 
 run_to_from_test_with!(bbs, BbsScheme);
 run_to_from_test_with!(ps, PsScheme);
 
 #[allow(unused_variables)]
-fn to_from_test<S: ShortGroupSignatureScheme>() -> Result<(),vca::Error> {
+fn to_from_test<S: ShortGroupSignatureScheme>() -> Result<(), vca::Error> {
     let sdcts = &td::D_CTS;
     // println!("create_signer_data: sdcts: {:?}", sdcts.to_vec());
     let schema_claims = create_schema_claims(sdcts)?;
-    let cred_schema   = CredentialSchema::new(
+    let cred_schema = CredentialSchema::new(
         Some("fake label"),
         Some("fake description"),
         &[],
-        &schema_claims).map_err(|e| vca::convert_to_crypto_library_error("AC2C", "to_from_test", e))?;
+        &schema_claims,
+    )
+    .map_err(|e| vca::convert_to_crypto_library_error("AC2C", "to_from_test", e))?;
     let (issuer_public, issuer_secret) = Issuer::<S>::new(&cred_schema);
     // println!("issuer_public: {:?}", issuer_public);
     // println!("issuer_secret: {:?}", issuer_secret);
@@ -46,35 +48,37 @@ fn to_from_test<S: ShortGroupSignatureScheme>() -> Result<(),vca::Error> {
     let x = SignerPublicData {
         signer_public_setup_data: to_api(issuer_public)?,
         signer_public_schema: sdcts.to_vec(),
-        signer_blinded_attr_idxs: Vec::new()
+        signer_blinded_attr_idxs: Vec::new(),
     };
     // println!("to_api((issuer_public, sdcts.to_vec())): {:?}", x);
 
     let y = to_api(issuer_secret)?;
     // println!("to_api(issuer_secret): {:?}", y);
 
-    let sd = SignerData::new(x,y);
+    let sd = SignerData::new(x, y);
     // println!("SignerData: {:?}", sd);
 
-    let SignerData { signer_public_data, signer_secret_data } = sd;
+    let SignerData {
+        signer_public_data,
+        signer_secret_data,
+    } = sd;
     // println!("signer_public_data : {:?}", signer_public_data);
     // println!("signer_secret_data : {:?}", signer_secret_data);
 
-    let s: IssuerPublic<S> =
-        from_api(&signer_public_data.signer_public_setup_data)?;
+    let s: IssuerPublic<S> = from_api(&signer_public_data.signer_public_setup_data)?;
     let sdcts = signer_public_data.signer_public_schema;
     // println!("from_api(*signer_public_data): s: {:?}", s);
     // println!("from_api(*signer_public_data): sdcts: {:?}", sdcts);
 
     let (issuer_public, issuer_secret) = Issuer::<S>::new(&cred_schema);
-    let x   = SignerPublicData {
+    let x = SignerPublicData {
         signer_public_setup_data: to_api(issuer_public)?,
         signer_public_schema: sdcts.to_vec(),
-        signer_blinded_attr_idxs: Vec::new()
+        signer_blinded_attr_idxs: Vec::new(),
     };
-    let z1  : Issuer<S> = from_api(&signer_secret_data)?;
-    let z2  = to_api(z1)?;
-    let sd2 = SignerData::new(x,z2);
+    let z1: Issuer<S> = from_api(&signer_secret_data)?;
+    let z2 = to_api(z1)?;
+    let sd2 = SignerData::new(x, z2);
     //println!("{:#?}", sd2);
 
     let rpk_str = "eyJtZXNzYWdlX2dlbmVyYXRvciI6ImI4ZDk2NDlkMjJlYzc3N2UyZTQ0OTAxYzAwODU4NmQxZjEwMWRhNjE5ZmUyMDM2ZWRhMjZhNzFmMDFiMjdlZjllNzRiMzZiNTFmMmRkMTM0MDZlOTNmZTAwZGUxZmVlOSIsImJsaW5kZXJfZ2VuZXJhdG9yIjoiOTZmYmQzYWY2OTFkODIzYThhYmZmMzhjZTdmMjQ1NjYxODdiODkwZjU0MTdkYTNmNmE5N2MyYTc3MjE3MmNlNmVlNzI1NjdjZmNhZjBkYWFlMTJjZGY3N2RlNDc1MTFjIn0=";
@@ -83,7 +87,7 @@ fn to_from_test<S: ShortGroupSignatureScheme>() -> Result<(),vca::Error> {
     //println!("XXXXXXXXXXXX rpk_str_x: {:?}", rpk_str_x);
 
     let rpk = RangeProofProvingKey(rpk_str.to_string());
-    let xxx : RangeProofCommitmentSetup = from_api(&rpk)?;
+    let xxx: RangeProofCommitmentSetup = from_api(&rpk)?;
     //println!("YYYYYYYYYYYY rpk_str_x: {:?}", xxx);
 
     Ok(())

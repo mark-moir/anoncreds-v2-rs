@@ -1,14 +1,14 @@
 // ---------------------------------------------------------------------------
 use credx::str_vec_from;
-use credx::vca::{Error, VCAResult};
 use credx::vca::api;
 use credx::vca::crypto_interface::*;
 use credx::vca::r#impl::util::*;
+use credx::vca::{Error, VCAResult};
 // ---------------------------------------------------------------------------
 pub use crate::vca::test_framework::AccumsForSigner;
 // ---------------------------------------------------------------------------
-use serde::{Deserialize, Serialize};
 use maplit::hashmap;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
 // ---------------------------------------------------------------------------
@@ -25,13 +25,24 @@ use std::sync::Arc;
 
 pub fn create_accumulators(f: CreateAccumulatorData) -> CreateAccumulators {
     Arc::new(move |n, sdcts| {
-        create_for_accumulator_fields(sdcts, |i| f(n + i))
-            .map(|m| {
-                m.iter()
-                    .map(|(k, CreateAccumulatorResponse { accumulator_data, accumulator })|
-                         (*k, (accumulator_data.clone(), accumulator.clone(), hashmap!())))
-                    .collect()
-            })
+        create_for_accumulator_fields(sdcts, |i| f(n + i)).map(|m| {
+            m.iter()
+                .map(
+                    |(
+                        k,
+                        CreateAccumulatorResponse {
+                            accumulator_data,
+                            accumulator,
+                        },
+                    )| {
+                        (
+                            *k,
+                            (accumulator_data.clone(), accumulator.clone(), hashmap!()),
+                        )
+                    },
+                )
+                .collect()
+        })
     })
 }
 
@@ -117,10 +128,17 @@ pub fn get_accumulator_from_map() -> GetAccumulatorFromMap {
 
 pub fn get_accumulator_public_data_from_map() -> GetAccumulatorPublicDataFromMap {
     Arc::new(|acc_hdls, idx| {
-        let (AccumulatorData { accumulator_public_data: pub_data, .. }, _, _) =
-             acc_hdls.get(&idx).ok_or(Error::General(format!(
-                 "get_accumulator_public_data_from_map; missing index; {idx}; should be one of; {:?}",
-                 acc_hdls.keys().collect::<Vec<_>>())))?;
+        let (
+            AccumulatorData {
+                accumulator_public_data: pub_data,
+                ..
+            },
+            _,
+            _,
+        ) = acc_hdls.get(&idx).ok_or(Error::General(format!(
+            "get_accumulator_public_data_from_map; missing index; {idx}; should be one of; {:?}",
+            acc_hdls.keys().collect::<Vec<_>>()
+        )))?;
         Ok(pub_data.clone())
     })
 }
@@ -157,26 +175,33 @@ pub fn get_accumulator_public_data_from_map() -> GetAccumulatorPublicDataFromMap
 pub fn get_witness_sequence_number_for_update(
     m: &AllAccumulatorWitnesses,
     a_idx: CredAttrIndex,
-    sn: AccumulatorBatchSeqNo
+    sn: AccumulatorBatchSeqNo,
 ) -> VCAResult<AccumulatorBatchSeqNo> {
-    let wits = lookup_throw_if_absent(&a_idx, m, Error::General,
-                                      &str_vec_from!("getWitnessSequenceNumberForUpdate",
-                                                     "no witnesses for attribute index"))?;
+    let wits = lookup_throw_if_absent(
+        &a_idx,
+        m,
+        Error::General,
+        &str_vec_from!(
+            "getWitnessSequenceNumberForUpdate",
+            "no witnesses for attribute index"
+        ),
+    )?;
     match wits.get(&sn) {
         Some(_) => Ok(sn),
-        None => match wits
-            .range(..sn)
-            .map(|(n, _)| n)
-            .max() {
-                // TODO: This suggests that verb-throw-if-adjective things might be refactored to
-                // use a common throw-if-none, which could be used here too.
-                None => Err(Error::General(format!(
-                    concat!("getWitnessSequenceNumberForUpdate; ",
-                            "no witnesses available at or before sequence number {}; ",
-                            "for attribute index {}"), sn, a_idx))),
-                Some(prev_sn) => Ok(*prev_sn)
-            }
-        }
+        None => match wits.range(..sn).map(|(n, _)| n).max() {
+            // TODO: This suggests that verb-throw-if-adjective things might be refactored to
+            // use a common throw-if-none, which could be used here too.
+            None => Err(Error::General(format!(
+                concat!(
+                    "getWitnessSequenceNumberForUpdate; ",
+                    "no witnesses available at or before sequence number {}; ",
+                    "for attribute index {}"
+                ),
+                sn, a_idx
+            ))),
+            Some(prev_sn) => Ok(*prev_sn),
+        },
+    }
 }
 
 pub fn update_accumulator_witness_with_map(
@@ -185,17 +210,28 @@ pub fn update_accumulator_witness_with_map(
     a_idx: CredAttrIndex,
     vals: &[DataValue],
     adui_api: &AccumulatorWitnessUpdateInfo,
-    sn: AccumulatorBatchSeqNo
+    sn: AccumulatorBatchSeqNo,
 ) -> VCAResult<()> {
     let prim_upd_wit = vca_api.update_accumulator_witness.clone();
     let create_elt = vca_api.create_accumulator_element.clone();
-    let wits =
-        lookup_throw_if_absent_mut(&a_idx, wits_api, Error::General,
-                                   &str_vec_from!("updateAccumWitnessesAndValues",
-                                              "no witnesses for attribute index"))?;
-    let wit = lookup_throw_if_absent(&sn, wits, Error::General,
-                                     &str_vec_from!("updateAccumWitnessesAndValues",
-                                                    "witness not found for sequence number"))?;
+    let wits = lookup_throw_if_absent_mut(
+        &a_idx,
+        wits_api,
+        Error::General,
+        &str_vec_from!(
+            "updateAccumWitnessesAndValues",
+            "no witnesses for attribute index"
+        ),
+    )?;
+    let wit = lookup_throw_if_absent(
+        &sn,
+        wits,
+        Error::General,
+        &str_vec_from!(
+            "updateAccumWitnessesAndValues",
+            "witness not found for sequence number"
+        ),
+    )?;
     // TODO: lookup_throw_if_out_of_bounds
     let val = vals.get(a_idx as usize).ok_or(Error::General(format!(
         "update_accumulator_witness_with_map; out of range; {a_idx}; {vals:?}"
@@ -203,15 +239,15 @@ pub fn update_accumulator_witness_with_map(
     let t = get_text_from_value(val)?;
     let elt = create_elt(t)?;
     let wit_ = prim_upd_wit(wit, &elt, adui_api)?;
-    wits.insert(sn+1, wit_);
+    wits.insert(sn + 1, wit_);
     Ok(())
 }
 
 pub type CreateAccumulators = Arc<
     dyn Fn(
-        Natural, // RNG seed
-        &[ClaimType],
-    ) -> VCAResult<AccumsForSigner>
+            Natural, // RNG seed
+            &[ClaimType],
+        ) -> VCAResult<AccumsForSigner>
         + Send
         + Sync,
 >;
@@ -233,11 +269,8 @@ pub type GetAccumulatorFromMap = Arc<
         + Sync,
 >;
 
-pub type GetAccumulatorPublicDataFromMap = Arc<
-    dyn Fn(&AccumsForSigner, CredAttrIndex) -> VCAResult<AccumulatorPublicData>
-        + Send
-        + Sync,
->;
+pub type GetAccumulatorPublicDataFromMap =
+    Arc<dyn Fn(&AccumsForSigner, CredAttrIndex) -> VCAResult<AccumulatorPublicData> + Send + Sync>;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AccumulatorAddRemoveWithMapResponse {
@@ -246,4 +279,3 @@ pub struct AccumulatorAddRemoveWithMapResponse {
     pub updated_accum_map: AccumsForSigner,
     pub updated_accum_value: Accumulator,
 }
-

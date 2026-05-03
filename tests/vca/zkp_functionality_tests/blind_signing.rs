@@ -7,19 +7,19 @@ use credx::vca::api::VcaApi;
 use credx::vca::api_utils::implement_vca_api_using;
 use credx::vca::r#impl::to_from_api::{from_api, to_api};
 use credx::vca::types as api;
-use credx::vca::VCAResult;
-use credx::vca::Error;
 use credx::vca::zkp_backends::ac2c::crypto_interface::{
     CRYPTO_INTERFACE_AC2C_BBS, CRYPTO_INTERFACE_AC2C_PS,
 };
 use credx::vca::zkp_backends::dnc::crypto_interface::CRYPTO_INTERFACE_DNC;
 use credx::vca::zkp_backends::dnc::types::BlindInfoForSignerPayload as DncBlindInfo;
+use credx::vca::Error;
+use credx::vca::VCAResult;
 
 // Simple fixtures for a single-blinded attribute schema.
 fn schema() -> Vec<api::ClaimType> {
     vec![
         api::ClaimType::CTText,
-        api::ClaimType::CTInt,                 // blinded
+        api::ClaimType::CTInt, // blinded
         api::ClaimType::CTText,
         api::ClaimType::CTInt,
         api::ClaimType::CTAccumulatorMember,
@@ -49,7 +49,10 @@ fn non_blinded_vals() -> Vec<api::CredAttrIndexAndDataValue> {
         (0, api::DataValue::DVText("meta".to_string())),
         (2, api::DataValue::DVText("ssn".to_string())),
         (3, api::DataValue::DVInt(180)),
-        (4, api::DataValue::DVText("abcdef0123456789abcdef0123456789".to_string())),
+        (
+            4,
+            api::DataValue::DVText("abcdef0123456789abcdef0123456789".to_string()),
+        ),
     ]
     .into_iter()
     .map(|(i, v)| api::CredAttrIndexAndDataValue { index: i, value: v })
@@ -73,15 +76,25 @@ fn build_blind_infos(
     let non_blinded = non_blinded_vals();
 
     let sd = create_signer_data(0, &schema, &blinded_idx, api::ProofMode::TestBackend)?;
-    let bsi_good =
-        create_blind_info(0, &sd.signer_public_data, &blinded_vals_good(), api::ProofMode::TestBackend)?;
-    let bsi_alt =
-        create_blind_info(0, &sd.signer_public_data, &blinded_vals_alt(), api::ProofMode::TestBackend)?;
+    let bsi_good = create_blind_info(
+        0,
+        &sd.signer_public_data,
+        &blinded_vals_good(),
+        api::ProofMode::TestBackend,
+    )?;
+    let bsi_alt = create_blind_info(
+        0,
+        &sd.signer_public_data,
+        &blinded_vals_alt(),
+        api::ProofMode::TestBackend,
+    )?;
 
     Ok((bsi_good, bsi_alt, sd, non_blinded, schema))
 }
 
-fn do_not_tamper<T>(g: T, _a: T) -> T { g }
+fn do_not_tamper<T>(g: T, _a: T) -> T {
+    g
+}
 
 fn ac2c_tamper_commitment<S: Clone + ShortGroupSignatureScheme>(
     good: BlindCredentialRequest<S>,
@@ -148,7 +161,10 @@ fn expect_blind_info_failure(e: &Error) -> bool {
 
 fn run_blind_sign(
     api: VcaApi,
-    bifs_builder: impl FnOnce(&api::BlindSigningInfo, &api::BlindSigningInfo) -> VCAResult<api::BlindInfoForSigner>,
+    bifs_builder: impl FnOnce(
+        &api::BlindSigningInfo,
+        &api::BlindSigningInfo,
+    ) -> VCAResult<api::BlindInfoForSigner>,
 ) -> VCAResult<()> {
     let (bsi_good, bsi_alt, signer_data, non_blinded, schema) = build_blind_infos(&api)?;
     let blind_info_for_signer = bifs_builder(&bsi_good, &bsi_alt)?;
@@ -185,9 +201,7 @@ fn run_blind_sign_roundtrip<T: Clone>(
     })
 }
 
-fn from_api_ac2c_bbs(
-    bi: &api::BlindInfoForSigner,
-) -> VCAResult<BlindCredentialRequest<BbsScheme>> {
+fn from_api_ac2c_bbs(bi: &api::BlindInfoForSigner) -> VCAResult<BlindCredentialRequest<BbsScheme>> {
     from_api(bi)
 }
 fn to_api_ac2c_bbs(
@@ -196,14 +210,10 @@ fn to_api_ac2c_bbs(
     to_api(payload)
 }
 
-fn from_api_ac2c_ps(
-    bi: &api::BlindInfoForSigner,
-) -> VCAResult<BlindCredentialRequest<PsScheme>> {
+fn from_api_ac2c_ps(bi: &api::BlindInfoForSigner) -> VCAResult<BlindCredentialRequest<PsScheme>> {
     from_api(bi)
 }
-fn to_api_ac2c_ps(
-    payload: BlindCredentialRequest<PsScheme>,
-) -> VCAResult<api::BlindInfoForSigner> {
+fn to_api_ac2c_ps(payload: BlindCredentialRequest<PsScheme>) -> VCAResult<api::BlindInfoForSigner> {
     to_api(payload)
 }
 

@@ -4,4 +4,3 @@ pub mod json;
 pub mod to_from_api;
 pub mod types;
 pub mod util;
-

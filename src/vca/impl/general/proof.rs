@@ -1,13 +1,13 @@
 use crate::str_vec_from;
-use crate::vca::{Error, VCAResult};
+use crate::vca::interfaces::non_primitives::*;
+use crate::vca::interfaces::primitives::types::WarningsAndProof;
+use crate::vca::interfaces::primitives::*;
+use crate::vca::interfaces::types::*;
 use crate::vca::r#impl::general::presentation_request_setup::presentation_request_setup;
 use crate::vca::r#impl::json::shared_params::lookup_one_text;
 use crate::vca::r#impl::json::util::decode_from_text;
 use crate::vca::r#impl::util::*;
-use crate::vca::interfaces::non_primitives::*;
-use crate::vca::interfaces::primitives::*;
-use crate::vca::interfaces::primitives::types::WarningsAndProof;
-use crate::vca::interfaces::types::*;
+use crate::vca::{Error, VCAResult};
 // ----------------------------------------------------------------------------
 use lazy_static::lazy_static;
 use std::collections::{HashMap, HashSet};
@@ -30,44 +30,71 @@ pub fn create_proof(spec_prover: SpecificProver) -> CreateProof {
                 presentation_request_setup(pres_reqs, shared_params, &vals_to_reveal, proof_mode)?;
             if (proof_mode != ProofMode::TestBackend) {
                 validate_proof_instructions_against_values(&all_vals, &res_prf_insts)?;
-                eq_reqs.iter().try_for_each(|x| {validate_one_equality(&all_vals, x)})?;
+                eq_reqs
+                    .iter()
+                    .try_for_each(|x| validate_one_equality(&all_vals, x))?;
             }
             let WarningsAndProof {
                 warnings: warns_dfv,
                 proof: proof_from_sp,
-            } = spec_prover(&res_prf_insts, &eq_reqs, sigs_and_rel_data_api, get_nonce(&nonce))?;
+            } = spec_prover(
+                &res_prf_insts,
+                &eq_reqs,
+                sigs_and_rel_data_api,
+                get_nonce(&nonce),
+            )?;
             let warnings = [warns_rev, warns_dfv].concat();
             check_warnings("create_proof", &proof_mode, &warnings)?;
             Ok(WarningsAndDataForVerifier {
                 warnings,
                 data_for_verifier: DataForVerifier {
                     revealed_idxs_and_vals: vals_to_reveal,
-                    proof: proof_from_sp
+                    proof: proof_from_sp,
                 },
             })
         },
     )
 }
 
-fn validate_one_equality (
-    all_vals: &HashMap<CredentialLabel,HashMap<CredAttrIndex,(DataValue,bool)>>,
-    eq_req: &[(CredentialLabel, CredAttrIndex)]
+fn validate_one_equality(
+    all_vals: &HashMap<CredentialLabel, HashMap<CredAttrIndex, (DataValue, bool)>>,
+    eq_req: &[(CredentialLabel, CredAttrIndex)],
 ) -> VCAResult<()> {
     match eq_req {
-        []  =>  Err(Error::General(ic_semi(&str_vec_from!("validate_one_equality",
-                                                          "UNEXPECTED",
-                                                          "empty equality list")))),
-        [_] =>  Err(Error::General(ic_semi(&str_vec_from!("validate_one_equality",
-                                                          "UNEXPECTED",
-                                                          "empty equality list")))),
-        [(c_lbl_first, a_idx_first),l @ ..] => {
-            let (v_first, _) = lookup_throw_if_absent_2_lvl(c_lbl_first, a_idx_first, all_vals, Error::General,
-                                                            &str_vec_from!("createProof", "validate_one_equality_1",
-                                                                           format!("{all_vals:?}")))?;
+        [] => Err(Error::General(ic_semi(&str_vec_from!(
+            "validate_one_equality",
+            "UNEXPECTED",
+            "empty equality list"
+        )))),
+        [_] => Err(Error::General(ic_semi(&str_vec_from!(
+            "validate_one_equality",
+            "UNEXPECTED",
+            "empty equality list"
+        )))),
+        [(c_lbl_first, a_idx_first), l @ ..] => {
+            let (v_first, _) = lookup_throw_if_absent_2_lvl(
+                c_lbl_first,
+                a_idx_first,
+                all_vals,
+                Error::General,
+                &str_vec_from!(
+                    "createProof",
+                    "validate_one_equality_1",
+                    format!("{all_vals:?}")
+                ),
+            )?;
             for (ref c_lbl_other, ref a_idx_other) in l.iter() {
-                let (v_other, _) = lookup_throw_if_absent_2_lvl(c_lbl_other, a_idx_other, all_vals, Error::General,
-                                                                &str_vec_from!("createProof", "validate_one_equality_1",
-                                                                           format!("{all_vals:?}")))?;
+                let (v_other, _) = lookup_throw_if_absent_2_lvl(
+                    c_lbl_other,
+                    a_idx_other,
+                    all_vals,
+                    Error::General,
+                    &str_vec_from!(
+                        "createProof",
+                        "validate_one_equality_1",
+                        format!("{all_vals:?}")
+                    ),
+                )?;
                 if v_first != v_other {
                     return Err(Error::General(ic_semi(&str_vec_from!(
                         "validate_one_equality",
@@ -77,9 +104,10 @@ fn validate_one_equality (
                         c_lbl_other,
                         a_idx_other.to_string(),
                         v_first.to_string(),
-                        v_other.to_string()))))
+                        v_other.to_string()
+                    ))));
                 };
-            };
+            }
             Ok(())
         }
     }
@@ -118,8 +146,9 @@ pub fn verify_proof(spec_verifier: SpecificVerifier) -> VerifyProof {
     )
 }
 
-pub fn verify_decryption(spec_verifier: SpecificVerifier,
-                         spec_verify_decryption: SpecificVerifyDecryption
+pub fn verify_decryption(
+    spec_verifier: SpecificVerifier,
+    spec_verify_decryption: SpecificVerifyDecryption,
 ) -> VerifyDecryption {
     Arc::new(
         move |pres_reqs, shared_params, dfv, auth_dks, decrypt_responses, proof_mode, nonce| {
@@ -146,36 +175,39 @@ pub fn verify_decryption(spec_verifier: SpecificVerifier,
                 get_nonce(&nonce),
             )?;
             let warns_ver_decr = spec_verify_decryption(
-                &res_prf_instrs, &eq_reqs, dfv, auth_dks, decrypt_responses)?;
+                &res_prf_instrs,
+                &eq_reqs,
+                dfv,
+                auth_dks,
+                decrypt_responses,
+            )?;
             let all_warnings = [warns_rev, warns_ver, warns_ver_decr].concat();
             check_warnings("verify_decryption", &proof_mode, &all_warnings)?;
             Ok(all_warnings)
-        })
+        },
+    )
 }
 // ----------------------------------------------------------------------------
 
-fn check_warnings(
-    s          : &str,
-    proof_mode : &ProofMode,
-    warnings   : &Vec<Warning>,
-) -> VCAResult<()>
-{
-    if (*proof_mode == ProofMode::Strict && ! warnings.is_empty() ) {
+fn check_warnings(s: &str, proof_mode: &ProofMode, warnings: &Vec<Warning>) -> VCAResult<()> {
+    if (*proof_mode == ProofMode::Strict && !warnings.is_empty()) {
         Err(Error::General(format!(
-            "{s}; cannot create proof with warnings in Strict mode; {:?}", warnings)))
+            "{s}; cannot create proof with warnings in Strict mode; {:?}",
+            warnings
+        )))
     } else {
         Ok(())
     }
 }
 
 lazy_static! {
-    pub static ref NONCE_DEFAULT : Nonce = "XXXDefaultDeterministicNonce".to_string();
+    pub static ref NONCE_DEFAULT: Nonce = "XXXDefaultDeterministicNonce".to_string();
 }
 
-fn get_nonce(n : &Option<Nonce>) -> Nonce {
+fn get_nonce(n: &Option<Nonce>) -> Nonce {
     match n {
         Some(n) => n.to_string(),
-        None    => NONCE_DEFAULT.to_string(),
+        None => NONCE_DEFAULT.to_string(),
     }
 }
 
@@ -216,35 +248,47 @@ fn validate_cred_reqs_against_schemas(
 }
 
 fn validate_proof_instructions_against_values(
-    all_vals      : &HashMap<CredentialLabel, HashMap<CredAttrIndex, (DataValue, bool)>>,
-    res_prf_insts : &[ProofInstructionGeneral<ResolvedRequirement>],
-) -> VCAResult<()>
-{
+    all_vals: &HashMap<CredentialLabel, HashMap<CredAttrIndex, (DataValue, bool)>>,
+    res_prf_insts: &[ProofInstructionGeneral<ResolvedRequirement>],
+) -> VCAResult<()> {
     for pi in res_prf_insts {
         if let ProofInstructionGeneral {
-            cred_label, attr_idx_general, related_pi_idx,
-            requirement : ResolvedRequirement::InRangeResolvedWrapper
-                (InRangeResolved { min_val, max_val, proving_key }),
-        } = pi {
+            cred_label,
+            attr_idx_general,
+            related_pi_idx,
+            requirement:
+                ResolvedRequirement::InRangeResolvedWrapper(InRangeResolved {
+                    min_val,
+                    max_val,
+                    proving_key,
+                }),
+        } = pi
+        {
             let v = &lookup_throw_if_absent_2_lvl(
                 cred_label,
                 attr_idx_general,
                 all_vals,
                 Error::General,
-                &str_vec_from!("validate_proof_instructions_against_values", "missing value"))?.0;
-            match v
-            {
+                &str_vec_from!(
+                    "validate_proof_instructions_against_values",
+                    "missing value"
+                ),
+            )?
+            .0;
+            match v {
                 DataValue::DVText(t) => {
                     return Err(Error::General(format!(
                         "validate_proof_instructions_against_values;
-                         expected DVInt value for range proof, got DVText {t}")));
+                         expected DVInt value for range proof, got DVText {t}"
+                    )));
                 }
                 DataValue::DVInt(v) => {
                     if v < min_val || v > max_val {
                         return Err(Error::General(format!(
                             "validate_proof_instructions_against_values;
                              {v} out of range [{min_val},{max_val}];
-                             for {cred_label}; attribute index {attr_idx_general}")));
+                             for {cred_label}; attribute index {attr_idx_general}"
+                        )));
                     }
                 }
             }
@@ -308,11 +352,14 @@ fn get_vals_for_cred(
     }
 
     let mut result = HashMap::<CredAttrIndex, (DataValue, bool)>::new();
-    for i in 0 .. vals.len() {
-        let val = vals.get(i).ok_or_else(|| {
-            Error::General("get_vals_for_cred; INTERNAL ERROR".to_string()) })?;
-        result.insert(i as u64,
-                      (val.clone(), idxs_to_reveal.contains( &(i as u64) )));
+    for i in 0..vals.len() {
+        let val = vals
+            .get(i)
+            .ok_or_else(|| Error::General("get_vals_for_cred; INTERNAL ERROR".to_string()))?;
+        result.insert(
+            i as u64,
+            (val.clone(), idxs_to_reveal.contains(&(i as u64))),
+        );
     }
     Ok(result)
 }
@@ -320,8 +367,8 @@ fn get_vals_for_cred(
 #[allow(clippy::type_complexity)]
 // This is pub only to enable its use in tests
 pub fn get_all_vals(
-    pres_reqs             : &HashMap<CredentialLabel, CredentialReqs>,
-    sigs_and_rel_data_api : &HashMap<CredentialLabel, SignatureAndRelatedData>,
+    pres_reqs: &HashMap<CredentialLabel, CredentialReqs>,
+    sigs_and_rel_data_api: &HashMap<CredentialLabel, SignatureAndRelatedData>,
 ) -> VCAResult<HashMap<CredentialLabel, HashMap<CredAttrIndex, (DataValue, bool)>>> {
     merge_maps(
         pres_reqs.iter().collect(),
@@ -338,8 +385,8 @@ pub fn get_all_vals(
 }
 
 // This is pub only to enable its use in tests
-pub fn get_vals_to_reveal (
-    all_vals: &HashMap<CredentialLabel,HashMap<CredAttrIndex,(DataValue,bool)>>
-) -> HashMap<CredentialLabel,HashMap<CredAttrIndex,DataValue>> {
-    filter_map_2_lvl(|(_,b)| b, |(dv,_)| dv, all_vals)
+pub fn get_vals_to_reveal(
+    all_vals: &HashMap<CredentialLabel, HashMap<CredAttrIndex, (DataValue, bool)>>,
+) -> HashMap<CredentialLabel, HashMap<CredAttrIndex, DataValue>> {
+    filter_map_2_lvl(|(_, b)| b, |(dv, _)| dv, all_vals)
 }

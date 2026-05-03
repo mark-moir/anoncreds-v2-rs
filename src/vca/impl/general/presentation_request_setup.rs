@@ -1,13 +1,15 @@
 // ----------------------------------------------------------------------------
-use crate::vca::{Error, SerdeJsonError, VCAResult};
+use crate::vca::primitives::types::*;
 use crate::vca::r#impl::json::shared_params::{lookup_one_int, lookup_one_text};
 use crate::vca::r#impl::json::util::decode_from_text;
-use crate::vca::r#impl::util::{disjoint_vec_of_vecs, keys_vec_sorted, merge_maps, sort_by, TryCollectConcat};
-use crate::vca::primitives::types::*;
+use crate::vca::r#impl::util::{
+    disjoint_vec_of_vecs, keys_vec_sorted, merge_maps, sort_by, TryCollectConcat,
+};
 use crate::vca::types::*;
+use crate::vca::{Error, SerdeJsonError, VCAResult};
 // ----------------------------------------------------------------------------
 use std::cmp::{min, Ordering};
-use std::collections::{HashMap,HashSet};
+use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
 // ----------------------------------------------------------------------------
 
@@ -20,12 +22,13 @@ pub fn presentation_request_setup(
     Vec<ProofInstructionGeneral<ResolvedRequirement>>,
     EqualityReqs,
 )> {
-    let res_prf_insts = get_proof_instructions(shared_params, pres_reqs, vals_to_reveal, proof_mode)?;
+    let res_prf_insts =
+        get_proof_instructions(shared_params, pres_reqs, vals_to_reveal, proof_mode)?;
     let eq_reqs = equality_reqs_from_pres_reqs_general(pres_reqs)?;
     if proof_mode != ProofMode::TestBackend {
         for eq_req in eq_reqs.clone() {
             check_equalities_have_same_claim_types::main(pres_reqs, shared_params, eq_req)?
-        };
+        }
         // We could also check that values are the same if called by the prover, which would help to
         // catch mistakes by honest provers, but verification will fail if values differ anyway.
         // For this, we would need to have the caller optionally provide all attribute values, not
@@ -45,7 +48,8 @@ mod check_equalities_have_same_claim_types {
     pub fn main(
         pres_reqs: &HashMap<CredentialLabel, CredentialReqs>,
         shared_params: &HashMap<SharedParamKey, SharedParamValue>,
-        eq_req: EqualityReq) -> VCAResult<()> {
+        eq_req: EqualityReq,
+    ) -> VCAResult<()> {
         let claim_types: Vec<ClaimType> = eq_req
             .iter()
             .map(|x| go(pres_reqs, shared_params, x.clone()))
@@ -59,18 +63,20 @@ mod check_equalities_have_same_claim_types {
                             "checkEqualitiesHaveSameClaimTypes",
                             "multiple claim types",
                             format!("{claim_types:?}"),
-                            format!("{eq_req:?}")))))
+                            format!("{eq_req:?}")
+                        ))));
                     }
-                };
+                }
                 Ok(())
             }
         }
     }
 
-    fn go (
+    fn go(
         pres_reqs: &HashMap<CredentialLabel, CredentialReqs>,
         shared_params: &HashMap<SharedParamKey, SharedParamValue>,
-        (c_lbl, a_idx): (CredentialLabel, CredAttrIndex)) -> VCAResult<ClaimType> {
+        (c_lbl, a_idx): (CredentialLabel, CredAttrIndex),
+    ) -> VCAResult<ClaimType> {
         let issuer_lbl = lookup_throw_if_absent(
             &c_lbl,
             pres_reqs,
@@ -80,21 +86,29 @@ mod check_equalities_have_same_claim_types {
                 format!("credential_label={c_lbl}"),
             ])?
             .signer_label.clone();
-        let (SignerPublicData {signer_public_schema: schema, ..}) =
-            decode_from_text(
-                "Unable to decode IssuerPublic from shared parameters",
-                lookup_one_text(&issuer_lbl, shared_params)?)?;
+        let (SignerPublicData {
+            signer_public_schema: schema,
+            ..
+        }) = decode_from_text(
+            "Unable to decode IssuerPublic from shared parameters",
+            lookup_one_text(&issuer_lbl, shared_params)?,
+        )?;
         lookup_throw_if_out_of_bounds(
             &schema,
             a_idx as usize,
             Error::General,
             &[
-                "checkEqualitiesHaveSameClaimTypes: attribute index out of bounds for schema".to_string(),
-                format!("credential_label={c_lbl}, attr_index={a_idx}, schema_len={}", schema.len()),
-            ]).copied()
+                "checkEqualitiesHaveSameClaimTypes: attribute index out of bounds for schema"
+                    .to_string(),
+                format!(
+                    "credential_label={c_lbl}, attr_index={a_idx}, schema_len={}",
+                    schema.len()
+                ),
+            ],
+        )
+        .copied()
     }
 }
-
 
 pub fn get_proof_instructions(
     sparms: &HashMap<SharedParamKey, SharedParamValue>,
@@ -111,8 +125,9 @@ pub fn get_proof_instructions(
     Ok(sort_by(
         merge_maps(cred_reqs.iter().collect(), vals_to_reveal.iter().collect())?
             .into_iter()
-            .map(|(label, reqs_and_vals)|
-                 get_proof_instructions_for_cred(sparms, &lkups, label, reqs_and_vals, prf_mode))
+            .map(|(label, reqs_and_vals)| {
+                get_proof_instructions_for_cred(sparms, &lkups, label, reqs_and_vals, prf_mode)
+            })
             .try_collect_concat()?,
         compare_prf_instrs,
     ))
@@ -160,21 +175,21 @@ fn get_proof_instructions_for_cred(
     })?;
     let sig_res: ProofInstructionGeneral<ResolvedRequirement> = {
         if prf_mode != ProofMode::TestBackend {
-            let revealed_idxs: HashSet<_> =
-                vals_to_reveal.iter().map(|(i, _)| *i).collect();
-            let requested_idxs: HashSet<_> =
-                requested_idxs.iter().cloned().collect();
+            let revealed_idxs: HashSet<_> = vals_to_reveal.iter().map(|(i, _)| *i).collect();
+            let requested_idxs: HashSet<_> = requested_idxs.iter().cloned().collect();
             if revealed_idxs != requested_idxs {
-                return Err(Error::General(
-                    format!("get_proof_instructions_for_cred; \
+                return Err(Error::General(format!(
+                    "get_proof_instructions_for_cred; \
                              revealed values {:?} do not match \
                              indexes requested {:?} for {c_lbl}",
-                            vals_to_reveal, requested_idxs)))
+                    vals_to_reveal, requested_idxs
+                )));
             }
         };
         let signer_public_data: SignerPublicData = decode_from_text(
             "Unable to decode IssuerPublic from shared parameters",
-            lookup_one_text(signer_label, sparms)?)?;
+            lookup_one_text(signer_label, sparms)?,
+        )?;
         let schema = &signer_public_data.signer_public_schema;
         let reveal_vals_and_cts = vals_to_reveal
             .iter()
@@ -207,20 +222,23 @@ fn get_proof_instructions_for_cred(
                  accumulator_public_data_label,
                  membership_proving_key_label,
                  accumulator_label,
-                 accumulator_seq_num_label
+                 accumulator_seq_num_label,
              }|
-                -> VCAResult<ProofInstructionGeneral<ResolvedRequirement>> {
+             -> VCAResult<ProofInstructionGeneral<ResolvedRequirement>> {
                 let public_data: AccumulatorPublicData = decode_from_text(
                     "get_proof_instructions_for_cred",
-                    lookup_one_text(accumulator_public_data_label, sparms)?)?;
+                    lookup_one_text(accumulator_public_data_label, sparms)?,
+                )?;
 
                 let mem_prv: MembershipProvingKey = decode_from_text(
                     "get_proof_instructions_for_cred",
-                    lookup_one_text(membership_proving_key_label, sparms)?)?;
+                    lookup_one_text(membership_proving_key_label, sparms)?,
+                )?;
 
                 let accumulator: Accumulator = decode_from_text(
                     "get_proof_instructions_for_cred",
-                    lookup_one_text(accumulator_label, sparms)?)?;
+                    lookup_one_text(accumulator_label, sparms)?,
+                )?;
 
                 let seq_num = lookup_one_int(accumulator_seq_num_label, sparms)?;
 
@@ -232,7 +250,7 @@ fn get_proof_instructions_for_cred(
                         public_data,
                         mem_prv,
                         accumulator,
-                        seq_num: *seq_num
+                        seq_num: *seq_num,
                     }),
                 })
             },
@@ -264,14 +282,15 @@ fn get_proof_instructions_for_cred(
         .iter()
         .map(
             |IndexAndLabel {
-                index: a_idx,
-                label: auth_lbl,
-            }| {
+                 index: a_idx,
+                 label: auth_lbl,
+             }| {
                 let x = EncryptedForResolved {
-                    auth_pub_label  : auth_lbl.to_string(),
-                    auth_pub_data : decode_from_text(
+                    auth_pub_label: auth_lbl.to_string(),
+                    auth_pub_data: decode_from_text(
                         "get_proof_instructions_for_cred",
-                        lookup_one_text(auth_lbl, sparms)?)?
+                        lookup_one_text(auth_lbl, sparms)?,
+                    )?,
                 };
                 Ok(ProofInstructionGeneral {
                     cred_label: c_lbl.clone(),
@@ -286,7 +305,7 @@ fn get_proof_instructions_for_cred(
     Ok([vec![sig_res], in_accum_res, in_range_res, en_f_res].concat())
 }
 
-fn extract_eq_pairs_from_pres_reqs (
+fn extract_eq_pairs_from_pres_reqs(
     pres_reqs: &HashMap<CredentialLabel, CredentialReqs>,
 ) -> VCAResult<EqualityReqs> {
     let mut all_eq_pairs: EqualityReqs = vec![];
@@ -298,12 +317,18 @@ fn extract_eq_pairs_from_pres_reqs (
                 ..
             },
         )| {
-            equal_to.iter().for_each(|EqInfo { from_index, to_label, to_index }| {
-                all_eq_pairs.extend([vec![
-                    (from_label.clone(), *from_index),
-                    (to_label.clone(), *to_index),
-                ]]);
-            });
+            equal_to.iter().for_each(
+                |EqInfo {
+                     from_index,
+                     to_label,
+                     to_index,
+                 }| {
+                    all_eq_pairs.extend([vec![
+                        (from_label.clone(), *from_index),
+                        (to_label.clone(), *to_index),
+                    ]]);
+                },
+            );
         },
     );
     Ok(all_eq_pairs)
@@ -317,9 +342,7 @@ fn extract_eq_pairs_from_pres_reqs (
 // When using AC2C, the prover and verifier must produce the same order of `EqualityReqs`
 // regardless of the order of items in `pres_reqs`.
 // If not, then the Merlin transcript check in verify fails.
-fn equality_reqs_canonical_order (
-    all_eq_pairs: &EqualityReqs,
-) -> EqualityReqs {
+fn equality_reqs_canonical_order(all_eq_pairs: &EqualityReqs) -> EqualityReqs {
     let mut all_eq_pairs_sorted = vec![];
     for v in all_eq_pairs.iter() {
         let mut v = v.clone().to_vec();
@@ -335,16 +358,14 @@ fn equality_reqs_from_pres_reqs_general(
     pres_reqs: &HashMap<CredentialLabel, CredentialReqs>,
 ) -> VCAResult<EqualityReqs> {
     // Get equality pairs from presentation requirements
-    let mut all_eq_pairs =
-        extract_eq_pairs_from_pres_reqs(pres_reqs)?;
+    let mut all_eq_pairs = extract_eq_pairs_from_pres_reqs(pres_reqs)?;
     all_eq_pairs = disjoint_vec_of_vecs(all_eq_pairs);
     // Ensure all target credential labels are in map
     all_eq_pairs.iter().try_for_each(|eq_pairs| {
         eq_pairs.iter().try_for_each(|(x, _)| {
-            pres_reqs
-                .get(x)
-                .ok_or(Error::General(
-                    format!("equality_reqs_from_pres_reqs_general: Non-existent credential label {x}")))?;
+            pres_reqs.get(x).ok_or(Error::General(format!(
+                "equality_reqs_from_pres_reqs_general: Non-existent credential label {x}"
+            )))?;
             Ok(())
         })
     })?;

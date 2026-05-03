@@ -1,8 +1,8 @@
 // ------------------------------------------------------------------------------
-use crate::vca::{Error, VCAResult};
-use crate::vca::r#impl::to_from_api::*;
 use crate::vca::interfaces::types as api;
+use crate::vca::r#impl::to_from_api::*;
 use crate::vca::zkp_backends::dnc::types::*;
+use crate::vca::{Error, VCAResult};
 // ------------------------------------------------------------------------------
 
 impl VcaTryFrom<ProofG1> for api::Proof {
@@ -16,4 +16,3 @@ impl VcaTryFrom<&api::Proof> for ProofG1 {
         from_opaque_json(&x.0)
     }
 }
-

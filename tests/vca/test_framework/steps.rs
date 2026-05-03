@@ -1,20 +1,20 @@
 // -----------------------------------------------------------------------------
 use credx::str_vec_from;
-use credx::vca::{Error, VCAResult};
 use credx::vca::api;
+use credx::vca::interfaces::primitives::types::*;
+use credx::vca::interfaces::primitives::ProofInstructionGeneral;
+use credx::vca::interfaces::types::ClaimType::*;
+use credx::vca::interfaces::types::DataValue::*;
 use credx::vca::r#impl::general::presentation_request_setup::get_proof_instructions;
 use credx::vca::r#impl::general::proof::{get_all_vals, get_vals_to_reveal};
 use credx::vca::r#impl::json::shared_params::put_shared_one;
 use credx::vca::r#impl::json::util::encode_to_text;
 use credx::vca::r#impl::util::*;
-use credx::vca::interfaces::primitives::ProofInstructionGeneral;
-use credx::vca::interfaces::primitives::types::*;
-use credx::vca::interfaces::types::ClaimType::*;
-use credx::vca::interfaces::types::DataValue::*;
+use credx::vca::{Error, VCAResult};
 // -----------------------------------------------------------------------------
-use crate::vca::test_framework::*;
-use crate::vca::test_framework::types::{CreateVerifyExpectation::*,PerturbDecryptedValue::*};
+use crate::vca::test_framework::types::{CreateVerifyExpectation::*, PerturbDecryptedValue::*};
 use crate::vca::test_framework::utility_functions as tuf;
+use crate::vca::test_framework::*;
 use crate::vca::test_utils::missing_case_insensitive;
 // -----------------------------------------------------------------------------
 use maplit::hashmap;
@@ -28,20 +28,28 @@ pub fn step_create_issuer(
     i_lbl: IssuerLabel,
     schema: Vec<api::ClaimType>,
     blind_attr_idxs: Vec<api::CredAttrIndex>,
-    proof_mode: ProofMode
+    proof_mode: ProofMode,
 ) -> AddTestStep {
     let create_signer_data = vca_api.create_signer_data.clone();
     Arc::new(move |ts| {
         pprintln("step_create_issuer", &format!("{:#?}", &ts));
         let asd0 = &mut ts.all_signer_data;
-        let sp0  = &mut ts.sparms;
+        let sp0 = &mut ts.sparms;
         // Check that issuer label is new
         if asd0.get(&i_lbl).is_some() {
             return Err(Error::General(ic_semi(&str_vec_from!(
-                "step_create_issuer", "Duplicate issuer label", format!("{i_lbl}")))));
+                "step_create_issuer",
+                "Duplicate issuer label",
+                format!("{i_lbl}")
+            ))));
         }
         // asd0.len creates SignerData with a different RNG seed so it differs from previous ones
-        let sd = (*create_signer_data)(asd0.len() as u64, &schema, &blind_attr_idxs, proof_mode.clone())?;
+        let sd = (*create_signer_data)(
+            asd0.len() as u64,
+            &schema,
+            &blind_attr_idxs,
+            proof_mode.clone(),
+        )?;
         let spd = &sd.signer_public_data;
 
         // update test state
@@ -68,21 +76,22 @@ pub fn step_create_accumulators_for_issuer(
             .all_signer_data
             .get(&i_lbl)
             .ok_or(Error::General(ic_semi(&str_vec_from!(
-                "step_create_accumulators_for_issuer", "no such Issuer"))))?
+                "step_create_accumulators_for_issuer",
+                "no such Issuer"
+            ))))?
             .signer_public_data;
         let schema = &spd.signer_public_schema;
         // TODO: ensure different RNG seeds for different revocation managers
         let accs = create_accumulators(0, schema)?;
         if ts.accums.contains_key(spd) {
             return Err(Error::General(ic_semi(&str_vec_from!(
-                "step_create_accumulators_for_issuer", "accumulators already exist for",
-                format!("{i_lbl}")))));
+                "step_create_accumulators_for_issuer",
+                "accumulators already exist for",
+                format!("{i_lbl}")
+            ))));
         };
         // Create map of accumulators, each with empty PublicAccumulatorUpdateInfo
-        ts.accums.insert(
-            spd.deref().clone(),
-            accs
-        );
+        ts.accums.insert(spd.deref().clone(), accs);
         Ok(())
     })
 }
@@ -105,7 +114,10 @@ pub fn step_sign_credential(
             Some(h_sards) => {
                 if h_sards.get(&i_lbl).is_some() {
                     return Err(Error::General(ic_semi(&str_vec_from!(
-                        "A credential signed by", format!("{i_lbl}"), "already exists"))));
+                        "A credential signed by",
+                        format!("{i_lbl}"),
+                        "already exists"
+                    ))));
                 }
             }
         }
@@ -131,27 +143,36 @@ pub fn step_sign_credential(
         // definition of StepSignCredential
         let vals = match attr_max_off_mb {
             None => Ok(vals.clone()),
-            Some(ReplaceValueWithMaximumPlus{attrIdxToReplaceWithMaxSupported: a_idx, plusOffset: off}) => {
-                match lookup_throw_if_out_of_bounds(&vals,a_idx as usize,Error::General,
-                                                    &str_vec_from!("step_sign_credential",
-                                                                   "overridden attribute"))? {
+            Some(ReplaceValueWithMaximumPlus {
+                attrIdxToReplaceWithMaxSupported: a_idx,
+                plusOffset: off,
+            }) => {
+                match lookup_throw_if_out_of_bounds(
+                    &vals,
+                    a_idx as usize,
+                    Error::General,
+                    &str_vec_from!("step_sign_credential", "overridden attribute"),
+                )? {
                     DVInt(_) => {
                         let m = get_range_proof_max_value();
-                        let v = m.checked_add(off).ok_or(
-                            Error::General(ic_semi(
-                                &str_vec_from!("step_sign_credential",
-                                               "overflow when adjusting range maximum"))))?;
+                        let v =
+                            m.checked_add(off)
+                                .ok_or(Error::General(ic_semi(&str_vec_from!(
+                                    "step_sign_credential",
+                                    "overflow when adjusting range maximum"
+                                ))))?;
                         let mut vals = vals.clone();
                         vals[a_idx as usize] = DVInt(v);
                         Ok(vals)
-                    },
+                    }
                     v => Err(Error::General(ic_semi(&str_vec_from!(
                         "step_sign_credential",
                         "expected DVInt for",
                         "attribute index",
                         format!("a_idx"),
                         "got",
-                        format!("{v:?}")))))
+                        format!("{v:?}")
+                    )))),
                 }
             }
         }?;
@@ -178,16 +199,33 @@ pub fn step_create_blind_signing_info(
     h_lbl: HolderLabel,
     i_lbl: IssuerLabel,
     blinded_vals: Vec<CredAttrIndexAndDataValue>,
-    proof_mode: ProofMode
+    proof_mode: ProofMode,
 ) -> AddTestStep {
     let create_blind_signing_info = vca_api.create_blind_signing_info.clone();
     Arc::new(move |ts| {
-        let sd = lookup_throw_if_absent(&i_lbl, &ts.all_signer_data, Error::General,
-                                        &str_vec_from!("stepCreateBlindSigningInfo",
-                                                       "Issuer has not been created"))?;
-        let bsi = create_blind_signing_info(0, &sd.signer_public_data, &blinded_vals, proof_mode.clone())?;
-        insert_throw_if_present_2_lvl(&h_lbl, &i_lbl, bsi, & mut ts.all_blind_signing_info, Error::General,
-                                      &str_vec_from!("stepCreateBlindSigningInfo", "BlindSigningInfo already created"))
+        let sd = lookup_throw_if_absent(
+            &i_lbl,
+            &ts.all_signer_data,
+            Error::General,
+            &str_vec_from!("stepCreateBlindSigningInfo", "Issuer has not been created"),
+        )?;
+        let bsi = create_blind_signing_info(
+            0,
+            &sd.signer_public_data,
+            &blinded_vals,
+            proof_mode.clone(),
+        )?;
+        insert_throw_if_present_2_lvl(
+            &h_lbl,
+            &i_lbl,
+            bsi,
+            &mut ts.all_blind_signing_info,
+            Error::General,
+            &str_vec_from!(
+                "stepCreateBlindSigningInfo",
+                "BlindSigningInfo already created"
+            ),
+        )
     })
 }
 
@@ -196,7 +234,7 @@ pub fn step_sign_credential_with_blinding(
     i_lbl: IssuerLabel,
     h_lbl: HolderLabel,
     non_blinded_values: Vec<CredAttrIndexAndDataValue>,
-    proof_mode: ProofMode
+    proof_mode: ProofMode,
 ) -> AddTestStep {
     let sign_with_blinded_attributes = vca_api.sign_with_blinded_attributes.clone();
     let unblind_blinded_signature = vca_api.unblind_blinded_signature.clone();
@@ -205,53 +243,93 @@ pub fn step_sign_credential_with_blinding(
         let h_sards_mb = sards_0.get(&h_lbl);
         if h_sards_mb.is_some_and(|x| x.get(&i_lbl).is_some()) {
             return Err(Error::General(ic_semi(&str_vec_from!(
-                "A credential signed by", i_lbl, "already exists",
-                "for", h_lbl,
-                "the test framework disallows multiple for simplicity"))))
+                "A credential signed by",
+                i_lbl,
+                "already exists",
+                "for",
+                h_lbl,
+                "the test framework disallows multiple for simplicity"
+            ))));
         }
         let asd0 = &ts.all_signer_data;
         // Get issuer SignerData
-        let sd = lookup_throw_if_absent(&i_lbl, asd0, Error::General,
-                                        &str_vec_from!("step_sign_credential",
-                                                       "Issuer has not been created"))?;
+        let sd = lookup_throw_if_absent(
+            &i_lbl,
+            asd0,
+            Error::General,
+            &str_vec_from!("step_sign_credential", "Issuer has not been created"),
+        )?;
         // Get Holder's BlindSigningInfo
-        let BlindSigningInfo{blind_info_for_signer: bsi,
-                             blinded_attributes: blinded_values,
-                             info_for_unblinding: blinding} =
-            lookup_throw_if_absent_2_lvl(&h_lbl, &i_lbl, &ts.all_blind_signing_info, Error::General, &str_vec_from!(
-                "step_sign_credential_with_blindings", "no blinding info found", "use create_blind_signing_info"))?;
+        let BlindSigningInfo {
+            blind_info_for_signer: bsi,
+            blinded_attributes: blinded_values,
+            info_for_unblinding: blinding,
+        } = lookup_throw_if_absent_2_lvl(
+            &h_lbl,
+            &i_lbl,
+            &ts.all_blind_signing_info,
+            Error::General,
+            &str_vec_from!(
+                "step_sign_credential_with_blindings",
+                "no blinding info found",
+                "use create_blind_signing_info"
+            ),
+        )?;
         // Sign credential
-        let blinded_sig = sign_with_blinded_attributes(0, &non_blinded_values, bsi, sd, proof_mode.clone())?;
+        let blinded_sig =
+            sign_with_blinded_attributes(0, &non_blinded_values, bsi, sd, proof_mode.clone())?;
         // Unblind signature
         // NOTE: in real life, this would be done by the Holder after receiving the blinded signature.
         // Similar to step_sign, we do this in the same step as the signing in order to keep usage of the
         // framework simpler.
         let schema = &sd.signer_public_data.signer_public_schema;
-        let sig = unblind_blinded_signature(schema, blinded_values, &blinded_sig, blinding, proof_mode.clone())?;
+        let sig = unblind_blinded_signature(
+            schema,
+            blinded_values,
+            &blinded_sig,
+            blinding,
+            proof_mode.clone(),
+        )?;
         let preqs_0 = &mut ts.preqs;
         // This models the Issuer sending the signature to the Holder, which stores it along with
         // empty CredentialAuxiliaryData (e.g., it has not yet received its accumulator witness(es),
         // associating this with the IssuerLabel, which is the same as the CredentialLabel
-        insert_throw_if_present_2_lvl(&h_lbl, &i_lbl, new_credential_reqs(i_lbl.clone()), preqs_0, Error::General,
-                                      &str_vec_from!("step_sign_credential_with_blinding",
-                                                     "credential requirements already exist",
-                                                     "UNEXPECTED due to earlier check"))?;
+        insert_throw_if_present_2_lvl(
+            &h_lbl,
+            &i_lbl,
+            new_credential_reqs(i_lbl.clone()),
+            preqs_0,
+            Error::General,
+            &str_vec_from!(
+                "step_sign_credential_with_blinding",
+                "credential requirements already exist",
+                "UNEXPECTED due to earlier check"
+            ),
+        )?;
 
         let mut all_vals_0 = [&non_blinded_values[..], &blinded_values[..]].concat();
         all_vals_0.sort();
         let all_vals = all_vals_0
             .iter()
-            .map(|CredAttrIndexAndDataValue { index : _, value }| (*value).clone())
+            .map(|CredAttrIndexAndDataValue { index: _, value }| (*value).clone())
             .collect::<Vec<_>>();
         let sard = SignatureAndRelatedData {
-            signature             : sig,
-            values                : all_vals,
-            accumulator_witnesses : HashMap::<CredAttrIndex, AccumulatorMembershipWitness>::new()
+            signature: sig,
+            values: all_vals,
+            accumulator_witnesses: HashMap::<CredAttrIndex, AccumulatorMembershipWitness>::new(),
         };
-        insert_throw_if_present_2_lvl(&h_lbl, &i_lbl, sard, &mut ts.sigs_and_rel_data, Error::General,
-                                      &str_vec_from!("step_sign_credential_with_blinding",
-                                                     "signature already exist",
-                                                     "UNEXPECTED due to earlier check"))?;
+        insert_throw_if_present_2_lvl(
+            &h_lbl,
+            &i_lbl,
+            sard,
+            &mut ts.sigs_and_rel_data,
+            Error::General,
+            &str_vec_from!(
+                "step_sign_credential_with_blinding",
+                "signature already exist",
+                "UNEXPECTED due to earlier check"
+            ),
+        )?;
         Ok(())
     })
 }
@@ -275,17 +353,23 @@ pub fn step_accumulator_add_remove(
         move |sn: api::AccumulatorBatchSeqNo,
               h_wits: &mut HolderAllWitnesses,
               (api::HolderID(h_lbl), mw): (api::HolderID, api::AccumulatorMembershipWitness)|
-                                           -> VCAResult<()> {
-                  let l1 = h_wits.entry(h_lbl.clone()).or_default();
-                  let l2 = l1.entry(i_lbl.clone()).or_default();
-                  let l3 = l2.entry(a_idx).or_default();
-                  insert_throw_if_present(
-                      sn, mw, l3,
-                      Error::General, &str_vec_from!(
-                          "populate_holder_wits", "witness_already_present",
-                          format!("{h_lbl}; {i_lbl}; {a_idx}; sn={sn}")))?;
-                  Ok(())
-              };
+              -> VCAResult<()> {
+            let l1 = h_wits.entry(h_lbl.clone()).or_default();
+            let l2 = l1.entry(i_lbl.clone()).or_default();
+            let l3 = l2.entry(a_idx).or_default();
+            insert_throw_if_present(
+                sn,
+                mw,
+                l3,
+                Error::General,
+                &str_vec_from!(
+                    "populate_holder_wits",
+                    "witness_already_present",
+                    format!("{h_lbl}; {i_lbl}; {a_idx}; sn={sn}")
+                ),
+            )?;
+            Ok(())
+        };
 
     Arc::new(move |ts| {
         pprintln("step_accumulator_add_remove", &format!("{:#?}", &ts));
@@ -299,24 +383,28 @@ pub fn step_accumulator_add_remove(
         let accs = ts.accums.get_mut(spd).ok_or(Error::General(
             "step_accumulator_add_remove; accumulators not created for Issuer".to_string(),
         ))?;
-        let (acc_data, orig_accum, upd_info_and_accums) = accs.get(&a_idx).ok_or(Error::General(
-            "step_accumulator_add_remove; no accumulator found".to_string(),
-        ))?;
+        let (acc_data, orig_accum, upd_info_and_accums) = accs.get(&a_idx).ok_or(
+            Error::General("step_accumulator_add_remove; no accumulator found".to_string()),
+        )?;
         // The sequence number is the number of previous updates
         // since the original accumulator was created
         let sn = upd_info_and_accums.len() as u64;
         // If sn == 0, i is not used, so saturating is ok
         let i = sn.saturating_sub(1);
         let acc_val = {
-            if sn == 0 { orig_accum }
-            else {
-                let (_,v) = lookup_throw_if_absent(
-                    &i,upd_info_and_accums,Error::General,
+            if sn == 0 {
+                orig_accum
+            } else {
+                let (_, v) = lookup_throw_if_absent(
+                    &i,
+                    upd_info_and_accums,
+                    Error::General,
                     // This assumes that Revocation Managers never "garbage collect" update
                     // information and accumulators; if that is ever done in future, this
                     // error message should change, and also we'll need to track the
                     // maximum sequence number (as opposed to using M.size above).
-                    &str_vec_from!("step_accumulator_add_remove", "INTERNAL ERROR"))?;
+                    &str_vec_from!("step_accumulator_add_remove", "INTERNAL ERROR"),
+                )?;
                 v
             }
         };
@@ -351,17 +439,24 @@ pub fn step_accumulator_add_remove(
             let mut upd_info_and_accums = upd_info_and_accums.clone();
             upd_info_and_accums.insert(sn, (awui, updated_acc_val));
             let mut accs = accs.clone();
-            accs.insert(a_idx, (acc_data.clone(), orig_accum.clone(), upd_info_and_accums));
+            accs.insert(
+                a_idx,
+                (acc_data.clone(), orig_accum.clone(), upd_info_and_accums),
+            );
             accs
         };
         ts.accums.insert(spd.as_ref().clone(), accs);
         for (holder_id, mem_wit) in wits_for_adds.iter() {
-        // Similarly to above, in reality, new witnesses would be sent to the respective
-        // Holders (using the HolderIDs), who would add them to their SigsAndRelatedData,
-        // but for expedience we add them directly in the TestState
-        // Because we have now done one more update, holders associate their new witness with sn + 1
-            let _ = populate_holder_wits(sn + 1, &mut ts.accum_witnesses, (holder_id.clone(), mem_wit.clone()));
-        };
+            // Similarly to above, in reality, new witnesses would be sent to the respective
+            // Holders (using the HolderIDs), who would add them to their SigsAndRelatedData,
+            // but for expedience we add them directly in the TestState
+            // Because we have now done one more update, holders associate their new witness with sn + 1
+            let _ = populate_holder_wits(
+                sn + 1,
+                &mut ts.accum_witnesses,
+                (holder_id.clone(), mem_wit.clone()),
+            );
+        }
         Ok(())
     })
 }
@@ -410,19 +505,27 @@ pub fn step_in_range(
         // within a specific range.
         let max_v = match max_off {
             None => max_v0,
-            Some(ReplaceUpperBoundWithMaxSupportedPlusOffset { replaceUpperBoundWithMaxSupportedPlusOffset: off }) =>
-                max_range_value.checked_add(off).ok_or(
-                           Error::General(ic_semi(
-                               &str_vec_from!("step_in_range",
-                                              "overflow"))))?,
+            Some(ReplaceUpperBoundWithMaxSupportedPlusOffset {
+                replaceUpperBoundWithMaxSupportedPlusOffset: off,
+            }) => max_range_value
+                .checked_add(off)
+                .ok_or(Error::General(ic_semi(&str_vec_from!(
+                    "step_in_range",
+                    "overflow"
+                ))))?,
         };
         // Including min and max values in labels enables different ranges for the same attribute
-        let range_min_val_sp_label =
-            ic_semi(&str_vec_from!("rangeMinValueFor", format!("{i_lbl}"), format!("{a_idx}")));
-        let range_max_val_sp_label =
-            ic_semi(&str_vec_from!("rangeMaxValueFor", format!("{i_lbl}"), format!("{a_idx}")));
-        let range_prv_key_sp_label =
-            "singleRangeProvingKey".to_string();
+        let range_min_val_sp_label = ic_semi(&str_vec_from!(
+            "rangeMinValueFor",
+            format!("{i_lbl}"),
+            format!("{a_idx}")
+        ));
+        let range_max_val_sp_label = ic_semi(&str_vec_from!(
+            "rangeMaxValueFor",
+            format!("{i_lbl}"),
+            format!("{a_idx}")
+        ));
+        let range_prv_key_sp_label = "singleRangeProvingKey".to_string();
         let err_msg = format!(
             "step_in_range; no credentials signed for holder; h_lbl={h_lbl}; i_lbl={i_lbl}"
         );
@@ -454,16 +557,20 @@ pub fn step_in_range(
                 ts.sparms.insert(
                     range_prv_key_sp_label.clone(),
                     api::SharedParamValue::SPVOne(api::DataValue::DVText(encode_to_text(
-                        &range_prv_key)?)));
+                        &range_prv_key,
+                    )?)),
+                );
                 Ok(&mut ts.sparms)
             }
         }?;
         sp1.insert(
             range_min_val_sp_label,
-            api::SharedParamValue::SPVOne(api::DataValue::DVInt(min_v)));
+            api::SharedParamValue::SPVOne(api::DataValue::DVInt(min_v)),
+        );
         sp1.insert(
             range_max_val_sp_label,
-            api::SharedParamValue::SPVOne(api::DataValue::DVInt(max_v)));
+            api::SharedParamValue::SPVOne(api::DataValue::DVInt(max_v)),
+        );
         Ok(())
     })
 }
@@ -482,22 +589,39 @@ pub fn step_in_accum(
         pprintln("step_in_accum", &format!("{:#?}", &ts));
         let membership_proving_key_sp_label = "SingleMembershipProvingKey".to_string();
         let acc_pub_data_sp_key = ic_semi(&str_vec_from!(
-            "accPubDataFor", format!("{i_lbl}"), format!("{a_idx}")));
+            "accPubDataFor",
+            format!("{i_lbl}"),
+            format!("{a_idx}")
+        ));
         // HolderID is included in SharedParamLabels to avoid needing per-holder SharedParams
         let acc_val_sp_key = ic_semi(&str_vec_from!(
-            "accValueFor", format!("{i_lbl}"), format!("{h_lbl}"), format!("{a_idx}")));
+            "accValueFor",
+            format!("{i_lbl}"),
+            format!("{h_lbl}"),
+            format!("{a_idx}")
+        ));
         let acc_sn_sp_key = ic_semi(&str_vec_from!(
-            "accumSeqNoFor", format!("{i_lbl}"), format!("{h_lbl}"), format!("{a_idx}")));
+            "accumSeqNoFor",
+            format!("{i_lbl}"),
+            format!("{h_lbl}"),
+            format!("{a_idx}")
+        ));
         let cred_reqs = ts
             .preqs
             .get_mut(&h_lbl)
             .ok_or(Error::General(ic_semi(&str_vec_from!(
-                "step_in_accum", "no credentials signed for holder",
-                format!("{h_lbl}")))))?
+                "step_in_accum",
+                "no credentials signed for holder",
+                format!("{h_lbl}")
+            ))))?
             .get_mut(&i_lbl)
             .ok_or(Error::General(ic_semi(&str_vec_from!(
-                "step_in_accum", "no credentials signed for holder",
-                format!("{h_lbl}"), "issuer", format!("{i_lbl}")))))?;
+                "step_in_accum",
+                "no credentials signed for holder",
+                format!("{h_lbl}"),
+                "issuer",
+                format!("{i_lbl}")
+            ))))?;
         cred_reqs.in_accum.0.insert(
             0,
             api::InAccumInfo {
@@ -522,7 +646,9 @@ pub fn step_in_accum(
                 ts.sparms.insert(
                     membership_proving_key_sp_label,
                     api::SharedParamValue::SPVOne(api::DataValue::DVText(encode_to_text(
-                        &acc_prv_key)?)));
+                        &acc_prv_key,
+                    )?)),
+                );
                 Ok(&mut ts.sparms)
             }
         }?;
@@ -530,7 +656,9 @@ pub fn step_in_accum(
         let spd = ts
             .all_signer_data
             .get(&i_lbl)
-            .ok_or(Error::General("step_in_accum; SignerPublicData".to_string()))?
+            .ok_or(Error::General(
+                "step_in_accum; SignerPublicData".to_string(),
+            ))?
             .signer_public_data
             .as_ref();
         // Use it to look up Accums
@@ -538,18 +666,21 @@ pub fn step_in_accum(
             .accums
             .get(spd)
             .ok_or(Error::General("step_in_accum; AccumulatorData".to_string()))?;
-        let acc_pub_api = get_accumulator_public_data_from_map(accums_for_signer,a_idx).unwrap();
+        let acc_pub_api = get_accumulator_public_data_from_map(accums_for_signer, a_idx).unwrap();
         // Add accumulator public data and current value
-        let acc_val_api = get_accumulator_from_map(accums_for_signer,a_idx,sn).unwrap();
+        let acc_val_api = get_accumulator_from_map(accums_for_signer, a_idx, sn).unwrap();
         sp1.insert(
             acc_pub_data_sp_key,
-            api::SharedParamValue::SPVOne(api::DataValue::DVText(encode_to_text(&acc_pub_api)?)));
+            api::SharedParamValue::SPVOne(api::DataValue::DVText(encode_to_text(&acc_pub_api)?)),
+        );
         sp1.insert(
             acc_val_sp_key,
-            api::SharedParamValue::SPVOne(api::DataValue::DVText(encode_to_text(&acc_val_api)?)));
+            api::SharedParamValue::SPVOne(api::DataValue::DVText(encode_to_text(&acc_val_api)?)),
+        );
         sp1.insert(
             acc_sn_sp_key,
-            api::SharedParamValue::SPVOne(api::DataValue::DVInt(sn)));
+            api::SharedParamValue::SPVOne(api::DataValue::DVInt(sn)),
+        );
         Ok(())
     })
 }
@@ -566,11 +697,18 @@ pub fn step_equality(
             .preqs
             .get_mut(&h_lbl)
             .ok_or(Error::General(ic_semi(&str_vec_from!(
-                "step_equality", "missing holder", format!("{h_lbl}")))))?
+                "step_equality",
+                "missing holder",
+                format!("{h_lbl}")
+            ))))?
             .get_mut(&i_lbl)
             .ok_or(Error::General(ic_semi(&str_vec_from!(
-                "step_equality", "holder", format!("{h_lbl}"),
-                "missing issuer", format!("{i_lbl}")))))?;
+                "step_equality",
+                "holder",
+                format!("{h_lbl}"),
+                "missing issuer",
+                format!("{i_lbl}")
+            ))))?;
         cred_reqs.equal_to.0.append(
             &mut eqs
                 .iter()
@@ -579,7 +717,8 @@ pub fn step_equality(
                     to_label: i_lbl.clone(),
                     to_index: *cai,
                 })
-                .collect());
+                .collect(),
+        );
         Ok(())
     })
 }
@@ -598,62 +737,71 @@ pub fn step_create_and_verify_proof(
     Arc::new(move |ts| {
         pprintln("step_create_and_verify_proof", &format!("{:#?}", &ts));
         let proof_reqs = ts.preqs.get(&h_lbl).ok_or(Error::General(format!(
-            "step_create_and_verify_proof; no credentials signed for holder; h_lbl={h_lbl}")))?;
+            "step_create_and_verify_proof; no credentials signed for holder; h_lbl={h_lbl}"
+        )))?;
         let all_sigs_and_rd = ts
             .sigs_and_rel_data
             .get(&h_lbl)
             .ok_or(Error::General(format!(
-                "step_create_and_verify_proof; no credentials signed for holder; h_lbl={h_lbl}")))?;
+                "step_create_and_verify_proof; no credentials signed for holder; h_lbl={h_lbl}"
+            )))?;
         let shared_params = &ts.sparms; // TODO: Holder-specific?
 
         // populate accum witnesses
-        let err_or_sigs_and_related_data_with_wits : VCAResult<HashMap<IssuerLabelAsCredentialLabel,SignatureAndRelatedData>> = {
+        let err_or_sigs_and_related_data_with_wits: VCAResult<
+            HashMap<IssuerLabelAsCredentialLabel, SignatureAndRelatedData>,
+        > = {
             // The holder has to get the accumulator witnesses for the InAccum requests
             // and put them into the map in sigsAndRD (which has an empty map for accumulator witnesses).
             // First, find out what's requested.
-            let all_wits: HashMap<IssuerLabelAsCredentialLabel,api::AllAccumulatorWitnesses> =
+            let all_wits: HashMap<IssuerLabelAsCredentialLabel, api::AllAccumulatorWitnesses> =
                 ts.accum_witnesses.get(&h_lbl).cloned().unwrap_or_default();
 
-            let to_reveal = get_vals_to_reveal(
-                &get_all_vals(proof_reqs, all_sigs_and_rd)?);
+            let to_reveal = get_vals_to_reveal(&get_all_vals(proof_reqs, all_sigs_and_rd)?);
 
-            let witness_reqs = get_proof_instructions(shared_params, proof_reqs, &to_reveal, proof_mode)?;
+            let witness_reqs =
+                get_proof_instructions(shared_params, proof_reqs, &to_reveal, proof_mode)?;
 
             // collect all attributeIndex/sequenceNumber pairs,
             // together for each credential label
-            let witness_reqs : Vec<(CredentialLabel,(CredAttrIndex,AccumulatorBatchSeqNo))> = witness_reqs
-                .into_iter()
-                .filter_map(|x| { match x {
-                    ProofInstructionGeneral {
-                        cred_label       : c_lbl,
-                        attr_idx_general : a_idx,
-                        requirement      : ResolvedRequirement::InAccumResolvedWrapper
-                            (InAccumResolved {
-                                public_data : _,
-                                mem_prv     : _,
-                                accumulator : _,
-                                seq_num     : sn
-                            }),
-                        ..
-                    } => {Some((c_lbl, (a_idx, sn)))},
-                    _ => None,
-                }})
-                .collect();
+            let witness_reqs: Vec<(CredentialLabel, (CredAttrIndex, AccumulatorBatchSeqNo))> =
+                witness_reqs
+                    .into_iter()
+                    .filter_map(|x| match x {
+                        ProofInstructionGeneral {
+                            cred_label: c_lbl,
+                            attr_idx_general: a_idx,
+                            requirement:
+                                ResolvedRequirement::InAccumResolvedWrapper(InAccumResolved {
+                                    public_data: _,
+                                    mem_prv: _,
+                                    accumulator: _,
+                                    seq_num: sn,
+                                }),
+                            ..
+                        } => Some((c_lbl, (a_idx, sn))),
+                        _ => None,
+                    })
+                    .collect();
 
             // for each credential mentioned in proof request
             // get SignatureAndRelatedData (with no accumulator witnesses, so far)
-            let mut sigs_and_rd =
-                proof_reqs
+            let mut sigs_and_rd = proof_reqs
                 .keys()
-                .map(|c_lbl| { all_sigs_and_rd
-                               .get(c_lbl)
-                               .ok_or_else(|| Error::General(ic_semi(&str_vec_from!(
-                                   "step_create_and_verify_proof",
-                                   format!("{h_lbl}"),
-                                   "does not have a signed credential from",
-                                   format!("{c_lbl}")))))
-                               .map(|sard| (c_lbl.clone(), sard.clone()))})
-                .collect::<Result<HashMap<CredentialLabel,SignatureAndRelatedData>,Error>>()?;
+                .map(|c_lbl| {
+                    all_sigs_and_rd
+                        .get(c_lbl)
+                        .ok_or_else(|| {
+                            Error::General(ic_semi(&str_vec_from!(
+                                "step_create_and_verify_proof",
+                                format!("{h_lbl}"),
+                                "does not have a signed credential from",
+                                format!("{c_lbl}")
+                            )))
+                        })
+                        .map(|sard| (c_lbl.clone(), sard.clone()))
+                })
+                .collect::<Result<HashMap<CredentialLabel, SignatureAndRelatedData>, Error>>()?;
 
             // For each witness required, look it up and insert it into the correct SignaturesAndRelatedData
             let _ = witness_reqs
@@ -693,14 +841,13 @@ pub fn step_create_and_verify_proof(
 
         let res_p = match err_or_sigs_and_related_data_with_wits {
             Err(e) => Err(e),
-            Ok(sigs_and_rd) => {
-                create_proof(
-                    proof_reqs,
-                    shared_params,
-                    &sigs_and_rd,
-                    proof_mode.clone(),
-                    None)
-            }
+            Ok(sigs_and_rd) => create_proof(
+                proof_reqs,
+                shared_params,
+                &sigs_and_rd,
+                proof_mode.clone(),
+                None,
+            ),
         };
 
         match res_p {
@@ -710,25 +857,38 @@ pub fn step_create_and_verify_proof(
                     return Err(Error::General(ic_semi(&str_vec_from!(
                         "stepCreateAndVerifyProof",
                         "createProof expected to succeed, but failed",
-                        format!("{e:?}")))))
+                        format!("{e:?}")
+                    ))));
                 };
                 // If the test expectation specifcies strings to check for in the error, ...
                 cfp_exps.map(|x| {
                     // Check for them, and if we get back an error (indicating missing strings), throw an error
                     missing_case_insensitive("step_create_and_verify_proof", format!("{e:?}"), x)
-                        .map(|z| panic!("{:?}",ic_semi(&str_vec_from!(
-                            "create_proof failed as expected, but",
-                            format!("{z:?}")))))
+                        .map(|z| {
+                            panic!(
+                                "{:?}",
+                                ic_semi(&str_vec_from!(
+                                    "create_proof failed as expected, but",
+                                    format!("{z:?}")
+                                ))
+                            )
+                        })
                 });
                 Ok(())
-            },
-            Ok(ref wadfv@WarningsAndDataForVerifier { warnings: ref create_warns, data_for_verifier: ref dfv }) => {
+            }
+            Ok(
+                ref wadfv @ WarningsAndDataForVerifier {
+                    warnings: ref create_warns,
+                    data_for_verifier: ref dfv,
+                },
+            ) => {
                 if let CreateProofFails(l) = &test_exp {
                     return Err(Error::General(ic_semi(&str_vec_from!(
                         "step_create_and_verify_proof",
                         "create_proof expected to fail, but succeeded",
                         "error expected to contain",
-                        format!("{l:?}")))))
+                        format!("{l:?}")
+                    ))));
                 };
                 let d_reqs = ts.decrypt_requests.get(&h_lbl).cloned().unwrap_or_default();
                 let res_v = verify_proof(
@@ -741,15 +901,19 @@ pub fn step_create_and_verify_proof(
                 );
                 match res_v {
                     Err(e) => {
-                        if ![ VerifyProofFails, CreateOrVerifyFails ].contains(&test_exp) {
+                        if ![VerifyProofFails, CreateOrVerifyFails].contains(&test_exp) {
                             return Err(Error::General(ic_semi(&str_vec_from!(
                                 "stepCreateAndVerifyProof",
                                 "verifyProof expected to succeed, but failed",
-                                format!("{e:?}")))))
+                                format!("{e:?}")
+                            ))));
                         };
                         Ok(())
-                    },
-                    Ok(WarningsAndDecryptResponses { warnings, decrypt_responses }) => {
+                    }
+                    Ok(WarningsAndDecryptResponses {
+                        warnings,
+                        decrypt_responses,
+                    }) => {
                         match &test_exp {
                             CreateProofFails(_) => {
                                 Err(Error::General(ic_semi(&str_vec_from!(
@@ -802,97 +966,137 @@ mod step_create_and_verify_proof_support {
 
     fn validate_values(
         ctxt: &String,
-        reqs: &HashMap<CredentialLabel,Vec<CredAttrIndex>>,
-        vals: &HashMap<CredentialLabel,HashMap<CredAttrIndex,DataValue>>,
+        reqs: &HashMap<CredentialLabel, Vec<CredAttrIndex>>,
+        vals: &HashMap<CredentialLabel, HashMap<CredAttrIndex, DataValue>>,
         h_lbl: &HolderLabel,
-        ts: &TestState
+        ts: &TestState,
     ) -> VCAResult<()> {
         // Confirm number of vals same as number of reqs for each credential
-        let num_reqs_per_cred = reqs.iter().map(|(c_lbl,l)| (c_lbl.clone(),l.len()))
-            .collect::<HashMap<_,_>>();
-        let num_vals_per_cred = vals.iter().map(|(c_lbl,m)| (c_lbl.clone(),m.values().len()))
-            .collect::<HashMap<_,_>>();
+        let num_reqs_per_cred = reqs
+            .iter()
+            .map(|(c_lbl, l)| (c_lbl.clone(), l.len()))
+            .collect::<HashMap<_, _>>();
+        let num_vals_per_cred = vals
+            .iter()
+            .map(|(c_lbl, m)| (c_lbl.clone(), m.values().len()))
+            .collect::<HashMap<_, _>>();
         if num_reqs_per_cred != num_vals_per_cred {
-            return Err(Error::General(ic_semi(&str_vec_from!("step_create_and_verify_proof_support",
-                                                             "validate_values", ctxt,
-                                                             "number of responses per credential",
-                                                             format!("{num_reqs_per_cred:?}"),
-                                                             "inconsistent with number of response values per credential",
-                                                             format!("{num_vals_per_cred:?}")))))
+            return Err(Error::General(ic_semi(&str_vec_from!(
+                "step_create_and_verify_proof_support",
+                "validate_values",
+                ctxt,
+                "number of responses per credential",
+                format!("{num_reqs_per_cred:?}"),
+                "inconsistent with number of response values per credential",
+                format!("{num_vals_per_cred:?}")
+            ))));
         };
 
         // Check that all values received are consistent with values signed in credentials
-        let sards = lookup_throw_if_absent(h_lbl, &ts.sigs_and_rel_data, Error::General,
-                                           &str_vec_from!("step_create_and_verify_proof_support",
-                                                          "validate_values",
-                                                          "Holder not found"))?;
+        let sards = lookup_throw_if_absent(
+            h_lbl,
+            &ts.sigs_and_rel_data,
+            Error::General,
+            &str_vec_from!(
+                "step_create_and_verify_proof_support",
+                "validate_values",
+                "Holder not found"
+            ),
+        )?;
         for (c_lbl, m1) in vals {
             for (a_idx, val) in m1 {
-                let vals_in_cred = lookup_throw_if_absent(c_lbl, sards, Error::General,
-                                                          &str_vec_from!("step_create_and_verify_proof_support",
-                                                                         "validate_values",
-                                                                         "no signature found for credental"))?
-                    .values.clone();
-                let correct_val = lookup_throw_if_out_of_bounds(&vals_in_cred, *a_idx as usize, Error::General,
-                                                                &str_vec_from!("step_create_and_verify_proof_support",
-                                                                               "validate_values"))?;
+                let vals_in_cred = lookup_throw_if_absent(
+                    c_lbl,
+                    sards,
+                    Error::General,
+                    &str_vec_from!(
+                        "step_create_and_verify_proof_support",
+                        "validate_values",
+                        "no signature found for credental"
+                    ),
+                )?
+                .values
+                .clone();
+                let correct_val = lookup_throw_if_out_of_bounds(
+                    &vals_in_cred,
+                    *a_idx as usize,
+                    Error::General,
+                    &str_vec_from!("step_create_and_verify_proof_support", "validate_values"),
+                )?;
                 if val != correct_val {
-                    return Err(Error::General(ic_semi(
-                        &str_vec_from!("step_create_and_verify_proof_support",
-                                       "values don't match",
-                                       c_lbl, a_idx, "expected", correct_val, "received", val))))
+                    return Err(Error::General(ic_semi(&str_vec_from!(
+                        "step_create_and_verify_proof_support",
+                        "values don't match",
+                        c_lbl,
+                        a_idx,
+                        "expected",
+                        correct_val,
+                        "received",
+                        val
+                    ))));
                 }
             }
-        };
+        }
         Ok(())
     }
 
-    pub fn validate_disclosed_values (
-        proof_reqs: &HashMap<CredentialLabel,CredentialReqs>,
-        vals: &HashMap<CredentialLabel,HashMap<CredAttrIndex,DataValue>>,
+    pub fn validate_disclosed_values(
+        proof_reqs: &HashMap<CredentialLabel, CredentialReqs>,
+        vals: &HashMap<CredentialLabel, HashMap<CredAttrIndex, DataValue>>,
         h_lbl: &HolderLabel,
-        ts: &TestState
+        ts: &TestState,
     ) -> VCAResult<()> {
-        validate_values(&"disclosed".to_string(),
-                        &proof_reqs
-                        .iter()
-                        .map(move |(cl,cr)| (cl.clone(),cr.disclosed.0.clone()))
-                        .collect::<HashMap<_,_>>(),
-                        vals,
-                        h_lbl,
-                        ts)
+        validate_values(
+            &"disclosed".to_string(),
+            &proof_reqs
+                .iter()
+                .map(move |(cl, cr)| (cl.clone(), cr.disclosed.0.clone()))
+                .collect::<HashMap<_, _>>(),
+            vals,
+            h_lbl,
+            ts,
+        )
     }
 
-    fn ensure_consistent(l:Vec<DecryptResponse>) -> VCAResult<DataValue> {
+    fn ensure_consistent(l: Vec<DecryptResponse>) -> VCAResult<DataValue> {
         let mut all_vals = l
             .iter()
-            .map(|DecryptResponse {value,..}| value.clone())
+            .map(|DecryptResponse { value, .. }| value.clone())
             .collect::<Vec<String>>();
         // Remove duplicates so that, if there is only one value represented in the
         // list, then ther list becomes one item, which we check next to confirm there
         // are no inconsistent values.
         all_vals.dedup();
         if all_vals.len() != 1 {
-            return Err(Error::General(
-                ic_semi(&str_vec_from!(
-                    "inconsistent decrypted values for same attribute",
-                    // We cannot indicate which attribute of which credential here
-                    format!("{all_vals:?}")))))
+            return Err(Error::General(ic_semi(&str_vec_from!(
+                "inconsistent decrypted values for same attribute",
+                // We cannot indicate which attribute of which credential here
+                format!("{all_vals:?}")
+            ))));
         };
         match all_vals.as_slice() {
-                [ unique_value ] => Ok(DVText(unique_value.to_string())),
-                _ => Err(Error::General(ic_semi(&str_vec_from!("ensure_consistent", "IMPOSSIBLE"))))
+            [unique_value] => Ok(DVText(unique_value.to_string())),
+            _ => Err(Error::General(ic_semi(&str_vec_from!(
+                "ensure_consistent",
+                "IMPOSSIBLE"
+            )))),
         }
     }
 
-    pub fn validate_decrypt_responses (
-        d_resps: &HashMap<CredentialLabel,HashMap<CredAttrIndex,HashMap<AuthorityLabel,DecryptResponse>>>,
+    pub fn validate_decrypt_responses(
+        d_resps: &HashMap<
+            CredentialLabel,
+            HashMap<CredAttrIndex, HashMap<AuthorityLabel, DecryptResponse>>,
+        >,
         h_lbl0: &HolderLabel,
-        ts0: &TestState
+        ts0: &TestState,
     ) -> VCAResult<()> {
-        let dreqs_for_holder = ts0.decrypt_requests.get(h_lbl0).cloned().unwrap_or_default();
-        let vals =
-            map_2_lvl_with_err(
+        let dreqs_for_holder = ts0
+            .decrypt_requests
+            .get(h_lbl0)
+            .cloned()
+            .unwrap_or_default();
+        let vals = map_2_lvl_with_err(
                 |m| ensure_consistent(m.values()
                                       .cloned()
                                       .collect::<Vec<DecryptResponse>>()),
@@ -900,23 +1104,24 @@ mod step_create_and_verify_proof_support {
             // map the error to show the DecryptResponses, but without the proofs
             map_err(|e| Error::General(format!("{e:?}, {:?}",
                                                map_3_lvl(|DecryptResponse {value,..}| value, d_resps))))?;
-        validate_values(&"decrypted".to_string(),
-                        &dreqs_for_holder
-                        .iter()
-                        .map(|(k,m)| (k.clone(),m.keys().copied().collect::<Vec<_>>()))
-                        .collect::<Vec<(CredentialLabel,_)>>()
-                        .into_iter()
-                        .collect::<HashMap<CredentialLabel,Vec<CredAttrIndex>>>(),
-                        &vals,
-                        h_lbl0,
-                        ts0)
+        validate_values(
+            &"decrypted".to_string(),
+            &dreqs_for_holder
+                .iter()
+                .map(|(k, m)| (k.clone(), m.keys().copied().collect::<Vec<_>>()))
+                .collect::<Vec<(CredentialLabel, _)>>()
+                .into_iter()
+                .collect::<HashMap<CredentialLabel, Vec<CredAttrIndex>>>(),
+            &vals,
+            h_lbl0,
+            ts0,
+        )
     }
 
-    pub fn create_proof_fail_exps(cve: CreateVerifyExpectation
-    ) -> Option<Vec<String>> {
+    pub fn create_proof_fail_exps(cve: CreateVerifyExpectation) -> Option<Vec<String>> {
         match cve {
             CreateProofFails(l) => Some(l),
-            _                   => None
+            _ => None,
         }
     }
 }
@@ -930,85 +1135,125 @@ pub fn step_update_accumulator_witness(
 ) -> AddTestStep {
     let vca_api = vca_api.clone();
     Arc::new(move |ts| {
-        let SignerData{signer_public_data: spd,..} =
-            lookup_throw_if_absent(&i_lbl,&ts.all_signer_data,Error::General,
-                                   &str_vec_from!("step_update_accumulator_witness",
-                                                  r#"issuer does not exist, so there are "
+        let SignerData {
+            signer_public_data: spd,
+            ..
+        } = lookup_throw_if_absent(
+            &i_lbl,
+            &ts.all_signer_data,
+            Error::General,
+            &str_vec_from!(
+                "step_update_accumulator_witness",
+                r#"issuer does not exist, so there are "
                                                   "no accumulators associated with it"#
-                                   ))?;
-        let accs_for_signer =
-            lookup_throw_if_absent(&**spd,&ts.accums,Error::General,
-                                   &str_vec_from!("step_update_accumulator_witness",
-                                                  "issuer exists",
-                                                  i_lbl,
-                                                  "but no accumulators are associated with its public data"
-                                   ))?;
-        let SignatureAndRelatedData{values: vals,..} =
-            lookup_throw_if_absent_2_lvl(&h_lbl, &i_lbl, &ts.sigs_and_rel_data, Error::General,
-                                   &str_vec_from!("step_update_accumulator_witness",
-                                                  "no signature and related data found"
-                                   ))?;
+            ),
+        )?;
+        let accs_for_signer = lookup_throw_if_absent(
+            &**spd,
+            &ts.accums,
+            Error::General,
+            &str_vec_from!(
+                "step_update_accumulator_witness",
+                "issuer exists",
+                i_lbl,
+                "but no accumulators are associated with its public data"
+            ),
+        )?;
+        let SignatureAndRelatedData { values: vals, .. } = lookup_throw_if_absent_2_lvl(
+            &h_lbl,
+            &i_lbl,
+            &ts.sigs_and_rel_data,
+            Error::General,
+            &str_vec_from!(
+                "step_update_accumulator_witness",
+                "no signature and related data found"
+            ),
+        )?;
         let aw0 = &mut ts.accum_witnesses;
-        let holder_wits =
-            lookup_throw_if_absent_mut(&h_lbl, aw0, Error::General,
-                                       &str_vec_from!("step_update_accumulator_witness",
-                                                      "no existing witnesses available to update",
-                                                      "has any credential been signed for this holder?"
-                                       ))?;
-        let wits_for_cred: &mut AllAccumulatorWitnesses =
-            lookup_throw_if_absent_mut(&i_lbl, holder_wits, Error::General,
-                                       &str_vec_from!("step_update_accumulator_witness",
-                                                      "no existing witnesses available to update",
-                                                      "has a credential been signed by this issuer for holder"
-                                       ))?;
-        let prev_seq_no = tuf::get_witness_sequence_number_for_update(wits_for_cred,a_idx,sn)?;
+        let holder_wits = lookup_throw_if_absent_mut(
+            &h_lbl,
+            aw0,
+            Error::General,
+            &str_vec_from!(
+                "step_update_accumulator_witness",
+                "no existing witnesses available to update",
+                "has any credential been signed for this holder?"
+            ),
+        )?;
+        let wits_for_cred: &mut AllAccumulatorWitnesses = lookup_throw_if_absent_mut(
+            &i_lbl,
+            holder_wits,
+            Error::General,
+            &str_vec_from!(
+                "step_update_accumulator_witness",
+                "no existing witnesses available to update",
+                "has a credential been signed by this issuer for holder"
+            ),
+        )?;
+        let prev_seq_no = tuf::get_witness_sequence_number_for_update(wits_for_cred, a_idx, sn)?;
 
-        let update_once =
-            move |vca_api: &api::VcaApi,
-                  accs:         &tuf::AccumsForSigner,
-                  vals:         &[api::DataValue],
-                  wits_for_cred: &mut AllAccumulatorWitnesses,
-                  i: AccumulatorBatchSeqNo | -> VCAResult<()> {
-                      let (_,_,update_info) =
-                          lookup_throw_if_absent(&a_idx,accs,Error::General,
-                                                 &str_vec_from!("stepUpdateAccumulatorWitness"
-                                                                ,"no accumulator update information for attribute index"
-                                                 ))?;
-                      let (awui,_) =
-                          lookup_throw_if_absent(&i,update_info,Error::General,
-                                                 &str_vec_from!("stepUpdateAccumulatorWitness"
-                                                                ,"no accumulator update information for sequence number"
-                                                 ))?;
-                      tuf::update_accumulator_witness_with_map(vca_api,wits_for_cred,a_idx,vals,awui,i)?;
-                      Ok(())
-                  };
+        let update_once = move |vca_api: &api::VcaApi,
+                                accs: &tuf::AccumsForSigner,
+                                vals: &[api::DataValue],
+                                wits_for_cred: &mut AllAccumulatorWitnesses,
+                                i: AccumulatorBatchSeqNo|
+              -> VCAResult<()> {
+            let (_, _, update_info) = lookup_throw_if_absent(
+                &a_idx,
+                accs,
+                Error::General,
+                &str_vec_from!(
+                    "stepUpdateAccumulatorWitness",
+                    "no accumulator update information for attribute index"
+                ),
+            )?;
+            let (awui, _) = lookup_throw_if_absent(
+                &i,
+                update_info,
+                Error::General,
+                &str_vec_from!(
+                    "stepUpdateAccumulatorWitness",
+                    "no accumulator update information for sequence number"
+                ),
+            )?;
+            tuf::update_accumulator_witness_with_map(vca_api, wits_for_cred, a_idx, vals, awui, i)?;
+            Ok(())
+        };
 
         //Inclusive range ending in sn-1 to make correspondence to Haskell code on which this is based clearer
-        for i in prev_seq_no..=(sn-1) {
-            update_once(&vca_api,accs_for_signer,vals,wits_for_cred,i)?;
-        };
+        for i in prev_seq_no..=(sn - 1) {
+            update_once(&vca_api, accs_for_signer, vals, wits_for_cred, i)?;
+        }
         Ok(())
     })
 }
 
-pub fn step_create_authority(
-    vca_api: &api::VcaApi,
-    a_lbl: AuthorityLabel
-) -> AddTestStep {
+pub fn step_create_authority(vca_api: &api::VcaApi, a_lbl: AuthorityLabel) -> AddTestStep {
     let create_authority_data = vca_api.create_authority_data.clone();
     Arc::new(move |ts| {
         let aad = &mut ts.all_authority_data;
         // Ensure each new authority is created with a different random seed
         let rng_seed = aad.len();
         let ad = create_authority_data(rng_seed as u64)?;
-        insert_throw_if_present(a_lbl.clone(), ad.clone(), aad, Error::General,
-                                &str_vec_from!("stepCreateAuthorityData",
-                                               "Duplicate authority label"))?;
+        insert_throw_if_present(
+            a_lbl.clone(),
+            ad.clone(),
+            aad,
+            Error::General,
+            &str_vec_from!("stepCreateAuthorityData", "Duplicate authority label"),
+        )?;
         match ts.sparms.get(&a_lbl) {
             Some(_) => Err(Error::General(ic_semi(&str_vec_from!(
-                "step_create_authority", a_lbl, "already exists in SharedParams")))),
-            None    => {
-                put_shared_one(a_lbl.clone(), DVText(encode_to_text(&ad.authority_public_data)?), &mut ts.sparms);
+                "step_create_authority",
+                a_lbl,
+                "already exists in SharedParams"
+            )))),
+            None => {
+                put_shared_one(
+                    a_lbl.clone(),
+                    DVText(encode_to_text(&ad.authority_public_data)?),
+                    &mut ts.sparms,
+                );
                 Ok(())
             }
         }
@@ -1019,22 +1264,38 @@ fn ensure_encryptable(
     c_txt: String,
     i_lbl: IssuerLabelAsCredentialLabel,
     a_idx: &api::CredAttrIndex,
-    ts: &TestState
+    ts: &TestState,
 ) -> VCAResult<()> {
-    let SignerData {signer_public_data, ..} =
-         lookup_throw_if_absent(&i_lbl,&ts.all_signer_data,Error::General,
-                                &str_vec_from!("ensure_encrytable", c_txt,
-                                               "signer data not found"))?.to_owned();
-    let SignerPublicData {signer_public_schema: cts, ..} = *signer_public_data;
-    let ct = lookup_throw_if_out_of_bounds(&cts,*a_idx as usize,Error::General,
-                                           &str_vec_from!("ensure_encrytable", c_txt,
-                                                          "claim type not found"))?;
+    let SignerData {
+        signer_public_data, ..
+    } = lookup_throw_if_absent(
+        &i_lbl,
+        &ts.all_signer_data,
+        Error::General,
+        &str_vec_from!("ensure_encrytable", c_txt, "signer data not found"),
+    )?
+    .to_owned();
+    let SignerPublicData {
+        signer_public_schema: cts,
+        ..
+    } = *signer_public_data;
+    let ct = lookup_throw_if_out_of_bounds(
+        &cts,
+        *a_idx as usize,
+        Error::General,
+        &str_vec_from!("ensure_encrytable", c_txt, "claim type not found"),
+    )?;
     if *ct == CTEncryptableText {
         Ok(())
     } else {
         Err(Error::General(ic_semi(&str_vec_from!(
-            "ensure_encrytable", c_txt,
-            "attribute index", a_idx, "exprected CTEncryptableText but found", ct))))
+            "ensure_encrytable",
+            c_txt,
+            "attribute index",
+            a_idx,
+            "exprected CTEncryptableText but found",
+            ct
+        ))))
     }
 }
 
@@ -1042,27 +1303,38 @@ pub fn step_encrypt_for(
     h_lbl: HolderLabel,
     i_lbl: IssuerLabel,
     a_idx: api::CredAttrIndex,
-    a_lbl: AuthorityLabel
+    a_lbl: AuthorityLabel,
 ) -> AddTestStep {
     Arc::new(move |ts| {
-        ensure_encryptable("step_encrypt_for".to_string(),
-                           i_lbl.clone(), &a_idx, ts)?;
-        let add_encrypted_for =
-            |a_idx: api::CredAttrIndex,
-             cr: &mut CredentialReqs|{
-                cr.encrypted_for.0.push(IndexAndLabel {index: a_idx, label: a_lbl.clone()});
-            };
+        ensure_encryptable("step_encrypt_for".to_string(), i_lbl.clone(), &a_idx, ts)?;
+        let add_encrypted_for = |a_idx: api::CredAttrIndex, cr: &mut CredentialReqs| {
+            cr.encrypted_for.0.push(IndexAndLabel {
+                index: a_idx,
+                label: a_lbl.clone(),
+            });
+        };
 
-        update_throw_if_absent_2_lvl(&h_lbl, &i_lbl,
-                                     |cr: &mut CredentialReqs| add_encrypted_for(a_idx,cr),
-                                     &mut ts.preqs, Error::General,
-                                     &str_vec_from!("step_encrypt_for",
-                                                    "no credentials signed for holder and issuer"))?;
+        update_throw_if_absent_2_lvl(
+            &h_lbl,
+            &i_lbl,
+            |cr: &mut CredentialReqs| add_encrypted_for(a_idx, cr),
+            &mut ts.preqs,
+            Error::General,
+            &str_vec_from!(
+                "step_encrypt_for",
+                "no credentials signed for holder and issuer"
+            ),
+        )?;
 
         // TODO: check if we introduced a duplicate encryption request, throw if so
 
-        let _ = &lookup_throw_if_absent(&a_lbl, &ts.all_authority_data, Error::General,
-                                        &str_vec_from!("step_encrypt_for", "no such Authority"))?.authority_public_data;
+        let _ = &lookup_throw_if_absent(
+            &a_lbl,
+            &ts.all_authority_data,
+            Error::General,
+            &str_vec_from!("step_encrypt_for", "no such Authority"),
+        )?
+        .authority_public_data;
         Ok(())
     })
 }
@@ -1071,28 +1343,41 @@ pub fn step_decrypt(
     h_lbl: HolderLabel,
     i_lbl: IssuerLabelAsCredentialLabel,
     a_idx: api::CredAttrIndex,
-    a_lbl: AuthorityLabel
+    a_lbl: AuthorityLabel,
 ) -> AddTestStep {
     Arc::new(move |ts| {
-        ensure_encryptable("step_decrypt".to_string(),
-                           i_lbl.clone(), &a_idx, ts)?;
-        let AuthorityData { authority_secret_data, authority_decryption_key, .. } =
-            lookup_throw_if_absent(&a_lbl, &ts.all_authority_data, Error::General,
-                                   &str_vec_from!("step_decrypt", "authority_not_created"))?;
-        let new_decr_req = api::DecryptRequest::new(authority_secret_data.clone(), authority_decryption_key.clone());
+        ensure_encryptable("step_decrypt".to_string(), i_lbl.clone(), &a_idx, ts)?;
+        let AuthorityData {
+            authority_secret_data,
+            authority_decryption_key,
+            ..
+        } = lookup_throw_if_absent(
+            &a_lbl,
+            &ts.all_authority_data,
+            Error::General,
+            &str_vec_from!("step_decrypt", "authority_not_created"),
+        )?;
+        let new_decr_req = api::DecryptRequest::new(
+            authority_secret_data.clone(),
+            authority_decryption_key.clone(),
+        );
         let dreqs_for_holder = ts.decrypt_requests.entry(h_lbl.clone()).or_default();
         let dreqs_for_issuer = dreqs_for_holder.entry(i_lbl.clone()).or_default();
         let dreqs_for_authority = dreqs_for_issuer.entry(a_idx).or_default();
         match dreqs_for_authority.insert(a_lbl.clone(), new_decr_req) {
             None => Ok(()),
             Some(_) => Err(Error::General(format!(
-                "Duplicate decryption request: {h_lbl}/{i_lbl}/{a_idx}/{a_lbl}")))
+                "Duplicate decryption request: {h_lbl}/{i_lbl}/{a_idx}/{a_lbl}"
+            ))),
         }
     })
 }
 
-fn perturb_value (dr: DecryptResponse) -> DecryptResponse {
-    DecryptResponse { value: dr.value + "_", decryption_proof: dr.decryption_proof }
+fn perturb_value(dr: DecryptResponse) -> DecryptResponse {
+    DecryptResponse {
+        value: dr.value + "_",
+        decryption_proof: dr.decryption_proof,
+    }
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -1102,39 +1387,51 @@ pub fn verify_decrypt_responses(
     shared_params: &HashMap<api::SharedParamKey, api::SharedParamValue>,
     dfv: &DataForVerifier,
     perturb: PerturbDecryptedValue,
-    d_reqs: &HashMap<IssuerLabelAsCredentialLabel,
-                     HashMap<api::CredAttrIndex,
-                             HashMap<api::AuthorityLabel,api::DecryptRequest>>>,
-    d_resps0: &HashMap<IssuerLabelAsCredentialLabel,
-                     HashMap<api::CredAttrIndex,
-                             HashMap<api::AuthorityLabel,api::DecryptResponse>>>,
-    proof_mode: ProofMode
+    d_reqs: &HashMap<
+        IssuerLabelAsCredentialLabel,
+        HashMap<api::CredAttrIndex, HashMap<api::AuthorityLabel, api::DecryptRequest>>,
+    >,
+    d_resps0: &HashMap<
+        IssuerLabelAsCredentialLabel,
+        HashMap<api::CredAttrIndex, HashMap<api::AuthorityLabel, api::DecryptResponse>>,
+    >,
+    proof_mode: ProofMode,
 ) -> VCAResult<()> {
     let vca_api = vca_api.clone();
     let d_resps = match perturb {
-        Perturb => &map_3_lvl(perturb_value,d_resps0),
-        DontPerturb => d_resps0
+        Perturb => &map_3_lvl(perturb_value, d_resps0),
+        DontPerturb => d_resps0,
     };
     let auth_dks = three_lvl_map_to_vec_of_tuples(d_reqs)
         .iter()
-        .map(|(_,_,a_lbl,d_req)| (a_lbl.to_string(),d_req.authority_decryption_key.clone()))
-        .collect::<HashMap<AuthorityLabel,AuthorityDecryptionKey>>();
-    match (vca_api.verify_decryption)(proof_reqs, shared_params, dfv, &auth_dks, d_resps, proof_mode, None) {
+        .map(|(_, _, a_lbl, d_req)| (a_lbl.to_string(), d_req.authority_decryption_key.clone()))
+        .collect::<HashMap<AuthorityLabel, AuthorityDecryptionKey>>();
+    match (vca_api.verify_decryption)(
+        proof_reqs,
+        shared_params,
+        dfv,
+        &auth_dks,
+        d_resps,
+        proof_mode,
+        None,
+    ) {
         Err(e) => {
             if perturb != Perturb {
                 return Err(Error::General(ic_semi(&str_vec_from!(
                     "verify_decrypt_responses",
                     "encryption verification failed with",
-                    format!("{e:?}")))))
+                    format!("{e:?}")
+                ))));
             };
             Ok(())
-        },
+        }
         Ok(_warnings) => {
             if perturb != DontPerturb {
                 return Err(Error::General(ic_semi(&str_vec_from!(
                     "verifyDecryptResponses",
                     "expected to fail due to perturbed value(s)",
-                    "but succeeded"))))
+                    "but succeeded"
+                ))));
             };
             Ok(())
         }
@@ -1144,23 +1441,52 @@ pub fn verify_decrypt_responses(
 pub fn step_verify_decryption(
     vca_api: &api::VcaApi,
     h_lbl: HolderLabel,
-    proof_mode: ProofMode
+    proof_mode: ProofMode,
 ) -> AddTestStep {
     let vca_api = vca_api.clone();
     let h_lbl = h_lbl.clone();
     Arc::new(move |ts| {
-        let proof_reqs =
-            lookup_throw_if_absent(&h_lbl, &ts.preqs, Error::General,
-                                   &str_vec_from!("step_verify_decryption", "no proof requirements found for holder"))?;
-        let d_reqs =
-            lookup_throw_if_absent(&h_lbl, &ts.decrypt_requests, Error::General,
-                                   &str_vec_from!("step_verify_decryption", "no decryption requests found for holder"))?;
-        let d_resps =
-            lookup_throw_if_absent(&h_lbl, &ts.last_decrypt_responses, Error::General,
-                                   &str_vec_from!("step_verify_decryption", "no decryption responses found for holder"))?;
+        let proof_reqs = lookup_throw_if_absent(
+            &h_lbl,
+            &ts.preqs,
+            Error::General,
+            &str_vec_from!(
+                "step_verify_decryption",
+                "no proof requirements found for holder"
+            ),
+        )?;
+        let d_reqs = lookup_throw_if_absent(
+            &h_lbl,
+            &ts.decrypt_requests,
+            Error::General,
+            &str_vec_from!(
+                "step_verify_decryption",
+                "no decryption requests found for holder"
+            ),
+        )?;
+        let d_resps = lookup_throw_if_absent(
+            &h_lbl,
+            &ts.last_decrypt_responses,
+            Error::General,
+            &str_vec_from!(
+                "step_verify_decryption",
+                "no decryption responses found for holder"
+            ),
+        )?;
         let dfv = &ts.warnings_and_data_for_verifier.data_for_verifier.clone();
-        verify_decrypt_responses(&vca_api, proof_reqs, &ts.sparms, dfv, Perturb,     d_reqs, d_resps, proof_mode)?;
-        verify_decrypt_responses(&vca_api, proof_reqs, &ts.sparms, dfv, DontPerturb, d_reqs, d_resps, proof_mode)?;
+        verify_decrypt_responses(
+            &vca_api, proof_reqs, &ts.sparms, dfv, Perturb, d_reqs, d_resps, proof_mode,
+        )?;
+        verify_decrypt_responses(
+            &vca_api,
+            proof_reqs,
+            &ts.sparms,
+            dfv,
+            DontPerturb,
+            d_reqs,
+            d_resps,
+            proof_mode,
+        )?;
         Ok(())
     })
 }

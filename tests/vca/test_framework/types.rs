@@ -8,40 +8,49 @@ use std::collections::HashMap;
 use std::sync::Arc;
 // -----------------------------------------------------------------------------
 
-pub type IssuerLabel                  = String;
+pub type IssuerLabel = String;
 /// See simplifying assumption below.
 pub type IssuerLabelAsCredentialLabel = IssuerLabel;
-pub type HolderLabel                  = String;
+pub type HolderLabel = String;
 
 pub type AllSignerData = HashMap<IssuerLabel, api::SignerData>;
-pub type AllAuthorityData = HashMap<api::AuthorityLabel,api::AuthorityData>;
-pub type AccumsForSigner =
-    HashMap<api::CredAttrIndex, (api::AccumulatorData,
-                                 // Original accumulator
-                                 api::Accumulator,
-                                 // For sequence number n, the update info to update a
-                                 // witness for nth accumulator to witness for (n+1)st
-                                 // accumulator, plus the (n+1)st accumulator itself
-                                 HashMap<api::AccumulatorBatchSeqNo, (api::AccumulatorWitnessUpdateInfo,
-                                                                      api::Accumulator)>)>;
+pub type AllAuthorityData = HashMap<api::AuthorityLabel, api::AuthorityData>;
+pub type AccumsForSigner = HashMap<
+    api::CredAttrIndex,
+    (
+        api::AccumulatorData,
+        // Original accumulator
+        api::Accumulator,
+        // For sequence number n, the update info to update a
+        // witness for nth accumulator to witness for (n+1)st
+        // accumulator, plus the (n+1)st accumulator itself
+        HashMap<api::AccumulatorBatchSeqNo, (api::AccumulatorWitnessUpdateInfo, api::Accumulator)>,
+    ),
+>;
 // TODO: Should be by AccumulatorPublicData, to enable modeling different Issuers using
 // common RevocationManagers
 pub type AllSignerAccumulatorData = HashMap<api::SignerPublicData, AccumsForSigner>;
-pub type AllBlindSigningInfo      = HashMap<HolderLabel, HashMap<IssuerLabel, api::BlindSigningInfo>>;
+pub type AllBlindSigningInfo = HashMap<HolderLabel, HashMap<IssuerLabel, api::BlindSigningInfo>>;
 pub type HolderSigsAndRelatedData =
     HashMap<HolderLabel, HashMap<IssuerLabelAsCredentialLabel, api::SignatureAndRelatedData>>;
-pub type HolderAllWitnesses       =
-    HashMap<HolderLabel,HashMap<IssuerLabelAsCredentialLabel,api::AllAccumulatorWitnesses>>;
+pub type HolderAllWitnesses =
+    HashMap<HolderLabel, HashMap<IssuerLabelAsCredentialLabel, api::AllAccumulatorWitnesses>>;
 pub type AllProofReqs =
     HashMap<HolderLabel, HashMap<IssuerLabelAsCredentialLabel, api::CredentialReqs>>;
-pub type AllDecryptReqs =
-    HashMap<HolderLabel, HashMap<IssuerLabelAsCredentialLabel,
-                                 HashMap<api::CredAttrIndex,
-                                         HashMap<api::AuthorityLabel,api::DecryptRequest>>>>;
-pub type AllDecryptResps =
-    HashMap<HolderLabel, HashMap<IssuerLabelAsCredentialLabel,
-                                 HashMap<api::CredAttrIndex,
-                                         HashMap<api::AuthorityLabel,api::DecryptResponse>>>>;
+pub type AllDecryptReqs = HashMap<
+    HolderLabel,
+    HashMap<
+        IssuerLabelAsCredentialLabel,
+        HashMap<api::CredAttrIndex, HashMap<api::AuthorityLabel, api::DecryptRequest>>,
+    >,
+>;
+pub type AllDecryptResps = HashMap<
+    HolderLabel,
+    HashMap<
+        IssuerLabelAsCredentialLabel,
+        HashMap<api::CredAttrIndex, HashMap<api::AuthorityLabel, api::DecryptResponse>>,
+    >,
+>;
 
 /// TestState captures the state as we run a test, keeping track of all data by
 /// all roles, which is updated by each TestStep.
@@ -146,7 +155,8 @@ pub enum CreateVerifyExpectation {
 
 #[derive(Eq, PartialEq, Debug)]
 pub enum PerturbDecryptedValue {
-    Perturb, DontPerturb
+    Perturb,
+    DontPerturb,
 }
 
 // Note these definitions use camel case for compatibility with Haskell implementations (including
@@ -154,23 +164,28 @@ pub enum PerturbDecryptedValue {
 // more understandable
 #[allow(non_snake_case)]
 #[derive(Clone, PartialEq, Eq, Debug, Deserialize, Serialize)]
-pub struct ReplaceValueWithMaximumPlus
-  { pub attrIdxToReplaceWithMaxSupported : api::CredAttrIndex,
-    pub plusOffset                       : u64
-  }
+pub struct ReplaceValueWithMaximumPlus {
+    pub attrIdxToReplaceWithMaxSupported: api::CredAttrIndex,
+    pub plusOffset: u64,
+}
 
 #[allow(non_snake_case)]
 #[derive(Clone, PartialEq, Eq, Debug, Deserialize, Serialize)]
-pub struct ReplaceUpperBoundWithMaxSupportedPlusOffset
-  { pub replaceUpperBoundWithMaxSupportedPlusOffset : u64
-  }
+pub struct ReplaceUpperBoundWithMaxSupportedPlusOffset {
+    pub replaceUpperBoundWithMaxSupportedPlusOffset: u64,
+}
 
 /// Each TestStep defines a step to take in a test.  Each step can be specified
 /// simply, e.g., in JSON, with no need to call any crypto library.
 #[derive(Clone, PartialEq, Eq, Debug, Serialize, Deserialize)]
 #[serde(tag = "tag", content = "contents")]
 pub enum TestStep {
-    CreateIssuer(IssuerLabel, Vec<api::ClaimType>, Vec<api::CredAttrIndex>, ProofMode),
+    CreateIssuer(
+        IssuerLabel,
+        Vec<api::ClaimType>,
+        Vec<api::CredAttrIndex>,
+        ProofMode,
+    ),
     CreateAccumulators(IssuerLabel),
     // If the last argument for a SignCredential TestStep is
     //   Some(ReplaceValueWithMaximumPlus{attrIdxToReplaceWithMaxSupported:ci, plusOffset:offset}),
@@ -182,19 +197,19 @@ pub enum TestStep {
         HolderLabel,
         Vec<api::DataValue>,
         Option<ReplaceValueWithMaximumPlus>,
-        ProofMode
+        ProofMode,
     ),
     CreateBlindSigningInfo(
         HolderLabel,
         IssuerLabel,
         Vec<api::CredAttrIndexAndDataValue>,
-        ProofMode
+        ProofMode,
     ),
     SignCredentialWithBlinding(
         IssuerLabel,
         HolderLabel,
         Vec<api::CredAttrIndexAndDataValue>,
-        ProofMode
+        ProofMode,
     ),
     AccumulatorAddRemove(
         IssuerLabel,
@@ -220,7 +235,7 @@ pub enum TestStep {
         api::CredAttrIndex,
         u64,
         u64,
-        Option<ReplaceUpperBoundWithMaxSupportedPlusOffset>
+        Option<ReplaceUpperBoundWithMaxSupportedPlusOffset>,
     ),
     InAccum(
         HolderLabel,
@@ -234,25 +249,21 @@ pub enum TestStep {
         api::CredAttrIndex,
         Vec<(IssuerLabel, api::CredAttrIndex)>,
     ),
-    CreateAndVerifyProof(
-        HolderLabel,
-        ProofMode,
-        CreateVerifyExpectation
-    ),
+    CreateAndVerifyProof(HolderLabel, ProofMode, CreateVerifyExpectation),
     CreateAuthority(api::AuthorityLabel),
     EncryptFor(
         HolderLabel,
         IssuerLabel,
         api::CredAttrIndex,
-        api::AuthorityLabel
+        api::AuthorityLabel,
     ),
     Decrypt(
         HolderLabel,
         IssuerLabel,
         api::CredAttrIndex,
-        api::AuthorityLabel
+        api::AuthorityLabel,
     ),
-    VerifyDecryption(HolderLabel,ProofMode),
+    VerifyDecryption(HolderLabel, ProofMode),
 }
 
 pub type TestSequence = Vec<TestStep>;
@@ -261,7 +272,7 @@ pub type TestSequence = Vec<TestStep>;
 // updating the TestState according to the step being executed. Each TestStep is
 // executed according to its type (see extendTest in Utils), using the functions
 // defined in Steps.
-pub type AddTestStep = Arc<dyn Fn(&mut TestState) -> VCAResult<()> + Send + Sync >;
+pub type AddTestStep = Arc<dyn Fn(&mut TestState) -> VCAResult<()> + Send + Sync>;
 
 /// Used by test to create base CredentialReqs given an IssuerLabel. Would fit
 /// better in Utils, but that causes an import cycle.

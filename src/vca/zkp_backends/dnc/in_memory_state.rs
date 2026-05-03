@@ -39,8 +39,8 @@ pub mod test {
         pub db: HashSet<T>,
     }
 
-    #[cfg(feature="in_memory_state")]
-    pub fn print_in_memory_state<T: Clone + Debug>(ims: &InMemoryState::<T>) {
+    #[cfg(feature = "in_memory_state")]
+    pub fn print_in_memory_state<T: Clone + Debug>(ims: &InMemoryState<T>) {
         let mut l: Vec<String> = ims.db.iter().map(|bn| format!("{bn:?}")).collect();
         l.sort();
         println!("IMS with {} elements", l.len());
@@ -74,7 +74,9 @@ pub mod test {
         }
     }
 
-    impl<'a, T: Clone + Debug + Hash + Eq + Sized + 'a> UniversalAccumulatorState<'a, T> for InMemoryState<T> {
+    impl<'a, T: Clone + Debug + Hash + Eq + Sized + 'a> UniversalAccumulatorState<'a, T>
+        for InMemoryState<T>
+    {
         type ElementIterator = std::collections::hash_set::Iter<'a, T>;
 
         fn elements(&'a self) -> Self::ElementIterator {

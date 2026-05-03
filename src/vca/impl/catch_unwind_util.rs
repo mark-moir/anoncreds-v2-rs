@@ -1,8 +1,8 @@
 // ------------------------------------------------------------------------------
 use crate::get_location_and_backtrace_on_panic;
-use crate::vca::VCAResult;
 use crate::vca::Error;
 use crate::vca::UnexpectedError;
+use crate::vca::VCAResult;
 // ------------------------------------------------------------------------------
 use indexmap::IndexMap;
 use std;
@@ -20,14 +20,13 @@ thread_local! {
     pub static BACKTRACE: Cell<Option<Backtrace>> = const { Cell::new(None) };
 }
 
-pub fn set_location_backtrace_hook() -> Box<dyn Fn(&std::panic::PanicHookInfo) + Send + Sync>
-{
+pub fn set_location_backtrace_hook() -> Box<dyn Fn(&std::panic::PanicHookInfo) + Send + Sync> {
     let prev_hook = std::panic::take_hook();
     std::panic::set_hook(Box::new(|phi| {
         if let Some(location) = phi.location() {
-            let to_file   = location.file();
-            let to_line   = location.line();
-            let to_col    = location.column();
+            let to_file = location.file();
+            let to_line = location.line();
+            let to_col = location.column();
             // the .caller method is in the doc, but not in code, so can't use it
             //let caller    = location.caller();
             // the next line just grabs the info of the actual line it is on, so not useful
@@ -51,57 +50,44 @@ pub fn set_location_backtrace_hook() -> Box<dyn Fn(&std::panic::PanicHookInfo) +
 
 #[macro_export]
 macro_rules! get_location_and_backtrace_on_panic {
-    ($funcall:expr) => {
-        {
-            let prev_hook = set_location_backtrace_hook();
+    ($funcall:expr) => {{
+        let prev_hook = set_location_backtrace_hook();
 
-            let result = match std::panic::catch_unwind(|| $funcall)
-            {
-                Ok(o) => {
-                    o
-                },
-                Err(e) => {
-                    let backtrace = BACKTRACE.with(|b| b.take()).unwrap();
-                    // Attempt to downcast to some known types.
-                    // If none of the downcasts work, then print type info.
-                    match e.downcast_ref::<String>()
-                    {
-                        Some(x) => {
+        let result = match std::panic::catch_unwind(|| $funcall) {
+            Ok(o) => o,
+            Err(e) => {
+                let backtrace = BACKTRACE.with(|b| b.take()).unwrap();
+                // Attempt to downcast to some known types.
+                // If none of the downcasts work, then print type info.
+                match e.downcast_ref::<String>() {
+                    Some(x) => Err(Error::UnexpectedError(UnexpectedError {
+                        reason: x.to_string(),
+                        backtrace,
+                    })),
+                    None => match e.downcast_ref::<i32>() {
+                        Some(x) => Err(Error::UnexpectedError(UnexpectedError {
+                            reason: format!("{x}"),
+                            backtrace,
+                        })),
+                        None => {
+                            let id = (*e).type_id();
+                            let name = type_of(&*e);
                             Err(Error::UnexpectedError(UnexpectedError {
-                                reason : x.to_string(),
+                                reason: format!("{id:?} {name:?} {e:?}"),
                                 backtrace,
                             }))
-                        },
-                        None => match e.downcast_ref::<i32>()
-                        {
-                            Some(x) => {
-                                Err(Error::UnexpectedError(UnexpectedError {
-                                    reason : format!("{x}"),
-                                    backtrace,
-                                }))
-                            },
-                            None => {
-                                let id   = (*e).type_id();
-                                let name = type_of(&*e);
-                                Err(Error::UnexpectedError(UnexpectedError {
-                                    reason : format!("{id:?} {name:?} {e:?}"),
-                                    backtrace,
-                                }))
-                            }
                         }
-                    }
+                    },
                 }
-            };
+            }
+        };
 
-            std::panic::set_hook(prev_hook);
+        std::panic::set_hook(prev_hook);
 
-            result
-
-        }
-    }
+        result
+    }};
 }
 
 pub fn type_of<T>(_: T) -> &'static str {
     std::any::type_name::<T>()
 }
-

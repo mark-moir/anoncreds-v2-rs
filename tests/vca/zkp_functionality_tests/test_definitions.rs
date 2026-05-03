@@ -1,18 +1,18 @@
 // ----------------------------------------------------------------------------
 use credx::vca::api;
-use credx::vca::types::ProofMode;
-use credx::vca::types::ProofMode::*;
 use credx::vca::r#impl::json::util::encode_to_text;
 use credx::vca::r#impl::util::{merge_maps, pp, three_lvl_map_to_vec_of_tuples};
+use credx::vca::types::ProofMode;
+use credx::vca::types::ProofMode::*;
 // ----------------------------------------------------------------------------
 use crate::vca::data_for_tests as td;
 use crate::vca::test_framework as tf;
 use crate::vca::test_framework::utility_functions::*;
 // ----------------------------------------------------------------------------
-use std::fmt::Debug;
 use lazy_static::lazy_static;
 use maplit::hashmap;
 use std::collections::HashMap;
+use std::fmt::Debug;
 use std::hash::Hash;
 // ----------------------------------------------------------------------------
 
@@ -59,58 +59,81 @@ macro_rules! per_crypto_library_test {
 }
 
 pub fn sign_d_cred(h_lbl: tf::HolderLabel) -> tf::TestStep {
-    tf::TestStep::SignCredential(td::D_ISSUER_LABEL.to_owned(), h_lbl, td::D_VALS.to_owned(), None, Strict)
+    tf::TestStep::SignCredential(
+        td::D_ISSUER_LABEL.to_owned(),
+        h_lbl,
+        td::D_VALS.to_owned(),
+        None,
+        Strict,
+    )
 }
 
 pub fn sign_s_cred(h_lbl: tf::HolderLabel) -> tf::TestStep {
-    tf::TestStep::SignCredential(td::S_ISSUER_LABEL.to_owned(), h_lbl, td::S_VALS.to_owned(), None, Strict)
+    tf::TestStep::SignCredential(
+        td::S_ISSUER_LABEL.to_owned(),
+        h_lbl,
+        td::S_VALS.to_owned(),
+        None,
+        Strict,
+    )
 }
 
 lazy_static! {
-    pub static ref CREATE_D_ISSUER: tf::TestStep =
-        tf::TestStep::CreateIssuer(td::D_ISSUER_LABEL.to_owned(), td::D_CTS.to_vec(), Vec::new(), TestBackend);
-    pub static ref CREATE_D_ISSUER_WITH_VE: tf::TestStep =
-        tf::TestStep::CreateIssuer(td::D_ISSUER_LABEL.to_owned(), td::D_CTS_WITH_VE.to_vec(), Vec::new(), TestBackend);
-    pub static ref CREATE_S_ISSUER: tf::TestStep =
-        tf::TestStep::CreateIssuer(td::S_ISSUER_LABEL.to_owned(), td::S_CTS.to_vec(), Vec::new(), TestBackend);
+    pub static ref CREATE_D_ISSUER: tf::TestStep = tf::TestStep::CreateIssuer(
+        td::D_ISSUER_LABEL.to_owned(),
+        td::D_CTS.to_vec(),
+        Vec::new(),
+        TestBackend
+    );
+    pub static ref CREATE_D_ISSUER_WITH_VE: tf::TestStep = tf::TestStep::CreateIssuer(
+        td::D_ISSUER_LABEL.to_owned(),
+        td::D_CTS_WITH_VE.to_vec(),
+        Vec::new(),
+        TestBackend
+    );
+    pub static ref CREATE_S_ISSUER: tf::TestStep = tf::TestStep::CreateIssuer(
+        td::S_ISSUER_LABEL.to_owned(),
+        td::S_CTS.to_vec(),
+        Vec::new(),
+        TestBackend
+    );
     pub static ref CREATE_POLICE_AUTHORITY: tf::TestStep =
         tf::TestStep::CreateAuthority(td::POLICE_AUTHORITY_LABEL.to_owned());
-    pub static ref ENCRYPT_FOR_POLICE_AUTHORITY: tf::TestStep =
-        tf::TestStep::EncryptFor(td::HOLDER_1.to_owned(),
-                                 td::D_ISSUER_LABEL.to_owned(),
-                                 td::D_SSN_IDX,
-                                 td::POLICE_AUTHORITY_LABEL.to_owned());
-    pub static ref DECRYPT_FOR_POLICE_AUTHORITY: tf::TestStep =
-        tf::TestStep::Decrypt(td::HOLDER_1.to_owned(),
-                              td::D_ISSUER_LABEL.to_owned(),
-                              td::D_SSN_IDX,
-                              td::POLICE_AUTHORITY_LABEL.to_owned());
+    pub static ref ENCRYPT_FOR_POLICE_AUTHORITY: tf::TestStep = tf::TestStep::EncryptFor(
+        td::HOLDER_1.to_owned(),
+        td::D_ISSUER_LABEL.to_owned(),
+        td::D_SSN_IDX,
+        td::POLICE_AUTHORITY_LABEL.to_owned()
+    );
+    pub static ref DECRYPT_FOR_POLICE_AUTHORITY: tf::TestStep = tf::TestStep::Decrypt(
+        td::HOLDER_1.to_owned(),
+        td::D_ISSUER_LABEL.to_owned(),
+        td::D_SSN_IDX,
+        td::POLICE_AUTHORITY_LABEL.to_owned()
+    );
 }
 
-pub fn succeeds_with_mode (proof_mode: ProofMode) ->
-    Vec<tf::TestStep> {
-        vec![tf::TestStep::CreateAndVerifyProof(
-                "Holder1".to_string(),
-                proof_mode,
-                tf::CreateVerifyExpectation::BothSucceedNoWarnings
-        )]
-    }
+pub fn succeeds_with_mode(proof_mode: ProofMode) -> Vec<tf::TestStep> {
+    vec![tf::TestStep::CreateAndVerifyProof(
+        "Holder1".to_string(),
+        proof_mode,
+        tf::CreateVerifyExpectation::BothSucceedNoWarnings,
+    )]
+}
 
 #[allow(dead_code)]
-pub fn proof_fails_with_mode (proof_mode: ProofMode, l: Vec<String>) ->
-    Vec<tf::TestStep> {
-        vec![tf::TestStep::CreateAndVerifyProof(
-                "Holder1".to_string(),
-                proof_mode,
-                tf::CreateVerifyExpectation::CreateProofFails(l)
-        )]
-    }
+pub fn proof_fails_with_mode(proof_mode: ProofMode, l: Vec<String>) -> Vec<tf::TestStep> {
+    vec![tf::TestStep::CreateAndVerifyProof(
+        "Holder1".to_string(),
+        proof_mode,
+        tf::CreateVerifyExpectation::CreateProofFails(l),
+    )]
+}
 
 #[allow(dead_code)]
-pub fn proof_fails_with (l: Vec<String>) ->
-    Vec<tf::TestStep> {
-        proof_fails_with_mode(Strict,l)
-    }
+pub fn proof_fails_with(l: Vec<String>) -> Vec<tf::TestStep> {
+    proof_fails_with_mode(Strict, l)
+}
 
 lazy_static! {
     pub static ref CREATE_ISSUERS: Vec<tf::TestStep> =
@@ -142,11 +165,8 @@ lazy_static! {
         REVEAL_METADATA.to_owned()
     ]
     .concat();
-
     pub static ref SUCCEEDS: Vec<tf::TestStep> = succeeds_with_mode(Strict);
-
     pub static ref FAILS: Vec<tf::TestStep> = proof_fails_with(vec!());
-
     pub static ref POK_AND_REVEAL_METADATA: Vec<tf::TestStep> =
         [COMMON_SETUP.to_owned(), SUCCEEDS.to_owned()].concat();
     pub static ref ADD_TO_ACCUMS: Vec<tf::TestStep> = vec![
@@ -205,8 +225,7 @@ macro_rules! pok_and_reveal_metadata_test {
         #[test]
         fn pok_and_reveal_metadata() {
             use $crate::vca::test_framework::start_test;
-            start_test($vca_api, POK_AND_REVEAL_METADATA.to_owned())
-                .unwrap();
+            start_test($vca_api, POK_AND_REVEAL_METADATA.to_owned()).unwrap();
         }
     };
 }
@@ -232,8 +251,7 @@ macro_rules! pok_test {
     ($vca_api: expr, $lib_spec: expr) => {
         #[test]
         fn pok_no_reveal() {
-            let (_, _, d_sig_cd, s_sig_cd, shared) =
-                do_create_signers_shared_and_sigs($vca_api);
+            let (_, _, d_sig_cd, s_sig_cd, shared) = do_create_signers_shared_and_sigs($vca_api);
             let proof_reqs: HashMap<CredentialLabel, CredentialReqs> = td::proof_reqs_with(
                 (vec![], vec![]),
                 (vec![], vec![]),
@@ -249,14 +267,20 @@ macro_rules! pok_test {
                 &d_sig_cd,
                 &s_sig_cd,
                 &hashmap!(),
-                Strict
+                Strict,
             );
         }
     };
 }
 
 #[derive(Debug)]
-pub enum RevealedState { Correct, Empty, Less, Change, More }
+pub enum RevealedState {
+    Correct,
+    Empty,
+    Less,
+    Change,
+    More,
+}
 
 #[macro_export]
 macro_rules! revealed_test {
@@ -349,7 +373,7 @@ macro_rules! test_in_range {
                 &D_SIG_CD,
                 &S_SIG_CD,
                 &hashmap!(),
-                TestBackend
+                TestBackend,
             );
         }
     };
@@ -392,8 +416,7 @@ macro_rules! equalities_test {
     ($vca_api: expr, $lib_spec: expr) => {
         #[test]
         fn one_equality() {
-            let (_, _, d_sig_cd, s_sig_cd, shared) =
-                do_create_signers_shared_and_sigs($vca_api);
+            let (_, _, d_sig_cd, s_sig_cd, shared) = do_create_signers_shared_and_sigs($vca_api);
             let proof_reqs = td::proof_reqs_with(
                 (vec![3], vec![0]),
                 (vec![], vec![]),
@@ -420,7 +443,7 @@ macro_rules! equalities_test {
                 &d_sig_cd,
                 &s_sig_cd,
                 &hashmap!(),
-                Strict
+                Strict,
             );
         }
 
@@ -747,7 +770,7 @@ macro_rules! expect_privacy_warnings {
                 &D_SIG_CD,
                 &S_SIG_CD,
                 &hashmap!(),
-                Loose
+                Loose,
             )
         }
     };
@@ -809,7 +832,7 @@ macro_rules! look_at_warnings_test {
             print!("D_ACCUM_WARNINGS\n{:?}", D_ACCUM_WARNINGS.to_owned());
             print!("S_ACCUM_WARNINGS\n{:?}", S_ACCUM_WARNINGS.to_owned());
         }
-    }
+    };
 }
 
 // Use this to mark a test as slowslow, so it gets skipped if EITHER of the ignore_slow and
@@ -834,90 +857,127 @@ pub fn it_with(lib_spec: &LibrarySpecificTestHandlers, label: TestLabel, k: impl
     match lib_spec.get(label) {
         None => k(),
         Some(TestHandler::NotSoSlow) => k(), // I can't quite directly translate the dynamic test label from Haskell
-        Some(TestHandler::Skip(s)) => { println!("{:?} skipped because {:?}", label, s) },
+        Some(TestHandler::Skip(s)) => {
+            println!("{:?} skipped because {:?}", label, s)
+        }
         Some(TestHandler::Fail(s)) => panic!("not run because: {s}"),
     }
 }
 
 #[allow(clippy::too_many_arguments)]
 pub fn expect_disclosed(
-    vca_api        : &api::VcaApi,
-    _lib_spec      : &LibrarySpecificTestHandlers,
-    proof_reqs     : &HashMap<api::CredentialLabel, api::CredentialReqs>,
-    shared         : &HashMap<api::SharedParamKey, api::SharedParamValue>,
-    d_sig_cd       : &(api::Signature, Vec<api::DataValue>, api::AccumulatorWitnesses),
-    s_sig_cd       : &(api::Signature, Vec<api::DataValue>, api::AccumulatorWitnesses),
-    decrypt_reqs   : &HashMap<api::CredentialLabel,
-                              HashMap<api::CredAttrIndex,
-                                      HashMap<api::AuthorityLabel, api::DecryptRequest>>>,
-    revealed_state : RevealedState,
-    proof_mode     : ProofMode,
+    vca_api: &api::VcaApi,
+    _lib_spec: &LibrarySpecificTestHandlers,
+    proof_reqs: &HashMap<api::CredentialLabel, api::CredentialReqs>,
+    shared: &HashMap<api::SharedParamKey, api::SharedParamValue>,
+    d_sig_cd: &(
+        api::Signature,
+        Vec<api::DataValue>,
+        api::AccumulatorWitnesses,
+    ),
+    s_sig_cd: &(
+        api::Signature,
+        Vec<api::DataValue>,
+        api::AccumulatorWitnesses,
+    ),
+    decrypt_reqs: &HashMap<
+        api::CredentialLabel,
+        HashMap<api::CredAttrIndex, HashMap<api::AuthorityLabel, api::DecryptRequest>>,
+    >,
+    revealed_state: RevealedState,
+    proof_mode: ProofMode,
 ) {
-    let api::WarningsAndDataForVerifier { data_for_verifier: dfv, .. } =
-        match do_create_proof(vca_api, proof_reqs, shared, d_sig_cd, s_sig_cd, proof_mode) {
-            Err(e) => panic!("expect_disclosed create_proof; unexpected failure; {e:?}"),
-            Ok(x)  => x,
-        };
+    let api::WarningsAndDataForVerifier {
+        data_for_verifier: dfv,
+        ..
+    } = match do_create_proof(vca_api, proof_reqs, shared, d_sig_cd, s_sig_cd, proof_mode) {
+        Err(e) => panic!("expect_disclosed create_proof; unexpected failure; {e:?}"),
+        Ok(x) => x,
+    };
     match revealed_state {
         RevealedState::Correct => {
-            if let Err(e) = do_verify_proof(vca_api, proof_reqs, shared, dfv, decrypt_reqs, proof_mode) {
+            if let Err(e) =
+                do_verify_proof(vca_api, proof_reqs, shared, dfv, decrypt_reqs, proof_mode)
+            {
                 panic!("'Correct' unexpected failure; {e:?}")
             };
-        },
+        }
         RevealedState::Empty => {
-            let dfv = api::DataForVerifier { revealed_idxs_and_vals : HashMap::new(), proof: dfv.proof };
+            let dfv = api::DataForVerifier {
+                revealed_idxs_and_vals: HashMap::new(),
+                proof: dfv.proof,
+            };
             match do_verify_proof(vca_api, proof_reqs, shared, dfv, decrypt_reqs, proof_mode) {
                 Err(api::Error::General(e)) => {
-                    if ! e.contains("Unequal keys for maps to be merged") {
+                    if !e.contains("Unequal keys for maps to be merged") {
                         panic!("'Empty' failed in the wrong way; {e:?}");
                     }
                 }
                 x => panic_on_ok_or_wrong_error(RevealedState::Empty, x),
             };
-        },
-        RevealedState::Less   =>
-            verify_proof_and_check_for_expected_outcome(
-                RevealedState::Less,   vca_api, proof_reqs, shared, decrypt_reqs, proof_mode,
-                // note: this removes the existing disclosure
-                modify_data_for_verifier(dfv, None)),
-        RevealedState::Change =>
-            verify_proof_and_check_for_expected_outcome(
-                RevealedState::Change, vca_api, proof_reqs, shared, decrypt_reqs, proof_mode,
-                // note: change existing
-                modify_data_for_verifier(dfv, Some((0, api::DataValue::DVText("WRONG".into()))))),
-        RevealedState::More   =>
-            verify_proof_and_check_for_expected_outcome(
-                RevealedState::More,   vca_api, proof_reqs, shared, decrypt_reqs, proof_mode,
-                // note: add a disclosure
-                modify_data_for_verifier(dfv, Some((1, api::DataValue::DVText("EXTRA VALUE".into()))))),
+        }
+        RevealedState::Less => verify_proof_and_check_for_expected_outcome(
+            RevealedState::Less,
+            vca_api,
+            proof_reqs,
+            shared,
+            decrypt_reqs,
+            proof_mode,
+            // note: this removes the existing disclosure
+            modify_data_for_verifier(dfv, None),
+        ),
+        RevealedState::Change => verify_proof_and_check_for_expected_outcome(
+            RevealedState::Change,
+            vca_api,
+            proof_reqs,
+            shared,
+            decrypt_reqs,
+            proof_mode,
+            // note: change existing
+            modify_data_for_verifier(dfv, Some((0, api::DataValue::DVText("WRONG".into())))),
+        ),
+        RevealedState::More => verify_proof_and_check_for_expected_outcome(
+            RevealedState::More,
+            vca_api,
+            proof_reqs,
+            shared,
+            decrypt_reqs,
+            proof_mode,
+            // note: add a disclosure
+            modify_data_for_verifier(dfv, Some((1, api::DataValue::DVText("EXTRA VALUE".into())))),
+        ),
     }
 
     fn verify_proof_and_check_for_expected_outcome(
-        revealed_state : RevealedState,
-        vca_api        : &api::VcaApi,
-        proof_reqs     : &HashMap<api::CredentialLabel, api::CredentialReqs>,
-        shared         : &HashMap<api::SharedParamKey, api::SharedParamValue>,
-        decrypt_reqs   : &HashMap<api::CredentialLabel,
-                                  HashMap<api::CredAttrIndex,
-                                          HashMap<api::AuthorityLabel, api::DecryptRequest>>>,
-        proof_mode     : ProofMode,
-        dfv            : api::DataForVerifier
+        revealed_state: RevealedState,
+        vca_api: &api::VcaApi,
+        proof_reqs: &HashMap<api::CredentialLabel, api::CredentialReqs>,
+        shared: &HashMap<api::SharedParamKey, api::SharedParamValue>,
+        decrypt_reqs: &HashMap<
+            api::CredentialLabel,
+            HashMap<api::CredAttrIndex, HashMap<api::AuthorityLabel, api::DecryptRequest>>,
+        >,
+        proof_mode: ProofMode,
+        dfv: api::DataForVerifier,
     ) {
         match do_verify_proof(vca_api, proof_reqs, shared, dfv, decrypt_reqs, proof_mode) {
-            Err(api::Error::General(e)) => panic_on_wrong_general_error_msg(&e, revealed_state, proof_mode),
-            x                           => panic_on_ok_or_wrong_error(revealed_state, x),
+            Err(api::Error::General(e)) => {
+                panic_on_wrong_general_error_msg(&e, revealed_state, proof_mode)
+            }
+            x => panic_on_ok_or_wrong_error(revealed_state, x),
         };
     }
 
     fn contains_expected_error_messages(e: &str, prf_mode: ProofMode) -> bool {
         let ac2c_1 = "verify_disclosed_messages: disclosed_messages_from_proof";
         let ac2c_2 = "differ from revealed values";
-        let dnc    = "DNC prf.verify BBSPlusProofContributionFailed(0, FirstSchnorrVerificationFailed)";
-        let gen_1  = "get_proof_instructions_for_cred";
-        let gen_2  = "do not match indexes requested";
+        let dnc =
+            "DNC prf.verify BBSPlusProofContributionFailed(0, FirstSchnorrVerificationFailed)";
+        let gen_1 = "get_proof_instructions_for_cred";
+        let gen_2 = "do not match indexes requested";
         match prf_mode {
             TestBackend => (e.contains(ac2c_1) && e.contains(ac2c_2)) || e.contains(dnc),
-            _           => e.contains(gen_1) && e.contains(gen_2)
+            _ => e.contains(gen_1) && e.contains(gen_2),
         }
     }
 
@@ -928,30 +988,38 @@ pub fn expect_disclosed(
     //          or adds a new disclosure
     fn modify_data_for_verifier(
         dfv: api::DataForVerifier,
-        inner_value: Option<(api::CredAttrIndex, api::DataValue)>
+        inner_value: Option<(api::CredAttrIndex, api::DataValue)>,
     ) -> api::DataForVerifier {
         let mut riav = dfv.revealed_idxs_and_vals;
         let inner = if let Some((idx, dv)) = inner_value {
-            let mut inner = riav.get(&td::S_CRED_LABEL.clone()).expect("I know it is there").clone();
+            let mut inner = riav
+                .get(&td::S_CRED_LABEL.clone())
+                .expect("I know it is there")
+                .clone();
             inner.insert(idx, dv);
             inner
         } else {
             HashMap::new()
         };
-        riav.insert(td::S_CRED_LABEL.clone(), inner).expect("It's still there");
-        api::DataForVerifier { revealed_idxs_and_vals : riav, proof: dfv.proof }
+        riav.insert(td::S_CRED_LABEL.clone(), inner)
+            .expect("It's still there");
+        api::DataForVerifier {
+            revealed_idxs_and_vals: riav,
+            proof: dfv.proof,
+        }
     }
 
     fn panic_on_wrong_general_error_msg(
         e: &str,
         revealed_state: RevealedState,
-        prf_mode: ProofMode) {
+        prf_mode: ProofMode,
+    ) {
         if !contains_expected_error_messages(e, prf_mode) {
             panic!("'{revealed_state:?}' failed in the wrong way; {e:?}")
         }
     }
 
-    fn panic_on_ok_or_wrong_error<T: Debug>(rs: RevealedState, x: T)  {
+    fn panic_on_ok_or_wrong_error<T: Debug>(rs: RevealedState, x: T) {
         panic!("{x:?} was 'Ok' or failed in the wrong way; {rs:?}")
     }
 }
@@ -959,22 +1027,40 @@ pub fn expect_disclosed(
 #[allow(dead_code)]
 #[allow(clippy::too_many_arguments)]
 pub fn expect_flow_to_be_unsuccessful(
-    vca_api      : &api::VcaApi,
-    _lib_spec    : &LibrarySpecificTestHandlers,
-    proof_reqs   : &HashMap<api::CredentialLabel, api::CredentialReqs>,
-    shared       : &HashMap<api::SharedParamKey, api::SharedParamValue>,
-    d_sig_cd     : &(api::Signature, Vec<api::DataValue>, api::AccumulatorWitnesses),
-    s_sig_cd     : &(api::Signature, Vec<api::DataValue>, api::AccumulatorWitnesses),
-    decrypt_reqs : &HashMap<api::CredentialLabel,
-                            HashMap<api::CredAttrIndex,
-                                    HashMap<api::AuthorityLabel, api::DecryptRequest>>>,
-    proof_mode   : ProofMode
+    vca_api: &api::VcaApi,
+    _lib_spec: &LibrarySpecificTestHandlers,
+    proof_reqs: &HashMap<api::CredentialLabel, api::CredentialReqs>,
+    shared: &HashMap<api::SharedParamKey, api::SharedParamValue>,
+    d_sig_cd: &(
+        api::Signature,
+        Vec<api::DataValue>,
+        api::AccumulatorWitnesses,
+    ),
+    s_sig_cd: &(
+        api::Signature,
+        Vec<api::DataValue>,
+        api::AccumulatorWitnesses,
+    ),
+    decrypt_reqs: &HashMap<
+        api::CredentialLabel,
+        HashMap<api::CredAttrIndex, HashMap<api::AuthorityLabel, api::DecryptRequest>>,
+    >,
+    proof_mode: ProofMode,
 ) {
-    let api::WarningsAndDataForVerifier { data_for_verifier: dfv, .. } =
-        match do_create_proof(vca_api, proof_reqs, shared, d_sig_cd, s_sig_cd, proof_mode.clone()) {
-            Err(_) => return,
-            Ok(x) => x,
-        };
+    let api::WarningsAndDataForVerifier {
+        data_for_verifier: dfv,
+        ..
+    } = match do_create_proof(
+        vca_api,
+        proof_reqs,
+        shared,
+        d_sig_cd,
+        s_sig_cd,
+        proof_mode.clone(),
+    ) {
+        Err(_) => return,
+        Ok(x) => x,
+    };
     let x = match do_verify_proof(vca_api, proof_reqs, shared, dfv, decrypt_reqs, proof_mode) {
         Err(_) => return,
         Ok(x) => x,
@@ -984,25 +1070,41 @@ pub fn expect_flow_to_be_unsuccessful(
 
 #[allow(clippy::too_many_arguments)]
 pub fn expect_with_warnings(
-    expect_warns_from_create_proof : impl Fn(&[api::Warning]),
-    expect_warns_from_verify_proof : impl Fn(&[api::Warning]),
-    vca_api                        : &api::VcaApi,
-    _lib_spec                      : &LibrarySpecificTestHandlers,
-    proof_reqs                     : &HashMap<api::CredentialLabel, api::CredentialReqs>,
-    shared                         : &HashMap<api::SharedParamKey, api::SharedParamValue>,
-    d_sig_cd                       : &(api::Signature, Vec<api::DataValue>, api::AccumulatorWitnesses),
-    s_sig_cd                       : &(api::Signature, Vec<api::DataValue>, api::AccumulatorWitnesses),
-    decrypt_reqs                   : &HashMap<api::CredentialLabel,
-                                              HashMap<api::CredAttrIndex,
-                                                      HashMap<api::AuthorityLabel, api::DecryptRequest>>>,
-    proof_mode   : ProofMode
+    expect_warns_from_create_proof: impl Fn(&[api::Warning]),
+    expect_warns_from_verify_proof: impl Fn(&[api::Warning]),
+    vca_api: &api::VcaApi,
+    _lib_spec: &LibrarySpecificTestHandlers,
+    proof_reqs: &HashMap<api::CredentialLabel, api::CredentialReqs>,
+    shared: &HashMap<api::SharedParamKey, api::SharedParamValue>,
+    d_sig_cd: &(
+        api::Signature,
+        Vec<api::DataValue>,
+        api::AccumulatorWitnesses,
+    ),
+    s_sig_cd: &(
+        api::Signature,
+        Vec<api::DataValue>,
+        api::AccumulatorWitnesses,
+    ),
+    decrypt_reqs: &HashMap<
+        api::CredentialLabel,
+        HashMap<api::CredAttrIndex, HashMap<api::AuthorityLabel, api::DecryptRequest>>,
+    >,
+    proof_mode: ProofMode,
 ) {
     // println!("EXPECT_WITH_WARNINGS");
     let api::WarningsAndDataForVerifier {
         warnings: warns_from_create_proof,
         data_for_verifier: dfv,
-    }: api::WarningsAndDataForVerifier =
-        do_create_proof(vca_api, proof_reqs, shared, d_sig_cd, s_sig_cd, proof_mode.clone()).unwrap();
+    }: api::WarningsAndDataForVerifier = do_create_proof(
+        vca_api,
+        proof_reqs,
+        shared,
+        d_sig_cd,
+        s_sig_cd,
+        proof_mode.clone(),
+    )
+    .unwrap();
     expect_warns_from_create_proof(&warns_from_create_proof);
 
     let discls = &dfv.revealed_idxs_and_vals;
@@ -1020,19 +1122,20 @@ pub fn expect_with_warnings(
         ])
     );
 
-    let validate_disclosures = |discls: &HashMap<api::CredentialLabel, HashMap<u64, api::DataValue>>,
-                                c_lbl: &api::CredentialLabel,
-                                vals: &[api::DataValue]|
-     -> api::VCAResult<()> {
-        let api::Disclosed(idxs) = &proof_reqs[c_lbl].disclosed;
-        let idxs_and_vals = idxs
-            .iter()
-            .map(|idx| (*idx, vals[*idx as usize].clone()))
-            .collect::<HashMap<_, _>>();
-        let cred_discls = &discls[c_lbl];
-        assert_eq!(&idxs_and_vals, cred_discls);
-        Ok(())
-    };
+    let validate_disclosures =
+        |discls: &HashMap<api::CredentialLabel, HashMap<u64, api::DataValue>>,
+         c_lbl: &api::CredentialLabel,
+         vals: &[api::DataValue]|
+         -> api::VCAResult<()> {
+            let api::Disclosed(idxs) = &proof_reqs[c_lbl].disclosed;
+            let idxs_and_vals = idxs
+                .iter()
+                .map(|idx| (*idx, vals[*idx as usize].clone()))
+                .collect::<HashMap<_, _>>();
+            let cred_discls = &discls[c_lbl];
+            assert_eq!(&idxs_and_vals, cred_discls);
+            Ok(())
+        };
 
     vec![
         (td::D_CRED_LABEL.to_string(), td::D_VALS.to_vec()),
@@ -1065,16 +1168,25 @@ pub fn expect_with_warnings(
 
 #[allow(clippy::too_many_arguments)]
 pub fn expect(
-    vca_api      : &api::VcaApi,
-    lib_spec     : &LibrarySpecificTestHandlers,
-    proof_reqs   : &HashMap<api::CredentialLabel, api::CredentialReqs>,
-    shared       : &HashMap<api::SharedParamKey, api::SharedParamValue>,
-    d_sig_cd     : &(api::Signature, Vec<api::DataValue>, api::AccumulatorWitnesses),
-    s_sig_cd     : &(api::Signature, Vec<api::DataValue>, api::AccumulatorWitnesses),
-    decrypt_reqs : &HashMap<api::CredentialLabel,
-                            HashMap<api::CredAttrIndex,
-                                    HashMap<api::AuthorityLabel,api::DecryptRequest>>>,
-    proof_mode   : ProofMode
+    vca_api: &api::VcaApi,
+    lib_spec: &LibrarySpecificTestHandlers,
+    proof_reqs: &HashMap<api::CredentialLabel, api::CredentialReqs>,
+    shared: &HashMap<api::SharedParamKey, api::SharedParamValue>,
+    d_sig_cd: &(
+        api::Signature,
+        Vec<api::DataValue>,
+        api::AccumulatorWitnesses,
+    ),
+    s_sig_cd: &(
+        api::Signature,
+        Vec<api::DataValue>,
+        api::AccumulatorWitnesses,
+    ),
+    decrypt_reqs: &HashMap<
+        api::CredentialLabel,
+        HashMap<api::CredAttrIndex, HashMap<api::AuthorityLabel, api::DecryptRequest>>,
+    >,
+    proof_mode: ProofMode,
 ) {
     expect_with_warnings(
         |ws| {
@@ -1098,22 +1210,30 @@ pub fn expect(
         d_sig_cd,
         s_sig_cd,
         decrypt_reqs,
-        proof_mode
+        proof_mode,
     )
 }
 
 pub fn expect_create_proof_to_throw(
-    vca_api        : &api::VcaApi,
-    proof_reqs     : &HashMap<api::CredentialLabel, api::CredentialReqs>,
-    shared         : &HashMap<api::SharedParamKey, api::SharedParamValue>,
-    dsig_cd        : &(api::Signature, Vec<api::DataValue>, api::AccumulatorWitnesses),
-    ssig_cd        : &(api::Signature, Vec<api::DataValue>, api::AccumulatorWitnesses),
-    proof_mode     : ProofMode,
-    fail_condition : impl Fn(&api::Error),
+    vca_api: &api::VcaApi,
+    proof_reqs: &HashMap<api::CredentialLabel, api::CredentialReqs>,
+    shared: &HashMap<api::SharedParamKey, api::SharedParamValue>,
+    dsig_cd: &(
+        api::Signature,
+        Vec<api::DataValue>,
+        api::AccumulatorWitnesses,
+    ),
+    ssig_cd: &(
+        api::Signature,
+        Vec<api::DataValue>,
+        api::AccumulatorWitnesses,
+    ),
+    proof_mode: ProofMode,
+    fail_condition: impl Fn(&api::Error),
 ) {
     match do_create_proof(vca_api, proof_reqs, shared, dsig_cd, ssig_cd, proof_mode) {
         Err(err) => fail_condition(&err),
-        Ok(_)    => panic!("create_proof expected to throw an error, but succeeded")
+        Ok(_) => panic!("create_proof expected to throw an error, but succeeded"),
     }
 }
 
@@ -1121,15 +1241,21 @@ pub fn expect_create_proof_to_throw(
 
 #[allow(clippy::type_complexity)]
 pub fn do_test_setup_with_additional_setup(
-    update_sp    : fn(
+    update_sp: fn(
         HashMap<api::SharedParamKey, api::SharedParamValue>,
     ) -> api::VCAResult<HashMap<api::SharedParamKey, api::SharedParamValue>>,
-    vca_api      : &api::VcaApi,
-    signers      : &HashMap<tf::IssuerLabel, Vec<api::ClaimType>>,
-    creds        : &HashMap<api::CredentialLabel, (tf::IssuerLabel, Vec<api::DataValue>)>,
+    vca_api: &api::VcaApi,
+    signers: &HashMap<tf::IssuerLabel, Vec<api::ClaimType>>,
+    creds: &HashMap<api::CredentialLabel, (tf::IssuerLabel, Vec<api::DataValue>)>,
 ) -> (
     HashMap<tf::IssuerLabel, api::SignerData>,
-    HashMap<api::CredentialLabel, (api::Signature, HashMap<api::CredAttrIndex, api::AccumulatorWitnesses>)>,
+    HashMap<
+        api::CredentialLabel,
+        (
+            api::Signature,
+            HashMap<api::CredAttrIndex, api::AccumulatorWitnesses>,
+        ),
+    >,
     HashMap<api::SharedParamKey, api::SharedParamValue>,
 ) {
     let signer_data: HashMap<tf::IssuerLabel, api::SignerData> = signers
@@ -1145,7 +1271,9 @@ pub fn do_test_setup_with_additional_setup(
 
     let go = |signer_data: &HashMap<tf::IssuerLabel, api::SignerData>,
               (i_lbl, vals): &(tf::IssuerLabel, Vec<api::DataValue>)|
-     -> api::Signature { (vca_api.sign)(0, vals, &signer_data[i_lbl], Strict).unwrap() };
+     -> api::Signature {
+        (vca_api.sign)(0, vals, &signer_data[i_lbl], Strict).unwrap()
+    };
 
     let sigs: HashMap<tf::IssuerLabel, api::Signature> = creds
         .iter()
@@ -1156,20 +1284,22 @@ pub fn do_test_setup_with_additional_setup(
         create_for_accumulator_fields(&signers[i_lbl], |_| Ok(hashmap!())).unwrap()
     };
 
-    let wits: HashMap
-        <api::CredentialLabel,
-         HashMap<api::CredAttrIndex,
-                 HashMap<api::CredAttrIndex, api::AccumulatorMembershipWitness>>,
+    let wits: HashMap<
+        api::CredentialLabel,
+        HashMap<api::CredAttrIndex, HashMap<api::CredAttrIndex, api::AccumulatorMembershipWitness>>,
     > = creds
         .iter()
         .map(|(k, (i_lbl, dvs))| (k.clone(), create_wits_for((i_lbl, dvs))))
         .collect();
 
-    let sigs_and_wits: HashMap
-        <api::CredentialLabel,
-         (api::Signature,
-          HashMap<api::CredAttrIndex,
-                  HashMap<api::CredAttrIndex, api::AccumulatorMembershipWitness>>,
+    let sigs_and_wits: HashMap<
+        api::CredentialLabel,
+        (
+            api::Signature,
+            HashMap<
+                api::CredAttrIndex,
+                HashMap<api::CredAttrIndex, api::AccumulatorMembershipWitness>,
+            >,
         ),
     > = merge_maps(sigs, wits).unwrap();
 
@@ -1192,13 +1322,12 @@ pub fn do_test_setup_with_additional_setup(
 
 #[allow(clippy::type_complexity, unused)]
 pub fn do_test_setup(
-    vca_api      : &api::VcaApi,
-    signers      : &HashMap<tf::IssuerLabel, Vec<api::ClaimType>>,
-    creds        : &HashMap<api::CredentialLabel, (tf::IssuerLabel, Vec<api::DataValue>)>,
+    vca_api: &api::VcaApi,
+    signers: &HashMap<tf::IssuerLabel, Vec<api::ClaimType>>,
+    creds: &HashMap<api::CredentialLabel, (tf::IssuerLabel, Vec<api::DataValue>)>,
 ) -> (
     HashMap<api::CredentialLabel, api::SignerData>,
-    HashMap<api::CredentialLabel,
-            (api::Signature, HashMap<u64, api::AccumulatorWitnesses>)>,
+    HashMap<api::CredentialLabel, (api::Signature, HashMap<u64, api::AccumulatorWitnesses>)>,
     HashMap<api::SharedParamKey, api::SharedParamValue>,
 ) {
     do_test_setup_with_additional_setup(Ok, vca_api, signers, creds)
@@ -1207,8 +1336,16 @@ pub fn do_test_setup(
 pub type SignersAndSigs = (
     api::SignerData,
     api::SignerData,
-    (api::Signature, Vec<api::DataValue>, api::AccumulatorWitnesses),
-    (api::Signature, Vec<api::DataValue>, api::AccumulatorWitnesses),
+    (
+        api::Signature,
+        Vec<api::DataValue>,
+        api::AccumulatorWitnesses,
+    ),
+    (
+        api::Signature,
+        Vec<api::DataValue>,
+        api::AccumulatorWitnesses,
+    ),
     HashMap<api::SharedParamKey, api::SharedParamValue>,
 );
 
@@ -1218,10 +1355,10 @@ pub fn do_create_signers_shared_and_sigs(vca_api: &api::VcaApi) -> SignersAndSig
 
 #[allow(clippy::type_complexity)]
 pub fn do_create_signers_shared_and_sigs_with_additional_setup(
-    update_sp : fn(
+    update_sp: fn(
         HashMap<api::SharedParamKey, api::SharedParamValue>,
     ) -> api::VCAResult<HashMap<api::SharedParamKey, api::SharedParamValue>>,
-    vca_api   : &api::VcaApi,
+    vca_api: &api::VcaApi,
 ) -> SignersAndSigs {
     let (signer_data, sigs_and_aux, shared) = do_test_setup_with_additional_setup(
         update_sp,
@@ -1268,12 +1405,20 @@ pub fn do_create_signers_shared_and_sigs_with_additional_setup(
 }
 
 pub fn do_create_proof(
-    vca_api                 : &api::VcaApi,
-    proof_reqs              : &HashMap<api::CredentialLabel, api::CredentialReqs>,
-    shared                  : &HashMap<api::SharedParamKey, api::SharedParamValue>,
-    (d_sig, d_vals, d_wits) : &(api::Signature, Vec<api::DataValue>, api::AccumulatorWitnesses),
-    (s_sig, s_vals, s_wits) : &(api::Signature, Vec<api::DataValue>, api::AccumulatorWitnesses),
-    proof_mode              : ProofMode
+    vca_api: &api::VcaApi,
+    proof_reqs: &HashMap<api::CredentialLabel, api::CredentialReqs>,
+    shared: &HashMap<api::SharedParamKey, api::SharedParamValue>,
+    (d_sig, d_vals, d_wits): &(
+        api::Signature,
+        Vec<api::DataValue>,
+        api::AccumulatorWitnesses,
+    ),
+    (s_sig, s_vals, s_wits): &(
+        api::Signature,
+        Vec<api::DataValue>,
+        api::AccumulatorWitnesses,
+    ),
+    proof_mode: ProofMode,
 ) -> api::VCAResult<api::WarningsAndDataForVerifier> {
     let wr = (*vca_api.create_proof)(
         proof_reqs,
@@ -1293,14 +1438,15 @@ pub fn do_create_proof(
 }
 
 fn do_verify_proof(
-    vca_api      : &api::VcaApi,
-    proof_reqs   : &HashMap<api::CredentialLabel, api::CredentialReqs>,
-    shared       : &HashMap<api::SharedParamKey, api::SharedParamValue>,
-    dfv          : api::DataForVerifier,
-    decrypt_reqs : &HashMap<api::CredentialLabel,
-                           HashMap<api::CredAttrIndex,
-                                   HashMap<api::AuthorityLabel, api::DecryptRequest>>>,
-    proof_mode              : ProofMode
+    vca_api: &api::VcaApi,
+    proof_reqs: &HashMap<api::CredentialLabel, api::CredentialReqs>,
+    shared: &HashMap<api::SharedParamKey, api::SharedParamValue>,
+    dfv: api::DataForVerifier,
+    decrypt_reqs: &HashMap<
+        api::CredentialLabel,
+        HashMap<api::CredAttrIndex, HashMap<api::AuthorityLabel, api::DecryptRequest>>,
+    >,
+    proof_mode: ProofMode,
 ) -> api::VCAResult<api::WarningsAndDecryptResponses> {
     let v = (*vca_api.verify_proof)(proof_reqs, shared, &dfv, decrypt_reqs, proof_mode, None)?;
     pp("verify", &v);

@@ -9,4 +9,3 @@ generate_tests_from_json::map_test_over_dir! {
     "./tests/data/JSON/TestSequences/LicenseSubscription",
     "./tests/data/JSON/TestSequences/LicenseSubscription/LibrarySpecificOverrides/DNC.json"
 }
-

@@ -1,9 +1,9 @@
 // ------------------------------------------------------------------------------
-use crate::vca::api;
-use crate::vca::VCAResult;
-use crate::vca::r#impl::to_from_api::*;
 use crate::impl_vca_roundtrip_json;
+use crate::vca::api;
+use crate::vca::r#impl::to_from_api::*;
 use crate::vca::types::*;
+use crate::vca::VCAResult;
 // ------------------------------------------------------------------------------
 use crate::prelude::blsful::inner_types::G1Projective;
 // ------------------------------------------------------------------------------
@@ -14,8 +14,8 @@ impl_vca_roundtrip_json!(RangeProofCommitmentSetup => api::RangeProofProvingKey)
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct RangeProofCommitmentSetup {
-    pub message_generator : G1Projective,
-    pub blinder_generator : G1Projective,
+    pub message_generator: G1Projective,
+    pub blinder_generator: G1Projective,
 }
 
 // // Uses JSON serialization; macro takes ownership, so we keep explicit & impls for zero-copy reuse.

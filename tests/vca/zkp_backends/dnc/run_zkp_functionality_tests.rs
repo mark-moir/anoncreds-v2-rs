@@ -13,5 +13,5 @@ crate::per_crypto_library_test! {
 }
 
 lazy_static! {
-    static ref SPECIFIC_TEST_OUTCOMES: LibrarySpecificTestHandlers = hashmap! { };
+    static ref SPECIFIC_TEST_OUTCOMES: LibrarySpecificTestHandlers = hashmap! {};
 }

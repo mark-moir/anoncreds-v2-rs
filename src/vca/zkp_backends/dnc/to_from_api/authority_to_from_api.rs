@@ -1,14 +1,14 @@
 // ------------------------------------------------------------------------------
-use crate::vca::{Error, VCAResult};
-use crate::vca::r#impl::to_from_api::*;
-use crate::{impl_vca_roundtrip_json, impl_vca_roundtrip_ark};
 use crate::vca::interfaces::types as api;
+use crate::vca::r#impl::to_from_api::*;
 use crate::vca::zkp_backends::dnc::types::*;
+use crate::vca::{Error, VCAResult};
+use crate::{impl_vca_roundtrip_ark, impl_vca_roundtrip_json};
 // ------------------------------------------------------------------------------
 use saver::keygen::DecryptionKey as SaverDecryptionKey;
-use saver::keygen::SecretKey     as SaverSecretKey;
+use saver::keygen::SecretKey as SaverSecretKey;
 // ------------------------------------------------------------------------------
-use ark_bls12_381::{Bls12_381,Fr};
+use ark_bls12_381::{Bls12_381, Fr};
 // ------------------------------------------------------------------------------
 
 impl_vca_roundtrip_json!(AuthorityPublicSetupData => api::AuthorityPublicData);

@@ -1,10 +1,10 @@
 // -----------------------------------------------------------------------------
-pub use crate::vca::Error;
 pub use crate::vca::crypto_interface::CryptoInterface;
-pub use crate::vca::r#impl::general::proof::{create_proof, verify_proof};
 pub use crate::vca::non_primitives::*;
 pub use crate::vca::primitives::*;
+pub use crate::vca::r#impl::general::proof::{create_proof, verify_proof};
 pub use crate::vca::types::*;
+pub use crate::vca::Error;
 // -----------------------------------------------------------------------------
 
 /// For now, we expose all functionality in one API.

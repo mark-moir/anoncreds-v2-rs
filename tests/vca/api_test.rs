@@ -8,35 +8,41 @@ use credx::vca::interfaces::types::*;
 // - particularly sum types.
 
 #[test]
-fn sum_types() -> Result<(),serde_json::Error> {
-    let cts   = [ClaimType::CTText, ClaimType::CTInt].to_vec();
+fn sum_types() -> Result<(), serde_json::Error> {
+    let cts = [ClaimType::CTText, ClaimType::CTInt].to_vec();
     let cts_s = serde_json::to_string(&cts)?;
     assert_eq!(cts_s, "[\"CTText\",\"CTInt\"]");
 
-    let dvi   = DataValue::DVInt(3);
+    let dvi = DataValue::DVInt(3);
     let dvi_s = serde_json::to_string(&dvi)?;
     assert_eq!(dvi_s, "{\"tag\":\"DVInt\",\"contents\":3}");
 
-    let sp    = SharedParamValue::SPVOne(dvi);
-    let sp_s  = serde_json::to_string(&sp)?;
-    assert_eq!(sp_s, "{\"tag\":\"SPVOne\",\"contents\":{\"tag\":\"DVInt\",\"contents\":3}}");
+    let sp = SharedParamValue::SPVOne(dvi);
+    let sp_s = serde_json::to_string(&sp)?;
+    assert_eq!(
+        sp_s,
+        "{\"tag\":\"SPVOne\",\"contents\":{\"tag\":\"DVInt\",\"contents\":3}}"
+    );
 
-    let vs  : Vec<DataValue> = serde_json::from_str(values())?;
+    let vs: Vec<DataValue> = serde_json::from_str(values())?;
     // println!("vs {:?}", vs);
     let vs_s = serde_json::to_string(&vs)?;
     // the reason these are NOT equals is because
     // Haskell puts "contents" first
     // Rust puts "tag" first
     assert_ne!(remove_whitespace(&vs_s), remove_whitespace(values()));
-    let vs1 : Vec<DataValue> = serde_json::from_str(&vs_s)?;
+    let vs1: Vec<DataValue> = serde_json::from_str(&vs_s)?;
     // But what is created from either tag order is equal.
     assert_eq!(vs, vs1);
 
-    let rpw : Warning = serde_json::from_str(reveal_privacy_warning())?;
+    let rpw: Warning = serde_json::from_str(reveal_privacy_warning())?;
     // println!("rpw {:?}", rpw);
     let rpw_s = serde_json::to_string(&rpw)?;
-    assert_ne!(remove_whitespace(&rpw_s), remove_whitespace(reveal_privacy_warning()));
-    let rpw1 : Warning = serde_json::from_str(&rpw_s)?;
+    assert_ne!(
+        remove_whitespace(&rpw_s),
+        remove_whitespace(reveal_privacy_warning())
+    );
+    let rpw1: Warning = serde_json::from_str(&rpw_s)?;
     assert_eq!(rpw, rpw1);
 
     // --------------------------------------------------
@@ -45,45 +51,51 @@ fn sum_types() -> Result<(),serde_json::Error> {
 }
 
 #[test]
-pub fn round_trip() -> Result<(),serde_json::Error> {
-
+pub fn round_trip() -> Result<(), serde_json::Error> {
     // --------------------------------------------------
 
-    let spd2 : SignerPublicData = serde_json::from_str(signer_data())?;
+    let spd2: SignerPublicData = serde_json::from_str(signer_data())?;
     // println!("spd2 {:?}", spd2);
     let spd2_s = serde_json::to_string(&spd2)?;
     assert_eq!(remove_whitespace(&spd2_s), remove_whitespace(signer_data()));
 
     // --------------------------------------------------
 
-    let dlrq : CredentialReqs = serde_json::from_str(dl_reqs())?;
+    let dlrq: CredentialReqs = serde_json::from_str(dl_reqs())?;
     // println!("dlrq {:?}", dlrq);
     let dlrq_s = serde_json::to_string(&dlrq)?;
     // Haskell and Rust emit the same virtual JSON, but in different orders.
     assert_ne!(remove_whitespace(&dlrq_s), remove_whitespace(signer_data()));
-    let dlrq2 : CredentialReqs = serde_json::from_str(&dlrq_s)?;
+    let dlrq2: CredentialReqs = serde_json::from_str(&dlrq_s)?;
     assert_eq!(dlrq, dlrq2);
 
     // --------------------------------------------------
 
-    let spvo : SharedParamValue = serde_json::from_str(spvone())?;
+    let spvo: SharedParamValue = serde_json::from_str(spvone())?;
     // println!("spvo {:?}", spvo);
     match &spvo {
         SharedParamValue::SPVOne(o) => match o {
             DataValue::DVText(t) => {
                 // println!("YES {:?}", t);
-                let x : SignerPublicData = serde_json::from_str(t)?;
+                let x: SignerPublicData = serde_json::from_str(t)?;
                 // println!("YES {:?}", x);
-                assert_eq!(x.signer_public_setup_data, SignerPublicSetupData("5LDYxXSJd".to_string()));
+                assert_eq!(
+                    x.signer_public_setup_data,
+                    SignerPublicSetupData("5LDYxXSJd".to_string())
+                );
                 let spvo_s = serde_json::to_string(&spvo)?;
                 // not equal but equivalent
                 assert_ne!(remove_whitespace(&spvo_s), remove_whitespace(spvone()));
-                let spvo2 : SharedParamValue = serde_json::from_str(&spvo_s)?;
+                let spvo2: SharedParamValue = serde_json::from_str(&spvo_s)?;
                 assert_eq!(spvo, spvo2);
             }
-            x => { panic!("expected 'DataValue::DVText(_)' but got {:?}", x); }
+            x => {
+                panic!("expected 'DataValue::DVText(_)' but got {:?}", x);
+            }
         },
-        x => { panic!("expected 'SharedParamValue::SPVOne(_)' but got {:?}", x); }
+        x => {
+            panic!("expected 'SharedParamValue::SPVOne(_)' but got {:?}", x);
+        }
     }
 
     // --------------------------------------------------
@@ -114,7 +126,6 @@ fn values() -> &'static str {
         {"contents": 181,           "tag": "DVInt"},
         {"contents": "abcdef",      "tag": "DVText"},
         {"contents": "123-45-6789", "tag": "DVText"}]"#
-
 }
 
 fn dl_reqs() -> &'static str {

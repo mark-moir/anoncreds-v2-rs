@@ -1,8 +1,8 @@
 // -----------------------------------------------------------------------------
 use credx::str_vec_from;
-use credx::vca::{Error, VCAResult};
 use credx::vca::api;
 use credx::vca::r#impl::util::*;
+use credx::vca::{Error, VCAResult};
 // -----------------------------------------------------------------------------
 use crate::vca::test_framework::steps::*;
 use crate::vca::test_framework::types::*;
@@ -36,13 +36,12 @@ lazy_static! {
     };
 }
 
-
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct TestSequenceWithMetadata {
     pub descr: String,
     pub comment: Option<String>,
     pub provenance: Option<String>,
-    pub testseq: TestSequence
+    pub testseq: TestSequence,
 }
 
 pub fn start_test(vca_api: &api::VcaApi, t_seq: TestSequence) -> VCAResult<TestState> {
@@ -74,17 +73,20 @@ pub fn extend_test(
                 (*step_create_accumulators_for_issuer(vca_api, i_lbl))(t_st)?
             }
             TestStep::SignCredential(i_lbl, h_lbl, vals, attr_max_off_mb, prf_mode) => {
-                (*step_sign_credential(vca_api, i_lbl, h_lbl, vals, attr_max_off_mb, prf_mode))(t_st)?
+                (*step_sign_credential(vca_api, i_lbl, h_lbl, vals, attr_max_off_mb, prf_mode))(
+                    t_st,
+                )?
             }
             TestStep::CreateBlindSigningInfo(h_lbl, i_lbl, vals, proof_mode) => {
                 (*step_create_blind_signing_info(vca_api, h_lbl, i_lbl, vals, proof_mode))(t_st)?
             }
             TestStep::SignCredentialWithBlinding(i_lbl, h_lbl, vals, proof_mode) => {
-                (*step_sign_credential_with_blinding(vca_api, i_lbl, h_lbl, vals, proof_mode))(t_st)?
+                (*step_sign_credential_with_blinding(vca_api, i_lbl, h_lbl, vals, proof_mode))(
+                    t_st,
+                )?
             }
             TestStep::AccumulatorAddRemove(i_lbl, a_idx, adds, removes) => {
-                (*step_accumulator_add_remove(vca_api, i_lbl, a_idx,
-                                              adds, removes))(t_st)?
+                (*step_accumulator_add_remove(vca_api, i_lbl, a_idx, adds, removes))(t_st)?
             }
             TestStep::UpdateAccumulatorWitness(h_lbl, i_lbl, a_idx, seq_no) => {
                 (*step_update_accumulator_witness(vca_api, h_lbl, i_lbl, a_idx, seq_no))(t_st)?
@@ -104,9 +106,7 @@ pub fn extend_test(
             TestStep::CreateAndVerifyProof(h_lbl, proof_mode, test_exp) => {
                 (*step_create_and_verify_proof(vca_api, h_lbl, proof_mode, test_exp))(t_st)?
             }
-            TestStep::CreateAuthority(a_lbl) => {
-                (*step_create_authority(vca_api, a_lbl))(t_st)?
-            }
+            TestStep::CreateAuthority(a_lbl) => (*step_create_authority(vca_api, a_lbl))(t_st)?,
             TestStep::EncryptFor(h_lbl, i_lbl, a_idx, a_lbl) => {
                 (*step_encrypt_for(h_lbl, i_lbl, a_idx, a_lbl))(t_st)?
             }
@@ -117,24 +117,20 @@ pub fn extend_test(
                 (*step_verify_decryption(vca_api, h_lbl, proof_mode))(t_st)?
             }
         };
-    };
+    }
     Ok(())
 }
 
 pub fn start_test_with_metadata(
     vca_api: &api::VcaApi,
-    TestSequenceWithMetadata { testseq: tseq, ..}:
-    TestSequenceWithMetadata
+    TestSequenceWithMetadata { testseq: tseq, .. }: TestSequenceWithMetadata,
 ) -> VCAResult<TestState> {
     start_test(vca_api, tseq)
 }
 
-pub fn run_test_from_json_file(
-    vca_api: &api::VcaApi,
-    filename: String
-) -> VCAResult<TestState> {
+pub fn run_test_from_json_file(vca_api: &api::VcaApi, filename: String) -> VCAResult<TestState> {
     let tswmd: TestSequenceWithMetadata = get_test_sequence_and_validate_name(filename)?;
-    start_test_with_metadata(vca_api,tswmd)
+    start_test_with_metadata(vca_api, tswmd)
 }
 
 fn get_test_sequence_and_validate_name(filename: String) -> VCAResult<TestSequenceWithMetadata> {
@@ -144,14 +140,26 @@ fn get_test_sequence_and_validate_name(filename: String) -> VCAResult<TestSequen
         .file_name()
         .ok_or(Error::General(format!("No filename found in {filename}")))?
         .to_str()
-        .ok_or(Error::General(format!("Can't convert {filename} to String")))?;
+        .ok_or(Error::General(format!(
+            "Can't convert {filename} to String"
+        )))?;
     if !r#fn.starts_with(json_test_prefix) {
-        return Err(Error::General(ic_semi(&str_vec_from!("getNameAndTestSequence", "expected prefix",
-                                                         json_test_prefix, "not found in", r#fn))))
+        return Err(Error::General(ic_semi(&str_vec_from!(
+            "getNameAndTestSequence",
+            "expected prefix",
+            json_test_prefix,
+            "not found in",
+            r#fn
+        ))));
     };
     if !r#fn.ends_with(json_test_suffix) {
-        return Err(Error::General(ic_semi(&str_vec_from!("getNameAndTestSequence", "expected suffix",
-                                                         json_test_suffix, "not found in", r#fn))))
+        return Err(Error::General(ic_semi(&str_vec_from!(
+            "getNameAndTestSequence",
+            "expected suffix",
+            json_test_suffix,
+            "not found in",
+            r#fn
+        ))));
     };
     let f_in = File::open(filename.clone()).map_err(|e| Error::FileError(e.to_string()))?;
     let tswmd: TestSequenceWithMetadata =
@@ -160,12 +168,15 @@ fn get_test_sequence_and_validate_name(filename: String) -> VCAResult<TestSequen
         .file_stem()
         .ok_or(Error::General(format!("No file stem found in {filename}")))?
         .to_str()
-        .ok_or(Error::General(format!("Can't convert {filename} to String")))?
-    .to_string();
+        .ok_or(Error::General(format!(
+            "Can't convert {filename} to String"
+        )))?
+        .to_string();
     let descr = tswmd.clone().descr;
     if !upper_case_slow(fn_base).ends_with(&upper_case_slow(descr.clone())) {
         return Err(Error::General(format!(
-            "ERROR: test description ({descr}) does not match filename ({filename})")));
+            "ERROR: test description ({descr}) does not match filename ({filename})"
+        )));
     };
     Ok(tswmd)
 }
@@ -177,13 +188,13 @@ macro_rules! make_test {
         pub fn $id() {
             $crate::vca::r#impl::test_framework::test_framework_core::run_test($res_ts)
         }
-    }
+    };
 }
 
 pub fn run_test(vca_api: &api::VcaApi, t_seq: TestSequence) {
     start_test(vca_api, t_seq).unwrap(); // Errors thrown from PresentationSetupRequestSetup end up here
 }
 
-pub fn upper_case_slow (s: String) -> String {
-        s.replace("slow","SLOW")
+pub fn upper_case_slow(s: String) -> String {
+    s.replace("slow", "SLOW")
 }

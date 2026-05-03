@@ -1,7 +1,7 @@
 #![allow(unused_imports)]
 // ------------------------------------------------------------------------------
-use credx::vca::*;
 use credx::vca::VCAResult;
+use credx::vca::*;
 // ------------------------------------------------------------------------------
 use crate::vca::data_for_tests as td;
 use crate::vca::test_framework as tf;
@@ -97,7 +97,7 @@ macro_rules! pok_and_reveal_metadata_test_test {
                         vec![tf::TestStep::CreateAndVerifyProof(
                             td::HOLDER_1.to_owned(),
                             Strict,
-                            tf::CreateVerifyExpectation::CreateProofFails(vec!()),
+                            tf::CreateVerifyExpectation::CreateProofFails(vec![]),
                         )],
                     ]
                     .concat(),

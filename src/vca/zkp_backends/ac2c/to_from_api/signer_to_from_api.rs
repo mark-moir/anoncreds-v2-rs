@@ -1,16 +1,16 @@
 use crate::blind::BlindCredentialRequest;
 // ------------------------------------------------------------------------------
-use crate::vca::VCAResult;
+use crate::impl_vca_roundtrip_json;
 use crate::vca::r#impl::to_from_api::*;
-use crate::{impl_vca_roundtrip_json};
 use crate::vca::types::*;
+use crate::vca::VCAResult;
 // ------------------------------------------------------------------------------
 use crate::knox::short_group_sig_core::short_group_traits::ShortGroupSignatureScheme;
-use crate::prelude::{BlindCredentialBundle, CredentialBundle, Issuer, IssuerPublic};
-use crate::prelude::blsful::{Bls12381G2Impl, SecretKey};
 use crate::prelude::blsful::inner_types::*;
+use crate::prelude::blsful::{Bls12381G2Impl, SecretKey};
 use crate::prelude::vb20;
 use crate::prelude::vb20::Coefficient;
+use crate::prelude::{BlindCredentialBundle, CredentialBundle, Issuer, IssuerPublic};
 // ------------------------------------------------------------------------------
 
 impl_vca_roundtrip_json!(Scalar => InfoForUnblinding);
@@ -80,4 +80,3 @@ impl<S: ShortGroupSignatureScheme> VcaTryFrom<&BlindSignature> for BlindCredenti
         from_opaque_json(&x.0)
     }
 }
-

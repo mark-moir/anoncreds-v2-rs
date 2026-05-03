@@ -1,18 +1,18 @@
 // ------------------------------------------------------------------------------
-use crate::vca::{Error, SerdeJsonError, VCAResult};
-use crate::vca::r#impl::types::*;
-use crate::vca::r#impl::to_from_api::*;
-use crate::vca::r#impl::util::*;
 use crate::vca::interfaces::crypto_interface::*;
 use crate::vca::interfaces::primitives::types::*;
+use crate::vca::r#impl::to_from_api::*;
+use crate::vca::r#impl::types::*;
+use crate::vca::r#impl::util::*;
 use crate::vca::zkp_backends::ac2c::to_from_api::range_proof_to_from_api::*;
+use crate::vca::{Error, SerdeJsonError, VCAResult};
 // ------------------------------------------------------------------------------
 use crate::knox::short_group_sig_core::short_group_traits::ShortGroupSignatureScheme;
-use crate::prelude::*;
 use crate::prelude::vb20;
+use crate::prelude::*;
 // ------------------------------------------------------------------------------
-use blsful::{Bls12381G2Impl, PublicKey};
 use blsful::inner_types::G1Projective;
+use blsful::{Bls12381G2Impl, PublicKey};
 use indexmap::*;
 use std::collections::BTreeSet;
 use std::collections::HashMap;
@@ -61,14 +61,23 @@ type PresentationCredentialLabel = String;
 pub fn presentation_credentials_from<S: ShortGroupSignatureScheme>(
     sigs_and_related_data: &HashMap<CredentialLabel, SignatureAndRelatedData>,
 ) -> VCAResult<IndexMap<CredentialLabel, PresentationCredential<S>>> {
-    let mut pres_creds : IndexMap<PresentationCredentialLabel, PresentationCredential<S>> = IndexMap::new();
-    for (clbl, SignatureAndRelatedData { signature, values:_, accumulator_witnesses }) in sigs_and_related_data {
-        let cb : CredentialBundle<S>       = from_api(signature)?;
-        let pc : PresentationCredential<S> = cb.credential.into();
+    let mut pres_creds: IndexMap<PresentationCredentialLabel, PresentationCredential<S>> =
+        IndexMap::new();
+    for (
+        clbl,
+        SignatureAndRelatedData {
+            signature,
+            values: _,
+            accumulator_witnesses,
+        },
+    ) in sigs_and_related_data
+    {
+        let cb: CredentialBundle<S> = from_api(signature)?;
+        let pc: PresentationCredential<S> = cb.credential.into();
         pres_creds.insert(stmt_label_for(clbl), pc);
         for (aidx, wit) in accumulator_witnesses {
-            let mw : vb20::MembershipWitness = from_api(wit)?;
-            let wit_cred                     = mw.into();
+            let mw: vb20::MembershipWitness = from_api(wit)?;
+            let wit_cred = mw.into();
             pres_creds.insert(membership_label_for(clbl, aidx), wit_cred);
         }
     }
@@ -131,16 +140,20 @@ pub fn cred_label_from_statement_id(bs: &str) -> VCAResult<CredentialLabel> {
 
 // ------------------------------------------------------------------------------
 
-static ATTR_PREFIX          : &str = "AttrPrefix-";
-static ENCRYPTED_FOR_PREFIX : &str = "EncryptedForPrefix-";
-static MEMBERSHIP_PREFIX    : &str = "MembershipPrefix-";
-static STMT_PREFIX          : &str = "StmtIdPrefix-";
+static ATTR_PREFIX: &str = "AttrPrefix-";
+static ENCRYPTED_FOR_PREFIX: &str = "EncryptedForPrefix-";
+static MEMBERSHIP_PREFIX: &str = "MembershipPrefix-";
+static STMT_PREFIX: &str = "StmtIdPrefix-";
 
-pub fn encrypted_for_label_for(c_lbl : &CredentialLabel, a_idx : &CredAttrIndex, auth_spk: &SharedParamKey) -> String {
+pub fn encrypted_for_label_for(
+    c_lbl: &CredentialLabel,
+    a_idx: &CredAttrIndex,
+    auth_spk: &SharedParamKey,
+) -> String {
     format!("{ENCRYPTED_FOR_PREFIX}{c_lbl}-{a_idx}-{auth_spk}")
 }
 
-fn membership_label_for(c_lbl : &CredentialLabel, a_idx : &CredAttrIndex) -> String {
+fn membership_label_for(c_lbl: &CredentialLabel, a_idx: &CredAttrIndex) -> String {
     format!("{MEMBERSHIP_PREFIX}{c_lbl}{a_idx}")
 }
 
@@ -153,75 +166,104 @@ enum SupportedRequirement<S: ShortGroupSignatureScheme> {
     RangeProof(Box<RangeProofCommitmentSetup>, u64, u64),
     SignatureAndReveal(Box<IssuerPublic<S>>, Vec<u64>),
     InAccumProof(Box<vb20::PublicKey>, vb20::Accumulator),
-    EncryptedFor(SharedParamKey, PublicKey<Bls12381G2Impl>)
+    EncryptedFor(SharedParamKey, PublicKey<Bls12381G2Impl>),
 }
 
 fn transform_instruction<S: ShortGroupSignatureScheme>(
-    pig : &ProofInstructionGeneral<ResolvedRequirement>
-) -> VCAResult<Validation<ProofInstructionGeneral<SupportedRequirement<S>>>>
-{
+    pig: &ProofInstructionGeneral<ResolvedRequirement>,
+) -> VCAResult<Validation<ProofInstructionGeneral<SupportedRequirement<S>>>> {
     match pig {
-
         ProofInstructionGeneral {
-            cred_label, attr_idx_general, related_pi_idx,
-            requirement : ResolvedRequirement::CredentialResolvedWrapper
-                (CredentialResolved { issuer_public, rev_idxs_and_vals }),
+            cred_label,
+            attr_idx_general,
+            related_pi_idx,
+            requirement:
+                ResolvedRequirement::CredentialResolvedWrapper(CredentialResolved {
+                    issuer_public,
+                    rev_idxs_and_vals,
+                }),
         } => {
             let iss_pub = from_api(&issuer_public.signer_public_setup_data)?;
             Ok(success(ProofInstructionGeneral {
-                cred_label       : cred_label.clone(),
-                attr_idx_general : *attr_idx_general,
-                related_pi_idx   : *related_pi_idx,
-                requirement      : SupportedRequirement::SignatureAndReveal
-                    (Box::new(iss_pub),
-                     rev_idxs_and_vals.clone().into_keys().collect())}))
-        },
-
-        ProofInstructionGeneral {
-            cred_label, attr_idx_general, related_pi_idx,
-            requirement : ResolvedRequirement::InRangeResolvedWrapper
-                (InRangeResolved { min_val, max_val, proving_key }),
-        }
-        => {
-            let prv_key = from_api(proving_key)?;
-            Ok(success(ProofInstructionGeneral {
-                cred_label       : cred_label.clone(),
-                attr_idx_general : *attr_idx_general,
-                related_pi_idx   : *related_pi_idx,
-                requirement      : SupportedRequirement::RangeProof
-                    (Box::new(prv_key), *min_val, *max_val)}))
-        },
-
-        ProofInstructionGeneral {
-            cred_label, attr_idx_general, related_pi_idx,
-            requirement : ResolvedRequirement::InAccumResolvedWrapper
-                (InAccumResolved { public_data, mem_prv, accumulator, seq_num}),
-        }
-        => {
-            Ok(success(ProofInstructionGeneral {
-                cred_label       : cred_label.clone(),
-                attr_idx_general : *attr_idx_general,
-                related_pi_idx   : *related_pi_idx,
-                requirement      : SupportedRequirement::InAccumProof
-                    (Box::new(from_api(public_data)?),
-                     from_api(accumulator)?),
+                cred_label: cred_label.clone(),
+                attr_idx_general: *attr_idx_general,
+                related_pi_idx: *related_pi_idx,
+                requirement: SupportedRequirement::SignatureAndReveal(
+                    Box::new(iss_pub),
+                    rev_idxs_and_vals.clone().into_keys().collect(),
+                ),
             }))
         }
 
         ProofInstructionGeneral {
-            cred_label, attr_idx_general, related_pi_idx,
-            requirement : ResolvedRequirement::EncryptedForResolvedWrapper
-                (EncryptedForResolved { auth_pub_label, auth_pub_data })
+            cred_label,
+            attr_idx_general,
+            related_pi_idx,
+            requirement:
+                ResolvedRequirement::InRangeResolvedWrapper(InRangeResolved {
+                    min_val,
+                    max_val,
+                    proving_key,
+                }),
+        } => {
+            let prv_key = from_api(proving_key)?;
+            Ok(success(ProofInstructionGeneral {
+                cred_label: cred_label.clone(),
+                attr_idx_general: *attr_idx_general,
+                related_pi_idx: *related_pi_idx,
+                requirement: SupportedRequirement::RangeProof(
+                    Box::new(prv_key),
+                    *min_val,
+                    *max_val,
+                ),
+            }))
+        }
+
+        ProofInstructionGeneral {
+            cred_label,
+            attr_idx_general,
+            related_pi_idx,
+            requirement:
+                ResolvedRequirement::InAccumResolvedWrapper(InAccumResolved {
+                    public_data,
+                    mem_prv,
+                    accumulator,
+                    seq_num,
+                }),
+        } => Ok(success(ProofInstructionGeneral {
+            cred_label: cred_label.clone(),
+            attr_idx_general: *attr_idx_general,
+            related_pi_idx: *related_pi_idx,
+            requirement: SupportedRequirement::InAccumProof(
+                Box::new(from_api(public_data)?),
+                from_api(accumulator)?,
+            ),
+        })),
+
+        ProofInstructionGeneral {
+            cred_label,
+            attr_idx_general,
+            related_pi_idx,
+            requirement:
+                ResolvedRequirement::EncryptedForResolvedWrapper(EncryptedForResolved {
+                    auth_pub_label,
+                    auth_pub_data,
+                }),
         } => {
             let AuthorityPublicData(authority_as_issuer) = auth_pub_data;
-            let IssuerPublic::<S> { verifiable_encryption_key, .. } =
-                from_api(&SignerPublicSetupData(authority_as_issuer.clone()))?;
+            let IssuerPublic::<S> {
+                verifiable_encryption_key,
+                ..
+            } = from_api(&SignerPublicSetupData(authority_as_issuer.clone()))?;
             Ok(success(ProofInstructionGeneral {
-                cred_label       : cred_label.clone(),
-                attr_idx_general : *attr_idx_general,
-                related_pi_idx   : *related_pi_idx,
-                requirement      : SupportedRequirement::EncryptedFor
-                    (auth_pub_label.clone(), verifiable_encryption_key)}))
+                cred_label: cred_label.clone(),
+                attr_idx_general: *attr_idx_general,
+                related_pi_idx: *related_pi_idx,
+                requirement: SupportedRequirement::EncryptedFor(
+                    auth_pub_label.clone(),
+                    verifiable_encryption_key,
+                ),
+            }))
         }
     }
 }
@@ -263,11 +305,13 @@ fn generate_statements<S: ShortGroupSignatureScheme>(
                 match discl_general {
                     SupportedRequirement::SignatureAndReveal(issuer_pub, idxs) => {
                         let mut disclosed = BTreeSet::<String>::new();
-                        idxs.iter().for_each(|x| { disclosed.insert(attr_label_for_idx(*x)); });
+                        idxs.iter().for_each(|x| {
+                            disclosed.insert(attr_label_for_idx(*x));
+                        });
                         Vec::from([<Statements<S>>::from(SignatureStatement {
-                                disclosed,
-                                id : stmt_label_for(c_lbl),
-                                issuer : *issuer_pub.clone(),
+                            disclosed,
+                            id: stmt_label_for(c_lbl),
+                            issuer: *issuer_pub.clone(),
                         })])
                     }
                     SupportedRequirement::RangeProof(commitment_setup, min_v, max_v) => {
@@ -278,49 +322,50 @@ fn generate_statements<S: ShortGroupSignatureScheme>(
                         let sig_stmt_id = stmt_label_for(c_lbl);
                         let commitment_stmnt_id = id_for("CommitmentStatement", c_lbl, a_idx);
                         let commitment_statement = <Statements<S>>::from(CommitmentStatement {
-                                id : commitment_stmnt_id.clone(),
-                                reference_id : sig_stmt_id.clone(),
-                                message_generator : msg_gen,
-                                blinder_generator : blinder_gen,
-                                claim : *a_idx as usize,
-                            });
+                            id: commitment_stmnt_id.clone(),
+                            reference_id: sig_stmt_id.clone(),
+                            message_generator: msg_gen,
+                            blinder_generator: blinder_gen,
+                            claim: *a_idx as usize,
+                        });
                         let rng_stmt_id = id_for("RangeStatement", c_lbl, a_idx);
                         let range_statement = <Statements<S>>::from(RangeStatement {
-                            id : rng_stmt_id,
-                            reference_id : commitment_stmnt_id,
-                            signature_id : sig_stmt_id,
-                            lower : Some(*min_v as isize),
-                            upper : Some(*max_v as isize),
-                            claim : *a_idx as usize,
+                            id: rng_stmt_id,
+                            reference_id: commitment_stmnt_id,
+                            signature_id: sig_stmt_id,
+                            lower: Some(*min_v as isize),
+                            upper: Some(*max_v as isize),
+                            claim: *a_idx as usize,
                         });
                         Vec::from([range_statement, commitment_statement])
                     }
                     SupportedRequirement::InAccumProof(pk, acc) => {
-                        let sig_stmt_id          = stmt_label_for(c_lbl);
-                        let mem_stmt_id          = membership_label_for(c_lbl, a_idx);
+                        let sig_stmt_id = stmt_label_for(c_lbl);
+                        let mem_stmt_id = membership_label_for(c_lbl, a_idx);
                         let membership_statement = <Statements<S>>::from(MembershipStatement {
-                            id               : mem_stmt_id,
-                            reference_id     : sig_stmt_id,
-                            accumulator      : *acc,
-                            verification_key : **pk,
-                            claim            : *a_idx as usize,
+                            id: mem_stmt_id,
+                            reference_id: sig_stmt_id,
+                            accumulator: *acc,
+                            verification_key: **pk,
+                            claim: *a_idx as usize,
                         });
                         Vec::from([membership_statement])
-                    },
+                    }
                     SupportedRequirement::EncryptedFor(auth_spk, public_key) => {
-                        let sig_stmt_id          = stmt_label_for(c_lbl);
-                        let encryption_stmt_id   = encrypted_for_label_for(c_lbl, a_idx, auth_spk);
-                        let encryption_statement = <Statements<S>>::from(VerifiableEncryptionStatement {
-                            // NOTE: It seems that G1Projective::GENERATOR is always used, so we
-                            // hard code it here, but in principle there could be different
-                            // generators that would have to be stored alongside the public key
-                            message_generator        : G1Projective::GENERATOR,
-                            encryption_key           : *public_key,
-                            id                       : encryption_stmt_id,
-                            reference_id             : sig_stmt_id,
-                            claim                    : *a_idx as usize,
-                            allow_message_decryption : true,
-                        });
+                        let sig_stmt_id = stmt_label_for(c_lbl);
+                        let encryption_stmt_id = encrypted_for_label_for(c_lbl, a_idx, auth_spk);
+                        let encryption_statement =
+                            <Statements<S>>::from(VerifiableEncryptionStatement {
+                                // NOTE: It seems that G1Projective::GENERATOR is always used, so we
+                                // hard code it here, but in principle there could be different
+                                // generators that would have to be stored alongside the public key
+                                message_generator: G1Projective::GENERATOR,
+                                encryption_key: *public_key,
+                                id: encryption_stmt_id,
+                                reference_id: sig_stmt_id,
+                                claim: *a_idx as usize,
+                                allow_message_decryption: true,
+                            });
                         Vec::from([encryption_statement])
                     }
                 }
@@ -329,14 +374,13 @@ fn generate_statements<S: ShortGroupSignatureScheme>(
         .collect_concat()
 }
 
-fn id_for(label: &str, clbl : &str, aidx : &u64) -> String {
+fn id_for(label: &str, clbl: &str, aidx: &u64) -> String {
     [label, clbl, "-", &aidx.to_string()].concat()
 }
 
-
 fn generate_equality_statements<S: ShortGroupSignatureScheme>(
-    eq_reqs: &[EqualityReq]) -> Vec<Statements<S>>
-{
+    eq_reqs: &[EqualityReq],
+) -> Vec<Statements<S>> {
     eq_reqs
         .iter()
         .map(|er| {

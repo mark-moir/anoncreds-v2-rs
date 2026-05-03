@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------------
-use crate::vca::{Error, VCAResult};
 use crate::vca::types::{DataValue, SharedParamKey, SharedParamValue, SharedParamValue::*};
+use crate::vca::{Error, VCAResult};
 // -----------------------------------------------------------------------------
 use std::collections::HashMap;
 // -----------------------------------------------------------------------------
@@ -45,6 +45,7 @@ pub fn lookup_one_int<'a>(k: &SharedParamKey, params: &'a SharedParams) -> VCARe
 pub fn put_shared_one(
     k: SharedParamKey,
     v: DataValue,
-    m: &mut HashMap<SharedParamKey,SharedParamValue>) {
-    let _ = m.insert(k,SPVOne(v));
+    m: &mut HashMap<SharedParamKey, SharedParamValue>,
+) {
+    let _ = m.insert(k, SPVOne(v));
 }

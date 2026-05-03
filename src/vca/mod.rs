@@ -31,11 +31,14 @@ pub enum Error {
     Utf8Error(std::str::Utf8Error),
 }
 
-pub fn convert_to_crypto_library_error<T>
-    (crypto_lib: &str, call_site: &str, err: T) -> Error
-where T: Debug {
-    Error::CryptoLibraryError(
-        format!("Error from underlying cryptography library {crypto_lib}, {call_site}: {:?}", err))
+pub fn convert_to_crypto_library_error<T>(crypto_lib: &str, call_site: &str, err: T) -> Error
+where
+    T: Debug,
+{
+    Error::CryptoLibraryError(format!(
+        "Error from underlying cryptography library {crypto_lib}, {call_site}: {:?}",
+        err
+    ))
 }
 
 #[derive(Debug)]
@@ -58,8 +61,8 @@ impl PartialEq for SerdeCborError {
 
 #[derive(Debug)]
 pub struct UnexpectedError {
-    pub reason    : String,
-    pub backtrace : Backtrace,
+    pub reason: String,
+    pub backtrace: Backtrace,
 }
 
 impl PartialEq for UnexpectedError {
@@ -80,7 +83,7 @@ where
 {
     fn is_err_containing(&self, substring: &str) -> bool {
         if let Err(err) = self {
-            format!("{:?}",err).contains(substring)
+            format!("{:?}", err).contains(substring)
         } else {
             false
         }
@@ -95,4 +98,3 @@ macro_rules! check_errors_in {
         )*
     }
 }
-

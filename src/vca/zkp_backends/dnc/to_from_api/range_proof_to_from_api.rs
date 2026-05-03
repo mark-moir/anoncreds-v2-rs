@@ -1,8 +1,8 @@
 // ------------------------------------------------------------------------------
-use crate::vca::{Error, VCAResult};
-use crate::vca::r#impl::to_from_api::*;
 use crate::impl_vca_roundtrip_ark;
 use crate::vca::interfaces::types as api;
+use crate::vca::r#impl::to_from_api::*;
+use crate::vca::{Error, VCAResult};
 // ------------------------------------------------------------------------------
 use legogroth16;
 // ------------------------------------------------------------------------------

@@ -7,8 +7,8 @@ use quote::quote;
 extern crate serde;
 use serde::Deserialize;
 extern crate serde_json;
-use std::fs;
 use std::collections::HashMap;
+use std::fs;
 
 /// Summary: for each file in `<dir_path>`, generate a test function that runs the test represented
 /// in a JSON file loaded from `<file_path>` using a VcaApi generated from <crypto_interface>.
@@ -203,12 +203,7 @@ pub fn map_test_over_dir(input: pm1::TokenStream) -> pm1::TokenStream {
     let input: pm2::TokenStream = input.into();
     let input_tokens = input.into_iter().collect::<Vec<_>>();
     let (crypto_interface, dir_path_lit, override_fn_lit) = match &input_tokens[..] {
-        [pm2::TokenTree::Ident(crypto_interface),
-         pm2::TokenTree::Punct(sep1),
-         pm2::TokenTree::Literal(dir_path_lit),
-         pm2::TokenTree::Punct(sep2),
-         pm2::TokenTree::Literal(override_fn_lit)
-        ]
+        [pm2::TokenTree::Ident(crypto_interface), pm2::TokenTree::Punct(sep1), pm2::TokenTree::Literal(dir_path_lit), pm2::TokenTree::Punct(sep2), pm2::TokenTree::Literal(override_fn_lit)]
             if sep1.as_char() == ',' && sep2.as_char() == ',' =>
         {
             (crypto_interface, dir_path_lit, override_fn_lit)
@@ -227,11 +222,12 @@ pub fn map_test_over_dir(input: pm1::TokenStream) -> pm1::TokenStream {
             HashMap::new()
         } else {
             let f_in = fs::File::open(override_file_name.clone())
-                .map_err(|e| panic!("Error opening {override_file_name}: {}", e)).unwrap();
-            serde_json::from_reader::<_,LibrarySpecificTestHandlers>(f_in)
+                .map_err(|e| panic!("Error opening {override_file_name}: {}", e))
+                .unwrap();
+            serde_json::from_reader::<_, LibrarySpecificTestHandlers>(f_in)
                 .unwrap()
                 .into_iter()
-                .map(|(k,v)| (k.distill_test_name(), v))
+                .map(|(k, v)| (k.distill_test_name(), v))
                 .collect()
         }
     };
@@ -243,10 +239,10 @@ pub fn map_test_over_dir(input: pm1::TokenStream) -> pm1::TokenStream {
     let dir_path = dir_path_lit.to_string().replace("\"", "");
     // running example continued:
     //   dir_path = "my/target/dir"
-    let dir:Vec<fs::DirEntry> = fs::read_dir(dir_path)
+    let dir: Vec<fs::DirEntry> = fs::read_dir(dir_path)
         .unwrap()
         .flatten()
-        .filter (|r| !((*r).path().is_dir()))
+        .filter(|r| !((*r).path().is_dir()))
         .collect();
 
     // output for each test file
@@ -322,7 +318,7 @@ pub fn map_test_over_dir(input: pm1::TokenStream) -> pm1::TokenStream {
         match r#override {
             Some(TestHandler::NotSoSlow) | None => {
                 unused_overrides.remove(lupstrref);
-                ts.extend(quote!{
+                ts.extend(quote! {
                     fn #test_name_id() {
                         extern crate credx;
                         use credx::vca::api_utils::implement_vca_api_using;
@@ -334,7 +330,8 @@ pub fn map_test_over_dir(input: pm1::TokenStream) -> pm1::TokenStream {
                             panic!("run_json_test failed with {:?}", e)
                         }
                     }
-                })},
+                })
+            }
             Some(TestHandler::Fail(s)) => {
                 unused_overrides.remove(lupstrref);
                 let err_str = pm2::Literal::string(s);
@@ -350,11 +347,13 @@ pub fn map_test_over_dir(input: pm1::TokenStream) -> pm1::TokenStream {
                     })
                 } else {
                     // Otherwise, we used panic! to make it fail.
-                    ts.extend(quote!{
+                    ts.extend(quote! {
                         fn #test_name_id() {
                             panic!(#err_str)
                         }
-                    })}},
+                    })
+                }
+            }
             Some(TestHandler::Skip(s)) => {
                 unused_overrides.remove(lupstrref);
                 let skip_str = pm2::Literal::string(s);
@@ -363,15 +362,16 @@ pub fn map_test_over_dir(input: pm1::TokenStream) -> pm1::TokenStream {
                 ts.extend(quote! {
                     #[ignore = #skip_str]
                     fn #test_name_id() {}
-                })}
+                })
+            }
         }
         output.extend(ts);
-    };
+    }
     let num_unused = unused_overrides.len();
     if num_unused != 0 {
         println!("-------------------------");
         println!("WARNING: {num_unused} unused overrides\n in {override_file_name}");
-        for (k,v) in unused_overrides {
+        for (k, v) in unused_overrides {
             println!("{k}\n    {v:?}")
         }
         println!("-------------------------\n");
@@ -384,16 +384,19 @@ pub fn map_test_over_dir(input: pm1::TokenStream) -> pm1::TokenStream {
 type TestLabel = String;
 type LibrarySpecificTestHandlers = HashMap<TestLabel, TestHandler>;
 
-#[derive(Clone,Debug,PartialEq,Deserialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize)]
 #[serde(content = "contents", tag = "tag")]
 enum TestHandler {
-    Skip(String),  // String contains reason for skipping, shown in test output
-    Fail(String),  // String shows reason for failing, shown in failure explanation in test output
+    Skip(String), // String contains reason for skipping, shown in test output
+    Fail(String), // String shows reason for failing, shown in failure explanation in test output
     NotSoSlow,
 }
 
-trait StringExt where Self: Sized {
-    fn remove_expected_prefix(self) -> Result<Self,String>;
+trait StringExt
+where
+    Self: Sized,
+{
+    fn remove_expected_prefix(self) -> Result<Self, String>;
     fn remove_slow(self) -> Self;
     fn is_slow(&self) -> bool;
     fn is_slow_slow(&self) -> bool;
@@ -402,22 +405,26 @@ trait StringExt where Self: Sized {
 }
 
 impl StringExt for String {
-    fn remove_expected_prefix(self) -> Result<Self,String> {
+    fn remove_expected_prefix(self) -> Result<Self, String> {
         if let Some(rest) = self.strip_prefix("json_test_") {
-            let (num,rest2) = rest.split_at(NUM_DIGITS_FOR_JSON_TEST_IDS);
-            if !num.chars().all(|c| char::is_digit(c,10)) {
+            let (num, rest2) = rest.split_at(NUM_DIGITS_FOR_JSON_TEST_IDS);
+            if !num.chars().all(|c| char::is_digit(c, 10)) {
                 return Err(format!("{NUM_DIGITS_FOR_JSON_TEST_IDS}-digit test id not found after \"json_test_\" in {self}"));
             };
             match rest2.strip_prefix("_") {
                 Some(_) => Ok(rest.to_string()),
-                None    => Err(format!("expected underscore after \"json_test_nnn\" not found in {self}"))
+                None => Err(format!(
+                    "expected underscore after \"json_test_nnn\" not found in {self}"
+                )),
             }
         } else {
-            Err(format!("expected test filename prefix \"json_test_\" not found in {self}"))
+            Err(format!(
+                "expected test filename prefix \"json_test_\" not found in {self}"
+            ))
         }
     }
     fn remove_slow(self) -> String {
-        self.replace("slow","").replace("SLOW","")
+        self.replace("slow", "").replace("SLOW", "")
     }
     fn is_slow(&self) -> bool {
         (self.contains("slow") || self.contains("SLOW")) && !(self.is_slow_slow())
@@ -426,7 +433,7 @@ impl StringExt for String {
         self.contains("slowslow") || self.contains("SLOWSLOW")
     }
     fn remove_double_underscores(self) -> String {
-        let x = self.clone().replace("__","_");
+        let x = self.clone().replace("__", "_");
         if x == self {
             return x;
         };
@@ -436,7 +443,6 @@ impl StringExt for String {
         self.remove_slow().remove_double_underscores()
     }
 }
-
 
 const NUM_DIGITS_FOR_JSON_TEST_IDS: usize = 3;
 
@@ -449,36 +455,43 @@ mod tests {
 
     #[test]
     fn test_remove_expected_prefix_happy() {
-        assert_eq!("json_test_012_therest".to_string().remove_expected_prefix(),
-                   Ok("012_therest".to_string()));
+        assert_eq!(
+            "json_test_012_therest".to_string().remove_expected_prefix(),
+            Ok("012_therest".to_string())
+        );
     }
     #[test]
     fn test_remove_expected_prefix_short() {
-        let Err(res) = "short".to_string().remove_expected_prefix()
-        else {
+        let Err(res) = "short".to_string().remove_expected_prefix() else {
             panic!("should have reported missing prefix");
         };
-        assert!(res.contains("expected test filename prefix") &&
-                res.contains("json_test_") &&
-                res.contains("not found in"))
+        assert!(
+            res.contains("expected test filename prefix")
+                && res.contains("json_test_")
+                && res.contains("not found in")
+        )
     }
     #[test]
     fn test_remove_expected_prefix_not_digits() {
-        let Err(res) = "json_test_12c".to_string().remove_expected_prefix()
-        else {
-            panic!("should have reported {}-digit id missing", NUM_DIGITS_FOR_JSON_TEST_IDS);
+        let Err(res) = "json_test_12c".to_string().remove_expected_prefix() else {
+            panic!(
+                "should have reported {}-digit id missing",
+                NUM_DIGITS_FOR_JSON_TEST_IDS
+            );
         };
-        assert!(res.contains(&format!("{}-digit test id not found after", NUM_DIGITS_FOR_JSON_TEST_IDS)) &&
-                res.contains("json_test_"))
+        assert!(
+            res.contains(&format!(
+                "{}-digit test id not found after",
+                NUM_DIGITS_FOR_JSON_TEST_IDS
+            )) && res.contains("json_test_")
+        )
     }
     #[test]
     fn test_remove_expected_prefix_missing_underscore() {
-        let Err(res) = "json_test_123rest".to_string().remove_expected_prefix()
-        else {
+        let Err(res) = "json_test_123rest".to_string().remove_expected_prefix() else {
             panic!("should have reported missing underscore");
         };
-        assert!(res.contains("expected underscore after") &&
-                res.contains("json_test_nnn"))
+        assert!(res.contains("expected underscore after") && res.contains("json_test_nnn"))
     }
     #[test]
     fn test_remove_double_underscore() {

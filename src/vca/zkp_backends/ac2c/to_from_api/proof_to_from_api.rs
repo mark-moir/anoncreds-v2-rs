@@ -1,7 +1,7 @@
 // ------------------------------------------------------------------------------
-use crate::vca::VCAResult;
 use crate::vca::r#impl::to_from_api::*;
 use crate::vca::types::*;
+use crate::vca::VCAResult;
 // ------------------------------------------------------------------------------
 use crate::knox::short_group_sig_core::short_group_traits::ShortGroupSignatureScheme;
 use crate::prelude::Presentation;
@@ -18,4 +18,3 @@ impl<S: ShortGroupSignatureScheme> VcaTryFrom<&Proof> for Presentation<S> {
         from_opaque_cbor(&x.0)
     }
 }
-

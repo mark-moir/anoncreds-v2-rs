@@ -41,8 +41,8 @@
 //!         [`Sync`].
 
 // ------------------------------------------------------------------------------
-pub use crate::vca::VCAResult;
 pub use crate::vca::interfaces::primitives::types::*;
+pub use crate::vca::VCAResult;
 // ------------------------------------------------------------------------------
 use std::sync::Arc;
 // ------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ pub type SpecificCreateSignerData = Arc<
             Natural, // RNG seed
             &[ClaimType],
             &[CredAttrIndex],
-        ) -> VCAResult<(SignerPublicSetupData,SignerSecretData)>
+        ) -> VCAResult<(SignerPublicSetupData, SignerSecretData)>
         + Send
         + Sync,
 >;
@@ -64,7 +64,7 @@ pub type SpecificCreateSignerData = Arc<
 pub type CreateAccumulatorData = Arc<
     dyn Fn(
             Natural, // RNG seed
-    ) -> VCAResult<CreateAccumulatorResponse>
+        ) -> VCAResult<CreateAccumulatorResponse>
         + Send
         + Sync,
 >;
@@ -74,7 +74,7 @@ pub type SpecificCreateBlindSigningInfo = Arc<
             Natural, // RNG seed
             &SignerPublicSetupData,
             &[ClaimType],
-            &[CredAttrIndexAndDataValue]  // Attributes to be blinded
+            &[CredAttrIndexAndDataValue], // Attributes to be blinded
         ) -> VCAResult<BlindSigningInfo>
         + Send
         + Sync,
@@ -92,35 +92,30 @@ pub type SpecificSign = Arc<
 
 pub type SpecificSignWithBlindedAttributes = Arc<
     dyn Fn(
-        Natural, // RNG seed
-        &[ClaimType],
-        &[CredAttrIndexAndDataValue],  // Non-blinded attributes
-        &BlindInfoForSigner,
-        &SignerPublicSetupData,
-        &SignerSecretData,
-    ) -> VCAResult<BlindSignature>
-    + Send
-    + Sync,
+            Natural, // RNG seed
+            &[ClaimType],
+            &[CredAttrIndexAndDataValue], // Non-blinded attributes
+            &BlindInfoForSigner,
+            &SignerPublicSetupData,
+            &SignerSecretData,
+        ) -> VCAResult<BlindSignature>
+        + Send
+        + Sync,
 >;
 
 pub type SpecificUnblindBlindedSignature = Arc<
     dyn Fn(
-        &[ClaimType],
-        &[CredAttrIndexAndDataValue],  // Blinded attributes, same as used for CreateBlindSigningInfo
-        &BlindSignature,
-        &InfoForUnblinding
-    ) -> VCAResult<Signature>
-    + Send
-    + Sync,
+            &[ClaimType],
+            &[CredAttrIndexAndDataValue], // Blinded attributes, same as used for CreateBlindSigningInfo
+            &BlindSignature,
+            &InfoForUnblinding,
+        ) -> VCAResult<Signature>
+        + Send
+        + Sync,
 >;
 
-pub type CreateAccumulatorElement = Arc<
-    dyn Fn(
-        AccumulatorMember
-    ) -> VCAResult<AccumulatorElement>
-    + Send
-    + Sync,
->;
+pub type CreateAccumulatorElement =
+    Arc<dyn Fn(AccumulatorMember) -> VCAResult<AccumulatorElement> + Send + Sync>;
 
 pub type AccumulatorAddRemove = Arc<
     dyn Fn(
@@ -135,12 +130,12 @@ pub type AccumulatorAddRemove = Arc<
 
 pub type GetAccumulatorWitness = Arc<
     dyn Fn(
-        &AccumulatorData,
-        &Accumulator,
-        &AccumulatorElement,
-    ) -> VCAResult<AccumulatorMembershipWitness>
-    + Send
-    + Sync,
+            &AccumulatorData,
+            &Accumulator,
+            &AccumulatorElement,
+        ) -> VCAResult<AccumulatorMembershipWitness>
+        + Send
+        + Sync,
 >;
 
 pub type UpdateAccumulatorWitness = Arc<
@@ -167,13 +162,9 @@ pub type CreateRangeProofProvingKey = Arc<
         ) -> VCAResult<RangeProofProvingKey>
         + Send
         + Sync,
-    >;
+>;
 
-pub type GetRangeProofMaxValue = Arc<
-    dyn Fn() -> u64
-        + Send
-        + Sync,
-    >;
+pub type GetRangeProofMaxValue = Arc<dyn Fn() -> u64 + Send + Sync>;
 
 pub type CreateAuthorityData = Arc<
     dyn Fn(
@@ -199,7 +190,10 @@ pub type SpecificVerifier = Arc<
             &[ProofInstructionGeneral<ResolvedRequirement>],
             &EqualityReqs,
             &Proof,
-            &HashMap<CredentialLabel, HashMap<CredAttrIndex, HashMap<AuthorityLabel, DecryptRequest>>>,
+            &HashMap<
+                CredentialLabel,
+                HashMap<CredAttrIndex, HashMap<AuthorityLabel, DecryptRequest>>,
+            >,
             Nonce,
         ) -> VCAResult<WarningsAndDecryptResponses>
         + Send
@@ -212,7 +206,10 @@ pub type SpecificVerifyDecryption = Arc<
             &EqualityReqs,
             &DataForVerifier,
             &HashMap<AuthorityLabel, AuthorityDecryptionKey>,
-            &HashMap<CredentialLabel, HashMap<CredAttrIndex, HashMap<AuthorityLabel, DecryptResponse>>>,
+            &HashMap<
+                CredentialLabel,
+                HashMap<CredAttrIndex, HashMap<AuthorityLabel, DecryptResponse>>,
+            >,
         ) -> VCAResult<Vec<Warning>>
         + Send
         + Sync,

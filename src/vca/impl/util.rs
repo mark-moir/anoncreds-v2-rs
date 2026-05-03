@@ -1,14 +1,14 @@
 // ----------------------------------------------------------------------------
 use crate::check_errors_in;
-use crate::vca::*;
 use crate::vca::r#impl::*;
 use crate::vca::types::DataValue;
+use crate::vca::*;
 use crate::vca::{Error, VCAResult};
 // ----------------------------------------------------------------------------
 use indexmap::IndexMap;
 use lazy_static::*;
 use std::cmp::Ordering;
-use std::collections::{BTreeMap,BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fmt::Debug;
 use std::hash::Hash;
 // ----------------------------------------------------------------------------
@@ -16,9 +16,7 @@ use std::hash::Hash;
 // ----------------------------------------------------------------------------
 // Extract text from DataValue expected to be DVText
 
-pub fn get_text_from_value(
-    dv : &DataValue
-) -> VCAResult<String> {
+pub fn get_text_from_value(dv: &DataValue) -> VCAResult<String> {
     match dv {
         DataValue::DVInt(_) => Err(Error::General(format!(
             "get_text_from_value; unexpected type; {dv:?}"
@@ -29,10 +27,8 @@ pub fn get_text_from_value(
 
 // ----------------------------------------------------------------------------
 
-pub fn disjoint_vec_of_vecs<T: Eq + Clone>(
-    xss : Vec<Vec<T>>
-) -> Vec<Vec<T>> {
-    let mut yss : Vec<Vec<T>> = vec![];
+pub fn disjoint_vec_of_vecs<T: Eq + Clone>(xss: Vec<Vec<T>>) -> Vec<Vec<T>> {
+    let mut yss: Vec<Vec<T>> = vec![];
     xss.into_iter().for_each(|xs| {
         // Find lists already in yss that overlap with xs
         let mut overlapping_idxs = vec![];
@@ -76,9 +72,9 @@ pub fn disjoint_vec_of_vecs<T: Eq + Clone>(
 }
 
 /// Merge maps, requiring same keys
-pub fn merge_maps<K: Clone + Eq + Hash + Debug, V1 : Clone, V2 : Clone>(
-    m1 : HashMap<K, V1>,
-    m2 : HashMap<K, V2>,
+pub fn merge_maps<K: Clone + Eq + Hash + Debug, V1: Clone, V2: Clone>(
+    m1: HashMap<K, V1>,
+    m2: HashMap<K, V2>,
 ) -> VCAResult<HashMap<K, (V1, V2)>> {
     let make_error = || {
         let ks1: Vec<_> = m1.keys().collect();
@@ -87,8 +83,8 @@ pub fn merge_maps<K: Clone + Eq + Hash + Debug, V1 : Clone, V2 : Clone>(
             "Unequal keys for maps to be merged; {ks1:?} != {ks2:?}"
         ))
     };
-    let mut m : HashMap<K, (V1, V2)> = HashMap::new();
-    let mut ks2 : HashSet<&K> = m2.keys().collect();
+    let mut m: HashMap<K, (V1, V2)> = HashMap::new();
+    let mut ks2: HashSet<&K> = m2.keys().collect();
     m1.iter().try_for_each(|(k, v1)| {
         let v2 = m2.get(k).ok_or_else(make_error)?;
         m.insert(k.clone(), (v1.clone(), v2.clone()));
@@ -100,7 +96,7 @@ pub fn merge_maps<K: Clone + Eq + Hash + Debug, V1 : Clone, V2 : Clone>(
 }
 
 #[cfg(not(feature = "verbose"))]
-pub fn pp<A>(_m : &str, _v: A) {}
+pub fn pp<A>(_m: &str, _v: A) {}
 
 #[cfg(feature = "verbose")]
 pub fn pp<A: std::fmt::Debug>(m: &str, v: A) {
@@ -121,7 +117,7 @@ pub fn pprintln(m: &str, s: &str) {
 //
 // These are Rust-specific, so they don't correspond to Haskell functions.
 
-pub fn extend_nub<T : Eq>(ys : &mut Vec<T>, xs : Vec<T>) {
+pub fn extend_nub<T: Eq>(ys: &mut Vec<T>, xs: Vec<T>) {
     xs.into_iter().for_each(|x| {
         if !ys.iter().any(|y| x == *y) {
             ys.push(x);
@@ -129,11 +125,11 @@ pub fn extend_nub<T : Eq>(ys : &mut Vec<T>, xs : Vec<T>) {
     })
 }
 
-pub fn ord_nub<T>(xs : &[T]) -> BTreeSet<&T>
+pub fn ord_nub<T>(xs: &[T]) -> BTreeSet<&T>
 where
     T: Ord,
 {
-    let mut ys : BTreeSet<&T> = BTreeSet::new();
+    let mut ys: BTreeSet<&T> = BTreeSet::new();
     xs.iter().for_each(|x| {
         ys.insert(x);
     });
@@ -145,7 +141,7 @@ where
 /// of this is `bool`, which has the canonical accept form
 /// `true`.
 pub trait Assert {
-    fn assert_or_else<R, F : FnOnce() -> R>(&self, f : F) -> Result<(), R>;
+    fn assert_or_else<R, F: FnOnce() -> R>(&self, f: F) -> Result<(), R>;
 
     fn assert_or<R>(&self, r: R) -> Result<(), R> {
         self.assert_or_else(move || r)
@@ -329,7 +325,7 @@ mod tests {
 
     use maplit::hashmap;
 
-    use crate::vca::r#impl::util::{merge_maps, insert_throw_if_present_3_lvl};
+    use crate::vca::r#impl::util::{insert_throw_if_present_3_lvl, merge_maps};
 
     use super::disjoint_vec_of_vecs;
 
@@ -351,19 +347,23 @@ mod tests {
         test("test1", vec![vec![1]], vec![vec![1]]);
         test("test2", vec![vec![1], vec![2]], vec![vec![1], vec![2]]);
         test("test3", vec![vec![1], vec![1, 2]], vec![vec![1, 2]]);
-        test("test4",
+        test(
+            "test4",
             vec![vec![1], vec![1, 2], vec![3], vec![3, 4]],
             vec![vec![1, 2], vec![3, 4]],
         );
-        test("test5",
+        test(
+            "test5",
             vec![vec![1], vec![1, 2], vec![3], vec![2, 3, 4]],
             vec![vec![1, 2, 3, 4]],
         );
-        test("test6",
+        test(
+            "test6",
             vec![vec![1, 2], vec![3, 4], vec![2, 3]],
             vec![vec![1, 2, 3, 4]],
         );
-        test("test7",
+        test(
+            "test7",
             vec![
                 vec![10],
                 vec![1, 2],
@@ -379,7 +379,8 @@ mod tests {
         // DockNetwork crypto: https://github.com/docknetwork/crypto/issues/18
         // The irrelevant tuples in that test have been "collapsed" to integers,
         // with leading zeroes removed to avoid warnings.
-        test("test8",
+        test(
+            "test8",
             vec![
                 vec![1, 20],
                 vec![5, 12],
@@ -442,10 +443,26 @@ mod tests {
         assert_eq!(m["k1"]["k2b"]["k3b"], 2);
 
         // duplicate third-level insert should error and include outer context
-        let err = insert_throw_if_present_3_lvl(&"k1", &"k2", &"k3", 9u8, &mut m, mk_err, &["ctx".to_string()])
-            .unwrap_err();
-        assert!(err.contains("already present"), "err missing duplicate text: {}", err);
-        assert!(err.contains("outer_key_present"), "err missing outer context: {}", err);
+        let err = insert_throw_if_present_3_lvl(
+            &"k1",
+            &"k2",
+            &"k3",
+            9u8,
+            &mut m,
+            mk_err,
+            &["ctx".to_string()],
+        )
+        .unwrap_err();
+        assert!(
+            err.contains("already present"),
+            "err missing duplicate text: {}",
+            err
+        );
+        assert!(
+            err.contains("outer_key_present"),
+            "err missing outer context: {}",
+            err
+        );
         assert!(err.contains("ctx"), "err missing caller context: {}", err);
     }
 }
@@ -471,8 +488,8 @@ macro_rules! str_vec_from {
 mod str_vec_from_examples {
     #[test]
     fn test_str_vec_from() {
-        let s: Vec<String> = str_vec_from!(2*3,"abc".to_string() + "def");
-        assert_eq!(s,vec!("6","abcdef"));
+        let s: Vec<String> = str_vec_from!(2 * 3, "abc".to_string() + "def");
+        assert_eq!(s, vec!("6", "abcdef"));
     }
 }
 
@@ -488,36 +505,36 @@ fn intercalate<T: ToString>(separator: &str, items: &[T]) -> String {
 }
 
 pub fn ic_semi(s: &[String]) -> String {
-    intercalate("; ",s)
+    intercalate("; ", s)
 }
 
-pub fn make_adjective_error<E>(
-    err_str: String,
-    mk_e: fn(String) -> E,
-    s: &[String])
-    -> E {
+pub fn make_adjective_error<E>(err_str: String, mk_e: fn(String) -> E, s: &[String]) -> E {
     let mut result = Vec::with_capacity(1 + s.len() + 1);
     result.extend_from_slice(s);
     result.push(err_str);
     mk_e(ic_semi(&result))
 }
 
-pub fn make_absent_error<K: Eq+Debug+Hash, E>(
+pub fn make_absent_error<K: Eq + Debug + Hash, E>(
     k: &K,
     l: usize,
     mk_e: fn(String) -> E,
-    s: &[String])
-    -> E {
-    make_adjective_error(format!("key {:?} not found among {} key(s)", k, l),mk_e,s)
+    s: &[String],
+) -> E {
+    make_adjective_error(format!("key {:?} not found among {} key(s)", k, l), mk_e, s)
 }
 
 pub fn make_present_error<K: Debug, V: Debug, E: Debug>(
     k: &K,
     v: &V,
     mk_e: fn(String) -> E,
-    s: &[String])
-    -> E {
-    make_adjective_error(format!("key {:?} already present with value {:?}", k, v),mk_e,s)
+    s: &[String],
+) -> E {
+    make_adjective_error(
+        format!("key {:?} already present with value {:?}", k, v),
+        mk_e,
+        s,
+    )
 }
 
 pub fn make_present_error_2<K1: Debug, K2: Debug, V: Debug, E: Debug>(
@@ -525,27 +542,30 @@ pub fn make_present_error_2<K1: Debug, K2: Debug, V: Debug, E: Debug>(
     k2: &K2,
     v: &V,
     mk_e: fn(String) -> E,
-    s: &[String])
-    -> E {
-    make_adjective_error(format!("keys {:?}/{:?} already present with value {:?}", k1, k2, v),mk_e,s)
+    s: &[String],
+) -> E {
+    make_adjective_error(
+        format!("keys {:?}/{:?} already present with value {:?}", k1, k2, v),
+        mk_e,
+        s,
+    )
 }
 
-pub fn make_out_of_bounds_error<E>(
-    i: usize,
-    l: usize,
-    mk_e: fn(String) -> E,
-    s: &[String])
-    -> E {
-    make_adjective_error(format!("index {:?} out of range for Vec of length {:?}", i, l),mk_e,s)
+pub fn make_out_of_bounds_error<E>(i: usize, l: usize, mk_e: fn(String) -> E, s: &[String]) -> E {
+    make_adjective_error(
+        format!("index {:?} out of range for Vec of length {:?}", i, l),
+        mk_e,
+        s,
+    )
 }
 
 pub trait KeyValueContainer<'a, K, V> {
     fn get(&'a self, key: &'a K) -> Option<&'a V>;
     fn get_mut(&'a mut self, key: &'a K) -> Option<&'a mut V>;
     fn insert(&'a mut self, key: K, val: V) -> Option<V>;
-    fn len (& self) -> usize;
-    fn is_empty (& self) -> bool;
-    fn one (key: K, val: V) -> Self;
+    fn len(&self) -> usize;
+    fn is_empty(&self) -> bool;
+    fn one(key: K, val: V) -> Self;
 }
 
 impl<K, V> KeyValueContainer<'_, K, V> for HashMap<K, V>
@@ -558,18 +578,18 @@ where
     fn get_mut(&mut self, key: &K) -> Option<&mut V> {
         self.get_mut(key)
     }
-    fn insert(& mut self, key: K, val: V) -> Option< V> {
-        self.insert(key,val)
+    fn insert(&mut self, key: K, val: V) -> Option<V> {
+        self.insert(key, val)
     }
-    fn len(&self)-> usize {
+    fn len(&self) -> usize {
         self.len()
     }
-    fn is_empty(&self)-> bool {
+    fn is_empty(&self) -> bool {
         self.is_empty()
     }
     fn one(k: K, v: V) -> HashMap<K, V> {
         let mut m = HashMap::<K, V>::new();
-        m.insert(k,v);
+        m.insert(k, v);
         m
     }
 }
@@ -584,18 +604,18 @@ where
     fn get_mut(&mut self, key: &K) -> Option<&mut V> {
         self.get_mut(key)
     }
-    fn insert(& mut self, key: K, val: V) -> Option< V> {
-        self.insert(key,val)
+    fn insert(&mut self, key: K, val: V) -> Option<V> {
+        self.insert(key, val)
     }
-    fn len(&self)-> usize {
+    fn len(&self) -> usize {
         self.len()
     }
-    fn is_empty(&self)-> bool {
+    fn is_empty(&self) -> bool {
         self.is_empty()
     }
     fn one(k: K, v: V) -> IndexMap<K, V> {
         let mut m = IndexMap::<K, V>::new();
-        m.insert(k,v);
+        m.insert(k, v);
         m
     }
 }
@@ -610,17 +630,17 @@ where
     fn get_mut(&mut self, key: &K) -> Option<&mut V> {
         self.get_mut(key)
     }
-    fn insert(& mut self, key: K, val: V) -> Option< V> {
-        self.insert(key,val)
+    fn insert(&mut self, key: K, val: V) -> Option<V> {
+        self.insert(key, val)
     }
-    fn len(&self)-> usize {
+    fn len(&self) -> usize {
         self.len()
     }
-    fn is_empty(&self)-> bool {
+    fn is_empty(&self) -> bool {
         self.is_empty()
     }
-    fn one(key: K, val: V) -> BTreeMap<K,V> {
-        let mut m = BTreeMap::<K,V>::new();
+    fn one(key: K, val: V) -> BTreeMap<K, V> {
+        let mut m = BTreeMap::<K, V>::new();
         m.insert(key, val);
         m
     }
@@ -629,106 +649,132 @@ where
 // The first "verb, throw if adjective" function.  This one looks up
 // a key in a hash map and produces an error containing the input
 // strings in s and additional information about the lookup failure.
-pub fn lookup_throw_if_absent<'a, K: Eq+Debug+Hash,V, M: KeyValueContainer<'a, K,V>, E>(
+pub fn lookup_throw_if_absent<'a, K: Eq + Debug + Hash, V, M: KeyValueContainer<'a, K, V>, E>(
     k: &'a K,
     m: &'a M,
     mk_e: fn(String) -> E,
-    s: &[String])
-    -> Result<&'a V,E> {
-    m.get(k).ok_or_else(|| make_absent_error(k,m.len(),mk_e,s))
+    s: &[String],
+) -> Result<&'a V, E> {
+    m.get(k)
+        .ok_or_else(|| make_absent_error(k, m.len(), mk_e, s))
 }
 
-pub fn lookup_throw_if_absent_mut<'a, K: Eq+Debug+Hash,V, M: KeyValueContainer<'a, K,V>, E>(
+pub fn lookup_throw_if_absent_mut<
+    'a,
+    K: Eq + Debug + Hash,
+    V,
+    M: KeyValueContainer<'a, K, V>,
+    E,
+>(
     k: &'a K,
     m: &'a mut M,
     mk_e: fn(String) -> E,
-    s: &[String])
-    -> Result<&'a mut V,E> {
+    s: &[String],
+) -> Result<&'a mut V, E> {
     let l = m.len();
-    m.get_mut(k).ok_or_else(|| make_absent_error(k,l,mk_e,s))
+    m.get_mut(k).ok_or_else(|| make_absent_error(k, l, mk_e, s))
 }
 
-pub fn lookup_throw_if_absent_2_lvl<'a,
-                                    K1: Eq+Debug+Hash,
-                                    K2: Eq+Debug+Hash, V,
-                                    M2: KeyValueContainer<'a, K2, V> + 'a,
-                                    M1: KeyValueContainer<'a, K1, M2>, E> (
+pub fn lookup_throw_if_absent_2_lvl<
+    'a,
+    K1: Eq + Debug + Hash,
+    K2: Eq + Debug + Hash,
+    V,
+    M2: KeyValueContainer<'a, K2, V> + 'a,
+    M1: KeyValueContainer<'a, K1, M2>,
+    E,
+>(
     k1: &'a K1,
     k2: &'a K2,
     m: &'a M1,
     mk_e: fn(String) -> E,
-    s: &[String])
-    -> Result<&'a V,E> {
-    let m2 = m.get(k1).ok_or_else(|| make_absent_error(k1,m.len(),mk_e,s))?;
-    lookup_throw_if_absent(k2,m2,mk_e,s)
+    s: &[String],
+) -> Result<&'a V, E> {
+    let m2 = m
+        .get(k1)
+        .ok_or_else(|| make_absent_error(k1, m.len(), mk_e, s))?;
+    lookup_throw_if_absent(k2, m2, mk_e, s)
 }
 
-pub fn lookup_throw_if_absent_2_lvl_mut<'a,
-                                    K1: Eq+Debug+Hash,
-                                    K2: Eq+Debug+Hash, V,
-                                    M2: KeyValueContainer<'a, K2, V> + 'a,
-                                    M1: KeyValueContainer<'a, K1, M2>, E> (
+pub fn lookup_throw_if_absent_2_lvl_mut<
+    'a,
+    K1: Eq + Debug + Hash,
+    K2: Eq + Debug + Hash,
+    V,
+    M2: KeyValueContainer<'a, K2, V> + 'a,
+    M1: KeyValueContainer<'a, K1, M2>,
+    E,
+>(
     k1: &'a K1,
     k2: &'a K2,
     m: &'a mut M1,
     mk_e: fn(String) -> E,
-    s: &[String])
-    -> Result<&'a mut V,E> {
+    s: &[String],
+) -> Result<&'a mut V, E> {
     let l = m.len();
-    let m2 = m.get_mut(k1).ok_or_else(|| make_absent_error(k1,l,mk_e,s))?;
-    lookup_throw_if_absent_mut(k2,m2,mk_e,s)
+    let m2 = m
+        .get_mut(k1)
+        .ok_or_else(|| make_absent_error(k1, l, mk_e, s))?;
+    lookup_throw_if_absent_mut(k2, m2, mk_e, s)
 }
 
 pub fn lookup_throw_if_out_of_bounds<'a, V, E>(
     l: &'a [V],
     i: usize,
     mk_e: fn(String) -> E,
-    s: &[String]) -> Result<&'a V,E> {
+    s: &[String],
+) -> Result<&'a V, E> {
     match l.get(i) {
         Some(v) => Ok(v),
-        None => Err(make_out_of_bounds_error(i,l.len(),mk_e,s))
+        None => Err(make_out_of_bounds_error(i, l.len(), mk_e, s)),
     }
 }
 
-pub fn insert_throw_if_present<'a, K: Eq+Debug+Hash+Clone, V: Clone+Debug+'a, M: KeyValueContainer<'a, K,V>, E: Debug>(
+pub fn insert_throw_if_present<
+    'a,
+    K: Eq + Debug + Hash + Clone,
+    V: Clone + Debug + 'a,
+    M: KeyValueContainer<'a, K, V>,
+    E: Debug,
+>(
     k: K,
     v: V,
     m: &'a mut M,
     mk_e: fn(String) -> E,
-    s: &[String])
-    -> Result<(),E> {
-    match m.insert(k.clone(),v) {
-        Some(v1)=> Err(make_present_error(&k,&v1,mk_e,s)),
-        None => Ok(())
+    s: &[String],
+) -> Result<(), E> {
+    match m.insert(k.clone(), v) {
+        Some(v1) => Err(make_present_error(&k, &v1, mk_e, s)),
+        None => Ok(()),
     }
 }
 
 // Ideally this would be generalised to work for any pair of types implementing KeyValueContainer,
 // but is only used for HashMap so far
-pub fn insert_throw_if_present_2_lvl<'a,
-                                     K1: Eq+Debug+Hash+Clone,
-                                     K2: Eq+Debug+Hash+Clone,
-                                     V: Clone+Debug+'a,
-                                     E: Debug>(
+pub fn insert_throw_if_present_2_lvl<
+    'a,
+    K1: Eq + Debug + Hash + Clone,
+    K2: Eq + Debug + Hash + Clone,
+    V: Clone + Debug + 'a,
+    E: Debug,
+>(
     k1: &K1,
     k2: &K2,
     v: V,
     m: &'a mut HashMap<K1, HashMap<K2, V>>,
     mk_e: fn(String) -> E,
-    s: &[String]
-) -> Result<(),E> {
+    s: &[String],
+) -> Result<(), E> {
     match m.get_mut(k1) {
-        Some(m1) => {
-            match m1.get_mut(k2) {
-                Some(_) => Err(make_present_error_2(&k1,&k2,&v,mk_e,s)),
-                None => {
-                    m1.insert(k2.clone(), v.clone());
-                    Ok(())
-                }
+        Some(m1) => match m1.get_mut(k2) {
+            Some(_) => Err(make_present_error_2(&k1, &k2, &v, mk_e, s)),
+            None => {
+                m1.insert(k2.clone(), v.clone());
+                Ok(())
             }
         },
         None => {
-            m.insert(k1.clone(),HashMap::<K2, V>::one(k2.clone(),v.clone()));
+            m.insert(k1.clone(), HashMap::<K2, V>::one(k2.clone(), v.clone()));
             Ok(())
         }
     }
@@ -736,66 +782,85 @@ pub fn insert_throw_if_present_2_lvl<'a,
 
 // Ideally this would be generalised to work for any combination of types implementing
 // KeyValueContainer, but is only used for HashMap so far
-pub fn insert_throw_if_present_3_lvl<'a,
-                                     K1: Eq+Debug+Hash+Clone,
-                                     K2: Eq+Debug+Hash+Clone,
-                                     K3: Eq+Debug+Hash+Clone,
-                                     V: Clone+Debug+'a,
-                                     E: Debug>(
+pub fn insert_throw_if_present_3_lvl<
+    'a,
+    K1: Eq + Debug + Hash + Clone,
+    K2: Eq + Debug + Hash + Clone,
+    K3: Eq + Debug + Hash + Clone,
+    V: Clone + Debug + 'a,
+    E: Debug,
+>(
     k1: &K1,
     k2: &K2,
     k3: &K3,
     v: V,
     m: &'a mut HashMap<K1, HashMap<K2, HashMap<K3, V>>>,
     mk_e: fn(String) -> E,
-    s: &[String])
-    -> Result<(),E> {
+    s: &[String],
+) -> Result<(), E> {
     match m.get_mut(k1) {
         Some(m1) => {
             let mut ctx = s.to_vec();
             ctx.push(format!("outer_key_present={:?}", k1));
             insert_throw_if_present_2_lvl(k2, k3, v, m1, mk_e, &ctx)
-        },
+        }
         None => {
-            m.insert(k1.clone(),
-                     HashMap::<K2, HashMap::<K3, V>>::one(k2.clone(),
-                                                          HashMap::<K3, V>::one(k3.clone(), v.clone())));
+            m.insert(
+                k1.clone(),
+                HashMap::<K2, HashMap<K3, V>>::one(
+                    k2.clone(),
+                    HashMap::<K3, V>::one(k3.clone(), v.clone()),
+                ),
+            );
             Ok(())
         }
     }
 }
 
-pub fn update_throw_if_absent<'a, K: Eq+Debug+Hash, V: Clone+'a, F: Fn(&mut V), M: KeyValueContainer<'a, K,V>, E: Debug>(
+pub fn update_throw_if_absent<
+    'a,
+    K: Eq + Debug + Hash,
+    V: Clone + 'a,
+    F: Fn(&mut V),
+    M: KeyValueContainer<'a, K, V>,
+    E: Debug,
+>(
     k: &'a K,
     f: F,
     m: &'a mut M,
     mk_e: fn(String) -> E,
-    s: &[String]
-) -> Result<(),E> {
+    s: &[String],
+) -> Result<(), E> {
     let l = m.len();
-    let v = m.get_mut(k).ok_or_else(|| make_absent_error(k,l,mk_e,s))?;
+    let v = m
+        .get_mut(k)
+        .ok_or_else(|| make_absent_error(k, l, mk_e, s))?;
     f(v);
     Ok(())
 }
 
-pub fn update_throw_if_absent_2_lvl<'a,
-                                    K1: Eq+Debug+Hash,
-                                    K2: Eq+Debug+Hash,
-                                    V:  Clone + 'a,
-                                    F:  Fn(&mut V),
-                                    M2: KeyValueContainer<'a, K2, V> + 'a + Clone,
-                                    M1: KeyValueContainer<'a, K1, M2> + 'a + Clone,
-                                    E:  Debug> (
+pub fn update_throw_if_absent_2_lvl<
+    'a,
+    K1: Eq + Debug + Hash,
+    K2: Eq + Debug + Hash,
+    V: Clone + 'a,
+    F: Fn(&mut V),
+    M2: KeyValueContainer<'a, K2, V> + 'a + Clone,
+    M1: KeyValueContainer<'a, K1, M2> + 'a + Clone,
+    E: Debug,
+>(
     k1: &'a K1,
     k2: &'a K2,
     f: F,
     m: &'a mut M1,
     mk_e: fn(String) -> E,
-    s: &[String]
-) -> Result<(),E> {
+    s: &[String],
+) -> Result<(), E> {
     let l = m.len();
-    let m2 = m.get_mut(k1).ok_or_else(|| make_absent_error(k1,l,mk_e,s))?;
-    update_throw_if_absent(k2,f,m2,mk_e,s)
+    let m2 = m
+        .get_mut(k1)
+        .ok_or_else(|| make_absent_error(k1, l, mk_e, s))?;
+    update_throw_if_absent(k2, f, m2, mk_e, s)
 }
 
 mod verb_throw_if_adjective_tests {
@@ -820,14 +885,16 @@ mod verb_throw_if_adjective_tests {
 
     macro_rules! test_lookup_throw_if_absent_with_tree_type {
         ($tree_type:ident) => {
-            let mut m = $tree_type::<String,u32>::new();
-            m.insert("key0".to_string(),0);
+            let mut m = $tree_type::<String, u32>::new();
+            m.insert("key0".to_string(), 0);
             let k1 = "key1".to_string();
-            check_errors_in_s!(lookup_throw_if_absent(&k1,&m,Error::General,&STR_VEC),
-                               &k1, "not found among 1 key(s)");
-            match lookup_throw_if_absent(&"key0".to_string(),&m,Error::General,&STR_VEC) {
-                Err(e) =>
-                    assert_eq!(format!("expected Ok(0), but got Err({:?})", e),""),
+            check_errors_in_s!(
+                lookup_throw_if_absent(&k1, &m, Error::General, &STR_VEC),
+                &k1,
+                "not found among 1 key(s)"
+            );
+            match lookup_throw_if_absent(&"key0".to_string(), &m, Error::General, &STR_VEC) {
+                Err(e) => assert_eq!(format!("expected Ok(0), but got Err({:?})", e), ""),
                 Ok(r) => {}
             }
         };
@@ -849,61 +916,85 @@ mod verb_throw_if_adjective_tests {
             let k1_1 = "key1_1".to_string();
             let k2_0 = "key2_0".to_string();
             let k2_1 = "key2_1".to_string();
-            let mut m1 = $tree_type_0::<String,$tree_type_1::<String,u32>>::new();
-            let mut m2 = $tree_type_1::<String,u32>::new();
-            m2.insert(k2_0.clone(),17);
-            m1.insert(k1_0.clone(),m2);
+            let mut m1 = $tree_type_0::<String, $tree_type_1<String, u32>>::new();
+            let mut m2 = $tree_type_1::<String, u32>::new();
+            m2.insert(k2_0.clone(), 17);
+            m1.insert(k1_0.clone(), m2);
             // Happy path
-            assert_eq!(lookup_throw_if_absent_2_lvl(&k1_0,&k2_0,&m1,Error::General,&STR_VEC),Ok(&17));
+            assert_eq!(
+                lookup_throw_if_absent_2_lvl(&k1_0, &k2_0, &m1, Error::General, &STR_VEC),
+                Ok(&17)
+            );
             // Failure paths
-            check_errors_in!(lookup_throw_if_absent_2_lvl(&k1_1,&k2_0,&m1,Error::General,&STR_VEC),
-                             &k1_1,"not found among 1 key(s)");
-            check_errors_in!(lookup_throw_if_absent_2_lvl(&k1_0,&k2_1,&m1,Error::General,&STR_VEC),
-                             &k2_1,"not found among 1 key(s)");
-        }
+            check_errors_in!(
+                lookup_throw_if_absent_2_lvl(&k1_1, &k2_0, &m1, Error::General, &STR_VEC),
+                &k1_1,
+                "not found among 1 key(s)"
+            );
+            check_errors_in!(
+                lookup_throw_if_absent_2_lvl(&k1_0, &k2_1, &m1, Error::General, &STR_VEC),
+                &k2_1,
+                "not found among 1 key(s)"
+            );
+        };
     }
 
     #[test]
     fn test_lookup_throw_if_absent_2_lvl_hashmap_btree() {
-        test_lookup_throw_if_absent_with_2lvl_tree_type!(HashMap,BTreeMap);
+        test_lookup_throw_if_absent_with_2lvl_tree_type!(HashMap, BTreeMap);
     }
 
     #[test]
     fn test_lookup_throw_if_absent_2_lvl_btree_hashmap() {
-        test_lookup_throw_if_absent_with_2lvl_tree_type!(BTreeMap,HashMap);
+        test_lookup_throw_if_absent_with_2lvl_tree_type!(BTreeMap, HashMap);
     }
 
     #[test]
     fn test_insert_throw_if_present_btree_map() {
         let k0 = "key0".to_string();
         let k1 = "key1".to_string();
-        let mut m = BTreeMap::<String,u32>::new();
-        m.insert(k0.clone(),12345);
+        let mut m = BTreeMap::<String, u32>::new();
+        m.insert(k0.clone(), 12345);
         // Happy path
-        assert_eq!(insert_throw_if_present(k1.clone(),54321,&mut m,Error::General,&STR_VEC),Ok(()));
-        assert_eq!(lookup_throw_if_absent(&k1,&m,Error::General,&STR_VEC), Ok(&54321));
+        assert_eq!(
+            insert_throw_if_present(k1.clone(), 54321, &mut m, Error::General, &STR_VEC),
+            Ok(())
+        );
+        assert_eq!(
+            lookup_throw_if_absent(&k1, &m, Error::General, &STR_VEC),
+            Ok(&54321)
+        );
         // Failure path
-        check_errors_in_s!((insert_throw_if_present(k0.clone(),42,&mut m,Error::General,&STR_VEC)),
-                           &k0,"12345");
+        check_errors_in_s!(
+            (insert_throw_if_present(k0.clone(), 42, &mut m, Error::General, &STR_VEC)),
+            &k0,
+            "12345"
+        );
     }
 
     // Functions for testing update_throw_if_absent variants
-    fn double(x: u32) -> u32 { x*2 }
-    fn double_mut(x: &mut u32) {*x = double(*x)}
+    fn double(x: u32) -> u32 {
+        x * 2
+    }
+    fn double_mut(x: &mut u32) {
+        *x = double(*x)
+    }
 
     #[test]
-    fn test_update_throw_if_absent_hash_map () {
-        let mut m = HashMap::<String,u32>::new();
+    fn test_update_throw_if_absent_hash_map() {
+        let mut m = HashMap::<String, u32>::new();
         let k0 = "key0".to_string();
         let k1 = "key1".to_string();
-        m.insert(k0.clone(),2);
+        m.insert(k0.clone(), 2);
 
-        check_errors_in!(update_throw_if_absent(&k1,double_mut,&mut m,Error::General,&STR_VEC),
-                         &k1, "not found among 1 key(s)");
-        match update_throw_if_absent(&k0,double_mut,&mut m,Error::General,&STR_VEC) {
-            Err(e) =>
-                assert_eq!(format!("expected Ok(0), but got Err({:?})", e),""),
-            Ok(_) => assert_eq!(*m.get(&k0).unwrap(),double(2))
+        check_errors_in!(
+            update_throw_if_absent(&k1, double_mut, &mut m, Error::General, &STR_VEC),
+            &k1,
+            "not found among 1 key(s)"
+        );
+        match update_throw_if_absent(&k0, double_mut, &mut m, Error::General, &STR_VEC) {
+            Err(e) => assert_eq!(format!("expected Ok(0), but got Err({:?})", e), ""),
+            Ok(_) => assert_eq!(*m.get(&k0).unwrap(), double(2)),
         }
     }
 
@@ -913,182 +1004,204 @@ mod verb_throw_if_adjective_tests {
         let k1_1 = "key1_1".to_string();
         let k2_0 = "key2_0".to_string();
         let k2_1 = "key2_1".to_string();
-        let mut m1 = HashMap::<String,BTreeMap::<String,u32>>::new();
-        let mut m2 = BTreeMap::<String,u32>::new();
-        m2.insert(k2_0.clone(),17);
-        m1.insert(k1_0.clone(),m2);
+        let mut m1 = HashMap::<String, BTreeMap<String, u32>>::new();
+        let mut m2 = BTreeMap::<String, u32>::new();
+        m2.insert(k2_0.clone(), 17);
+        m1.insert(k1_0.clone(), m2);
         // Happy path
-        assert_eq!(update_throw_if_absent_2_lvl(&k1_0,&k2_0,double_mut,&mut m1,Error::General,&STR_VEC),Ok(()));
-        assert_eq!(lookup_throw_if_absent_2_lvl(&k1_0,&k2_0,&m1,Error::General,&STR_VEC),Ok(&double(17)));
+        assert_eq!(
+            update_throw_if_absent_2_lvl(
+                &k1_0,
+                &k2_0,
+                double_mut,
+                &mut m1,
+                Error::General,
+                &STR_VEC
+            ),
+            Ok(())
+        );
+        assert_eq!(
+            lookup_throw_if_absent_2_lvl(&k1_0, &k2_0, &m1, Error::General, &STR_VEC),
+            Ok(&double(17))
+        );
         // Failure paths
-        check_errors_in!(lookup_throw_if_absent_2_lvl(&k1_1,&k2_0,&m1,Error::General,&STR_VEC),
-                         &k1_1,"not found among 1 key(s)");
-        check_errors_in!(lookup_throw_if_absent_2_lvl(&k1_0,&k2_1,&m1,Error::General,&STR_VEC),
-                         &k2_1,"not found among 1 key(s)");
+        check_errors_in!(
+            lookup_throw_if_absent_2_lvl(&k1_1, &k2_0, &m1, Error::General, &STR_VEC),
+            &k1_1,
+            "not found among 1 key(s)"
+        );
+        check_errors_in!(
+            lookup_throw_if_absent_2_lvl(&k1_0, &k2_1, &m1, Error::General, &STR_VEC),
+            &k2_1,
+            "not found among 1 key(s)"
+        );
     }
 }
 
-pub fn two_lvl_map_to_vec_of_tuples<T0,T1,T2>(
-    m0 : &HashMap<T0,HashMap<T1,T2>>
-) -> Vec<(&T0,&T1,&T2)>
+pub fn two_lvl_map_to_vec_of_tuples<T0, T1, T2>(
+    m0: &HashMap<T0, HashMap<T1, T2>>,
+) -> Vec<(&T0, &T1, &T2)>
 where
-    T0 : std::hash::Hash + Eq,
-    T1 : std::hash::Hash + Eq,
+    T0: std::hash::Hash + Eq,
+    T1: std::hash::Hash + Eq,
 {
     m0.iter()
-        .map(|(k0,m1)| m1.iter()
-             .map(move |(k1,v)| (k0,k1,v))
-             .collect::<Vec<_>>())
+        .map(|(k0, m1)| {
+            m1.iter()
+                .map(move |(k1, v)| (k0, k1, v))
+                .collect::<Vec<_>>()
+        })
         .collect_concat::<Vec<_>>()
 }
 
-pub fn three_lvl_map_to_vec_of_tuples<T0,T1,T2,T3>(
-    m0 : &HashMap<T0,HashMap<T1,HashMap<T2,T3>>>
-) -> Vec<(&T0,&T1,&T2,&T3)>
+pub fn three_lvl_map_to_vec_of_tuples<T0, T1, T2, T3>(
+    m0: &HashMap<T0, HashMap<T1, HashMap<T2, T3>>>,
+) -> Vec<(&T0, &T1, &T2, &T3)>
 where
-    T0 : std::hash::Hash + Eq,
-    T1 : std::hash::Hash + Eq,
-    T2 : std::hash::Hash + Eq,
+    T0: std::hash::Hash + Eq,
+    T1: std::hash::Hash + Eq,
+    T2: std::hash::Hash + Eq,
 {
     m0.iter()
-        .map(|(k0,m1)| m1.iter()
-             .map(move |(k1,m2)| m2.iter()
-                  .map(move |(k2,v)| (k0,k1,k2,v))
-                  .collect::<Vec<_>>())
-             .collect_concat::<Vec<_>>())
+        .map(|(k0, m1)| {
+            m1.iter()
+                .map(move |(k1, m2)| {
+                    m2.iter()
+                        .map(move |(k2, v)| (k0, k1, k2, v))
+                        .collect::<Vec<_>>()
+                })
+                .collect_concat::<Vec<_>>()
+        })
         .collect_concat::<Vec<_>>()
 }
 
-pub fn count_leaves_in_3_lvl_map<T0,T1,T2,T3>(
-    m0 : &HashMap<T0,HashMap<T1,HashMap<T2,T3>>>
+pub fn count_leaves_in_3_lvl_map<T0, T1, T2, T3>(
+    m0: &HashMap<T0, HashMap<T1, HashMap<T2, T3>>>,
 ) -> usize
 where
-    T0 : std::hash::Hash + Eq,
-    T1 : std::hash::Hash + Eq,
-    T2 : std::hash::Hash + Eq,
+    T0: std::hash::Hash + Eq,
+    T1: std::hash::Hash + Eq,
+    T2: std::hash::Hash + Eq,
 {
     three_lvl_map_to_vec_of_tuples(m0).len()
 }
 
-pub fn map_1_lvl<K0,V0,V1>(
-    f : fn(V0) -> V1,
-    m : &HashMap<K0,V0>
-) -> HashMap<K0,V1>
+pub fn map_1_lvl<K0, V0, V1>(f: fn(V0) -> V1, m: &HashMap<K0, V0>) -> HashMap<K0, V1>
 where
-    K0 : Clone+Eq+Hash,
-    V0 : Clone
+    K0: Clone + Eq + Hash,
+    V0: Clone,
 {
     m.iter()
-        .map(|(k,v)| (k.clone(),f(v.clone())))
-        .collect::<HashMap<K0,V1>>()
+        .map(|(k, v)| (k.clone(), f(v.clone())))
+        .collect::<HashMap<K0, V1>>()
 }
 
-pub fn filter_map_1_lvl<K0,V0,V1>(
-    f1 : fn(V0) -> bool,
-    f2 : fn(V0) -> V1,
-    m  : &HashMap<K0,V0>
-) -> HashMap<K0,V1>
+pub fn filter_map_1_lvl<K0, V0, V1>(
+    f1: fn(V0) -> bool,
+    f2: fn(V0) -> V1,
+    m: &HashMap<K0, V0>,
+) -> HashMap<K0, V1>
 where
-    K0 : Clone+Eq+Hash,
-    V0 : Clone
+    K0: Clone + Eq + Hash,
+    V0: Clone,
 {
     m.iter()
-        .filter(|(k,v)| f1((*v).clone()))
-        .map(|(k,v)| (k.clone(),f2(v.clone())))
-        .collect::<HashMap<K0,V1>>()
+        .filter(|(k, v)| f1((*v).clone()))
+        .map(|(k, v)| (k.clone(), f2(v.clone())))
+        .collect::<HashMap<K0, V1>>()
 }
 
-pub fn map_1_lvl_with_err<K0,V0,V1,E>(
-    f : fn(V0) -> Result<V1,E>,
-    m : &HashMap<K0,V0>
-) -> Result<HashMap<K0,V1>,E>
+pub fn map_1_lvl_with_err<K0, V0, V1, E>(
+    f: fn(V0) -> Result<V1, E>,
+    m: &HashMap<K0, V0>,
+) -> Result<HashMap<K0, V1>, E>
 where
-    K0 : Clone+Eq+Hash,
-    V0 : Clone
+    K0: Clone + Eq + Hash,
+    V0: Clone,
 {
     m.iter()
-        .map(|(k,v)| {
+        .map(|(k, v)| {
             let r = f(v.clone())?;
             Ok((k.clone(), r))
         })
-        .collect::<Result<HashMap<K0,V1>,E>>()
+        .collect::<Result<HashMap<K0, V1>, E>>()
 }
 
-pub fn filter_map_2_lvl<K0,K1,V0,V1>(
-    f1 : fn(V0) -> bool,
-    f2 : fn(V0) -> V1,
-    m  : &HashMap<K0,HashMap<K1,V0>>
-) -> HashMap<K0,HashMap<K1,V1>>
+pub fn filter_map_2_lvl<K0, K1, V0, V1>(
+    f1: fn(V0) -> bool,
+    f2: fn(V0) -> V1,
+    m: &HashMap<K0, HashMap<K1, V0>>,
+) -> HashMap<K0, HashMap<K1, V1>>
 where
-    K0 : Clone+Eq+Hash,
-    K1 : Clone+Eq+Hash,
-    V0 : Clone
+    K0: Clone + Eq + Hash,
+    K1: Clone + Eq + Hash,
+    V0: Clone,
 {
     m.iter()
-        .map(|(k0,m1)| (k0.clone(),filter_map_1_lvl(f1,f2,m1)))
+        .map(|(k0, m1)| (k0.clone(), filter_map_1_lvl(f1, f2, m1)))
         .collect()
 }
 
-pub fn map_2_lvl<K0,K1,V0,V1>(
-    f : fn(V0) -> V1,
-    m : &HashMap<K0,HashMap<K1,V0>>
-) -> HashMap<K0,HashMap<K1,V1>>
+pub fn map_2_lvl<K0, K1, V0, V1>(
+    f: fn(V0) -> V1,
+    m: &HashMap<K0, HashMap<K1, V0>>,
+) -> HashMap<K0, HashMap<K1, V1>>
 where
-    K0 : Clone+Eq+Hash,
-    K1 : Clone+Eq+Hash,
-    V0 : Clone
+    K0: Clone + Eq + Hash,
+    K1: Clone + Eq + Hash,
+    V0: Clone,
 {
     m.iter()
-        .map(|(k0,m1)| (k0.clone(),map_1_lvl(f,m1)))
+        .map(|(k0, m1)| (k0.clone(), map_1_lvl(f, m1)))
         .collect()
 }
 
-pub fn map_2_lvl_with_err<K0,K1,V0,V1,E>(
-    f : fn(V0) -> Result<V1,E>,
-    m : &HashMap<K0,HashMap<K1,V0>>
-) -> Result<HashMap<K0,HashMap<K1,V1>>,E>
+pub fn map_2_lvl_with_err<K0, K1, V0, V1, E>(
+    f: fn(V0) -> Result<V1, E>,
+    m: &HashMap<K0, HashMap<K1, V0>>,
+) -> Result<HashMap<K0, HashMap<K1, V1>>, E>
 where
-    K0 : Clone+Eq+Hash,
-    K1 : Clone+Eq+Hash,
-    V0 : Clone
+    K0: Clone + Eq + Hash,
+    K1: Clone + Eq + Hash,
+    V0: Clone,
 {
     m.iter()
-        .map(|(k0,m1)| {
-            let r = map_1_lvl_with_err(f,m1)?;
-            Ok((k0.clone(),r))
+        .map(|(k0, m1)| {
+            let r = map_1_lvl_with_err(f, m1)?;
+            Ok((k0.clone(), r))
         })
         .collect()
 }
 
-pub fn map_3_lvl<K0,K1,K2,V0,V1>(
-    f : fn(V0) -> V1,
-    m : &HashMap<K0,HashMap<K1,HashMap<K2,V0>>>
-) -> HashMap<K0,HashMap<K1,HashMap<K2,V1>>>
+pub fn map_3_lvl<K0, K1, K2, V0, V1>(
+    f: fn(V0) -> V1,
+    m: &HashMap<K0, HashMap<K1, HashMap<K2, V0>>>,
+) -> HashMap<K0, HashMap<K1, HashMap<K2, V1>>>
 where
-    K0 : Clone+Eq+Hash,
-    K1 : Clone+Eq+Hash,
-    K2 : Clone+Eq+Hash,
-    V0 : Clone
+    K0: Clone + Eq + Hash,
+    K1: Clone + Eq + Hash,
+    K2: Clone + Eq + Hash,
+    V0: Clone,
 {
     m.iter()
-        .map(|(k0,m1)| (k0.clone(),map_2_lvl::<K1,K2,V0,V1>(f,m1)))
+        .map(|(k0, m1)| (k0.clone(), map_2_lvl::<K1, K2, V0, V1>(f, m1)))
         .collect()
 }
 
 #[allow(clippy::type_complexity)]
-pub fn map_3_lvl_with_error<K0,K1,K2,V0,V1,E>(
-    f : fn(V0) -> Result<V1,E>,
-    m : &HashMap<K0,HashMap<K1,HashMap<K2,V0>>>
-) -> Result<HashMap<K0,HashMap<K1,HashMap<K2,V1>>>,E>
+pub fn map_3_lvl_with_error<K0, K1, K2, V0, V1, E>(
+    f: fn(V0) -> Result<V1, E>,
+    m: &HashMap<K0, HashMap<K1, HashMap<K2, V0>>>,
+) -> Result<HashMap<K0, HashMap<K1, HashMap<K2, V1>>>, E>
 where
-    K0 : Clone+Eq+Hash,
-    K1 : Clone+Eq+Hash,
-    K2 : Clone+Eq+Hash,
-    V0 : Clone
+    K0: Clone + Eq + Hash,
+    K1: Clone + Eq + Hash,
+    K2: Clone + Eq + Hash,
+    V0: Clone,
 {
     m.iter()
-        .map(|(k0,m1)| {
-            let r = map_2_lvl_with_err::<K1,K2,V0,V1,E>(f,m1)?;
+        .map(|(k0, m1)| {
+            let r = map_2_lvl_with_err::<K1, K2, V0, V1, E>(f, m1)?;
             Ok((k0.clone(), r))
         })
         .collect()
@@ -1103,70 +1216,71 @@ where
 // call to this function.  Thus, it may be reasonable for this function to take a &mut for m,
 // which may help to avoid unnecessary clones.
 #[allow(clippy::type_complexity)]
-pub fn map_3_lvl_with_keys_partially_applied_with_error<A0,K0,K1,K2,V0,V1,E>(
-    a0 : A0,
-    f  : fn(A0,K0,K1,K2,V0) -> Result<V1,E>,
-    m  : &HashMap<K0,HashMap<K1,HashMap<K2,V0>>>
-) -> Result<HashMap<K0,HashMap<K1,HashMap<K2,V1>>>,E>
+pub fn map_3_lvl_with_keys_partially_applied_with_error<A0, K0, K1, K2, V0, V1, E>(
+    a0: A0,
+    f: fn(A0, K0, K1, K2, V0) -> Result<V1, E>,
+    m: &HashMap<K0, HashMap<K1, HashMap<K2, V0>>>,
+) -> Result<HashMap<K0, HashMap<K1, HashMap<K2, V1>>>, E>
 where
-    A0 : Clone,
-    K0 : Clone+Eq+Hash,
-    K1 : Clone+Eq+Hash,
-    K2 : Clone+Eq+Hash,
-    V0 : Clone
+    A0: Clone,
+    K0: Clone + Eq + Hash,
+    K1: Clone + Eq + Hash,
+    K2: Clone + Eq + Hash,
+    V0: Clone,
 {
     mod util_fns {
         use super::*;
 
         // f5 is a function that takes 5 args
-        pub fn map_2_lvl_with_key_f5_with_err<A0,A1,K0,K1,V0,V1,E>(
-            a0 : A0,
-            a1 : A1,
-            f  : fn(A0,A1,K0,K1,V0) -> Result<V1,E>,
-            m  : &HashMap<K0,HashMap<K1,V0>>
-        ) -> Result<HashMap<K0,HashMap<K1,V1>>,E>
+        pub fn map_2_lvl_with_key_f5_with_err<A0, A1, K0, K1, V0, V1, E>(
+            a0: A0,
+            a1: A1,
+            f: fn(A0, A1, K0, K1, V0) -> Result<V1, E>,
+            m: &HashMap<K0, HashMap<K1, V0>>,
+        ) -> Result<HashMap<K0, HashMap<K1, V1>>, E>
         where
-            A0 : Clone,
-            A1 : Clone+Eq+Hash,
-            K0 : Clone+Eq+Hash,
-            K1 : Clone+Eq+Hash,
-            V0 : Clone
+            A0: Clone,
+            A1: Clone + Eq + Hash,
+            K0: Clone + Eq + Hash,
+            K1: Clone + Eq + Hash,
+            V0: Clone,
         {
             m.iter()
-                .map(|(k0,m1)| {
-                    let r = map_1_lvl_with_key_f5_with_err(a0.clone(),a1.clone(),k0.clone(),f,m1)?;
-                    Ok((k0.clone(),r))
+                .map(|(k0, m1)| {
+                    let r =
+                        map_1_lvl_with_key_f5_with_err(a0.clone(), a1.clone(), k0.clone(), f, m1)?;
+                    Ok((k0.clone(), r))
                 })
                 .collect()
         }
 
         // f5 is a function that takes 5 args
-        pub fn map_1_lvl_with_key_f5_with_err<A0,A1,A2,K0,V0,V1,E>(
-            a0 : A0,
-            a1 : A1,
-            a2 : A2,
-            f  : fn(A0, A1, A2, K0, V0) -> Result<V1,E>,
-            m  : &HashMap<K0,V0>
-        ) -> Result<HashMap<K0,V1>,E>
+        pub fn map_1_lvl_with_key_f5_with_err<A0, A1, A2, K0, V0, V1, E>(
+            a0: A0,
+            a1: A1,
+            a2: A2,
+            f: fn(A0, A1, A2, K0, V0) -> Result<V1, E>,
+            m: &HashMap<K0, V0>,
+        ) -> Result<HashMap<K0, V1>, E>
         where
-            A0 : Clone,
-            A1 : Clone+Eq+Hash,
-            A2 : Clone+Eq+Hash,
-            K0 : Clone+Eq+Hash,
-            V0 : Clone
+            A0: Clone,
+            A1: Clone + Eq + Hash,
+            A2: Clone + Eq + Hash,
+            K0: Clone + Eq + Hash,
+            V0: Clone,
         {
             m.iter()
-                .map(|(k,v)| {
-                    let r = f(a0.clone(),a1.clone(),a2.clone(),k.clone(),v.clone())?;
+                .map(|(k, v)| {
+                    let r = f(a0.clone(), a1.clone(), a2.clone(), k.clone(), v.clone())?;
                     Ok((k.clone(), r))
                 })
-                .collect::<Result<HashMap<K0,V1>,E>>()
+                .collect::<Result<HashMap<K0, V1>, E>>()
         }
     }
 
     m.iter()
-        .map(|(k0,m1)| {
-            let r = util_fns::map_2_lvl_with_key_f5_with_err(a0.clone(), k0.clone(),f,m1)?;
+        .map(|(k0, m1)| {
+            let r = util_fns::map_2_lvl_with_key_f5_with_err(a0.clone(), k0.clone(), f, m1)?;
             Ok((k0.clone(), r))
         })
         .collect()

@@ -10,8 +10,9 @@ pub fn decode_from_text<'de, T: Deserialize<'de> + Debug>(
     input: &'de str,
 ) -> VCAResult<T> {
     // println!("decode_from_text: input: {:?}", input);
-    let x = serde_json::from_str(input)
-        .map_err(|err| Error::General(format!("{error_message}; error decoding; {input}; {err}")))?;
+    let x = serde_json::from_str(input).map_err(|err| {
+        Error::General(format!("{error_message}; error decoding; {input}; {err}"))
+    })?;
     // println!("decode_from_text: x: {:?}", x);
     Ok(x)
 }
