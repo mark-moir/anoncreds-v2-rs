@@ -4,6 +4,9 @@ use credx::vca::r#impl::to_from_api::*;
 use credx::vca::types::*;
 use credx::vca::zkp_backends::ac2c::signer::*;
 use credx::vca::zkp_backends::ac2c::to_from_api::range_proof_to_from_api::*;
+use credx::vca::zkp_backends::ac2c::to_from_api::signer_to_from_api::{
+    Ac2cSignerPublicSetupDataCorrectnessProof, Ac2cSignerPublicSetupDataWithProof,
+};
 // ------------------------------------------------------------------------------
 use crate::vca::data_for_tests as td;
 // ------------------------------------------------------------------------------
@@ -46,7 +49,10 @@ fn to_from_test<S: ShortGroupSignatureScheme>() -> Result<(), vca::Error> {
     // println!("issuer_secret: {:?}", issuer_secret);
 
     let x = SignerPublicData {
-        signer_public_setup_data: to_api(issuer_public)?,
+        signer_public_setup_data: to_api(Ac2cSignerPublicSetupDataWithProof {
+            issuer_public,
+            correctness_proof: Ac2cSignerPublicSetupDataCorrectnessProof("TODO-proof".to_string()),
+        })?,
         signer_public_schema: sdcts.to_vec(),
         signer_blinded_attr_idxs: Vec::new(),
     };
@@ -72,7 +78,10 @@ fn to_from_test<S: ShortGroupSignatureScheme>() -> Result<(), vca::Error> {
 
     let (issuer_public, issuer_secret) = Issuer::<S>::new(&cred_schema);
     let x = SignerPublicData {
-        signer_public_setup_data: to_api(issuer_public)?,
+        signer_public_setup_data: to_api(Ac2cSignerPublicSetupDataWithProof {
+            issuer_public,
+            correctness_proof: Ac2cSignerPublicSetupDataCorrectnessProof("TODO-proof".to_string()),
+        })?,
         signer_public_schema: sdcts.to_vec(),
         signer_blinded_attr_idxs: Vec::new(),
     };
