@@ -38,15 +38,11 @@ pub struct AuthorityPublicSetupData {
     pub snark_proving_key: saver::saver_groth16::ProvingKey<Bls12_381>,
 }
 
-#[derive(CanonicalSerialize, CanonicalDeserialize, Clone, Debug)]
-pub struct BlindInfoCorrectnessProof {
-    pub u_tilde: G1Affine,
-    pub v_dash_cap: Fr,
-    pub m_caps: Vec<(usize, Fr)>,
-}
+#[derive(CanonicalSerialize, CanonicalDeserialize, Clone, Debug, Serialize, Deserialize)]
+pub struct BlindInfoCorrectnessProof(pub Proof<Bls12_381>);
 
-#[derive(CanonicalSerialize, CanonicalDeserialize, Clone, Debug)]
-pub struct BlindInfoForSignerPayload {
+#[derive(Clone, Debug)]
+pub struct DncBlindInfoForSigner {
     pub blinding_info: G1Affine,
     pub blinding_info_correctness_proof: BlindInfoCorrectnessProof,
 }
