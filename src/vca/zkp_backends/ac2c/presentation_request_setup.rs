@@ -254,7 +254,14 @@ fn transform_instruction<S: ShortGroupSignatureScheme>(
             let IssuerPublic::<S> {
                 verifiable_encryption_key,
                 ..
-            } = from_api(&SignerPublicSetupData(authority_as_issuer.clone()))?;
+            } = from_api(&SignerPublicSetupData {
+                signer_public_setup_data: authority_as_issuer.clone(),
+                // TODO: implement correctness proof if needed, or change it to
+                // an indication of why not needed
+                signer_public_setup_data_correctness_proof: SignerPublicSetupDataCorrectnessProof(
+                    "TODO-proof".to_string(),
+                ),
+            })?;
             Ok(success(ProofInstructionGeneral {
                 cred_label: cred_label.clone(),
                 attr_idx_general: *attr_idx_general,

@@ -11,6 +11,7 @@ use crate::prelude::blsful::{Bls12381G2Impl, SecretKey};
 use crate::prelude::vb20;
 use crate::prelude::vb20::Coefficient;
 use crate::prelude::{BlindCredentialBundle, CredentialBundle, Issuer, IssuerPublic};
+use serde::{Deserialize, Serialize};
 // ------------------------------------------------------------------------------
 
 impl_vca_roundtrip_json!(Scalar => InfoForUnblinding);
@@ -19,14 +20,47 @@ impl_vca_roundtrip_json!(Scalar => InfoForUnblinding);
 
 // Explicit impls below as our macros can't handle parameterised types
 
-impl<S: ShortGroupSignatureScheme> VcaTryFrom<IssuerPublic<S>> for SignerPublicSetupData {
-    fn vca_try_from(x: IssuerPublic<S>) -> VCAResult<SignerPublicSetupData> {
-        Ok(SignerPublicSetupData(to_opaque_json(&x)?))
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Ac2cSignerPublicSetupDataCorrectnessProof(pub OpaqueMaterial);
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(bound(
+    serialize = "IssuerPublic<S>: Serialize",
+    deserialize = "IssuerPublic<S>: Deserialize<'de>"
+))]
+pub struct Ac2cSignerPublicSetupDataWithProof<S: ShortGroupSignatureScheme> {
+    pub issuer_public: IssuerPublic<S>,
+    pub correctness_proof: Ac2cSignerPublicSetupDataCorrectnessProof,
+}
+
+impl<S: ShortGroupSignatureScheme> VcaTryFrom<Ac2cSignerPublicSetupDataWithProof<S>>
+    for SignerPublicSetupData
+{
+    fn vca_try_from(x: Ac2cSignerPublicSetupDataWithProof<S>) -> VCAResult<SignerPublicSetupData> {
+        Ok(SignerPublicSetupData {
+            signer_public_setup_data: to_opaque_json(&x.issuer_public)?,
+            signer_public_setup_data_correctness_proof: SignerPublicSetupDataCorrectnessProof(
+                x.correctness_proof.0,
+            ),
+        })
     }
 }
+impl<S: ShortGroupSignatureScheme> VcaTryFrom<&SignerPublicSetupData>
+    for Ac2cSignerPublicSetupDataWithProof<S>
+{
+    fn vca_try_from(x: &SignerPublicSetupData) -> VCAResult<Ac2cSignerPublicSetupDataWithProof<S>> {
+        Ok(Ac2cSignerPublicSetupDataWithProof {
+            issuer_public: from_opaque_json(&x.signer_public_setup_data)?,
+            correctness_proof: Ac2cSignerPublicSetupDataCorrectnessProof(
+                x.signer_public_setup_data_correctness_proof.0.clone(),
+            ),
+        })
+    }
+}
+
 impl<S: ShortGroupSignatureScheme> VcaTryFrom<&SignerPublicSetupData> for IssuerPublic<S> {
     fn vca_try_from(x: &SignerPublicSetupData) -> VCAResult<IssuerPublic<S>> {
-        from_opaque_json(&x.0)
+        Ok(from_opaque_json(&x.signer_public_setup_data)?)
     }
 }
 
@@ -45,38 +79,99 @@ impl<S: ShortGroupSignatureScheme> VcaTryFrom<&SignerSecretData> for Issuer<S> {
 
 // ------------------------------------------------------------------------------
 
-impl<S: ShortGroupSignatureScheme> VcaTryFrom<CredentialBundle<S>> for Signature {
-    fn vca_try_from(x: CredentialBundle<S>) -> VCAResult<Signature> {
-        Ok(Signature(to_opaque_json(&x)?))
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Ac2cSignatureCorrectnessProof(pub OpaqueMaterial);
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(bound(
+    serialize = "CredentialBundle<S>: Serialize",
+    deserialize = "CredentialBundle<S>: Deserialize<'de>"
+))]
+pub struct Ac2cSignatureWithProof<S: ShortGroupSignatureScheme> {
+    pub signature: CredentialBundle<S>,
+    pub correctness_proof: Ac2cSignatureCorrectnessProof,
+}
+
+impl<S: ShortGroupSignatureScheme> VcaTryFrom<Ac2cSignatureWithProof<S>> for Signature {
+    fn vca_try_from(x: Ac2cSignatureWithProof<S>) -> VCAResult<Signature> {
+        Ok(Signature {
+            signature: to_opaque_json(&x.signature)?,
+            signature_correctness_proof: SignatureCorrectnessProof(x.correctness_proof.0),
+        })
     }
 }
+impl<S: ShortGroupSignatureScheme> VcaTryFrom<&Signature> for Ac2cSignatureWithProof<S> {
+    fn vca_try_from(x: &Signature) -> VCAResult<Ac2cSignatureWithProof<S>> {
+        Ok(Ac2cSignatureWithProof {
+            signature: from_opaque_json(&x.signature)?,
+            correctness_proof: Ac2cSignatureCorrectnessProof(
+                x.signature_correctness_proof.0.clone(),
+            ),
+        })
+    }
+}
+
 impl<S: ShortGroupSignatureScheme> VcaTryFrom<&Signature> for CredentialBundle<S> {
     fn vca_try_from(x: &Signature) -> VCAResult<CredentialBundle<S>> {
-        from_opaque_json(&x.0)
+        Ok(from_opaque_json(&x.signature)?)
     }
 }
 
 impl<S: ShortGroupSignatureScheme> VcaTryFrom<BlindCredentialRequest<S>> for BlindInfoForSigner {
     fn vca_try_from(x: BlindCredentialRequest<S>) -> VCAResult<BlindInfoForSigner> {
-        Ok(BlindInfoForSigner(to_opaque_json(&x)?))
+        Ok(BlindInfoForSigner {
+            blinding_info: to_opaque_json(&x)?,
+            blind_signing_info_correctness_proof: BlindSigningInfoCorrectnessProof(
+                "TODO-proof".to_string(),
+            ),
+        })
     }
 }
 
 impl<S: ShortGroupSignatureScheme> VcaTryFrom<&BlindInfoForSigner> for BlindCredentialRequest<S> {
     fn vca_try_from(x: &BlindInfoForSigner) -> VCAResult<BlindCredentialRequest<S>> {
-        from_opaque_json(&x.0)
+        from_opaque_json(&x.blinding_info)
     }
 }
 
 // ------------------------------------------------------------------------------
 
-impl<S: ShortGroupSignatureScheme> VcaTryFrom<BlindCredentialBundle<S>> for BlindSignature {
-    fn vca_try_from(x: BlindCredentialBundle<S>) -> VCAResult<BlindSignature> {
-        Ok(BlindSignature(to_opaque_json(&x)?))
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Ac2cBlindSignatureCorrectnessProof(pub OpaqueMaterial);
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(bound(
+    serialize = "BlindCredentialBundle<S>: Serialize",
+    deserialize = "BlindCredentialBundle<S>: Deserialize<'de>"
+))]
+pub struct Ac2cBlindSignatureWithProof<S: ShortGroupSignatureScheme> {
+    pub blind_signature: BlindCredentialBundle<S>,
+    pub correctness_proof: Ac2cBlindSignatureCorrectnessProof,
+}
+
+impl<S: ShortGroupSignatureScheme> VcaTryFrom<Ac2cBlindSignatureWithProof<S>> for BlindSignature {
+    fn vca_try_from(x: Ac2cBlindSignatureWithProof<S>) -> VCAResult<BlindSignature> {
+        Ok(BlindSignature {
+            blind_signature: to_opaque_json(&x.blind_signature)?,
+            blind_signature_correctness_proof: BlindSignatureCorrectnessProof(
+                x.correctness_proof.0,
+            ),
+        })
     }
 }
+impl<S: ShortGroupSignatureScheme> VcaTryFrom<&BlindSignature> for Ac2cBlindSignatureWithProof<S> {
+    fn vca_try_from(x: &BlindSignature) -> VCAResult<Ac2cBlindSignatureWithProof<S>> {
+        Ok(Ac2cBlindSignatureWithProof {
+            blind_signature: from_opaque_json(&x.blind_signature)?,
+            correctness_proof: Ac2cBlindSignatureCorrectnessProof(
+                x.blind_signature_correctness_proof.0.clone(),
+            ),
+        })
+    }
+}
+
 impl<S: ShortGroupSignatureScheme> VcaTryFrom<&BlindSignature> for BlindCredentialBundle<S> {
     fn vca_try_from(x: &BlindSignature) -> VCAResult<BlindCredentialBundle<S>> {
-        from_opaque_json(&x.0)
+        Ok(from_opaque_json(&x.blind_signature)?)
     }
 }

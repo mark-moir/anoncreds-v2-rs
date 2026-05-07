@@ -1,6 +1,7 @@
 use crate::blind::{BlindCredential, BlindCredentialBundle, BlindCredentialRequest};
 // ------------------------------------------------------------------------------
 use crate::vca::interfaces::crypto_interface::*;
+use crate::vca::interfaces::primitives::*;
 use crate::vca::r#impl::catch_unwind_util::*;
 use crate::vca::r#impl::to_from_api::*;
 use crate::vca::r#impl::util::*;
@@ -16,6 +17,11 @@ use crate::prelude::{
     RevocationClaim, ScalarClaim,
 };
 // ------------------------------------------------------------------------------
+use crate::vca::zkp_backends::ac2c::to_from_api::signer_to_from_api::{
+    Ac2cBlindSignatureCorrectnessProof, Ac2cBlindSignatureWithProof, Ac2cSignatureCorrectnessProof,
+    Ac2cSignatureWithProof, Ac2cSignerPublicSetupDataCorrectnessProof,
+    Ac2cSignerPublicSetupDataWithProof,
+};
 use std::sync::Arc;
 // ------------------------------------------------------------------------------
 
@@ -41,7 +47,17 @@ pub fn specific_create_signer_data<S: ShortGroupSignatureScheme>() -> SpecificCr
         )
         .map_err(|e| convert_to_crypto_library_error("AC2C", "create_signer_data", e)))?;
         let (issuer_public, issuer_secret) = Issuer::<S>::new(&cred_schema);
-        Ok((to_api(issuer_public)?, to_api(issuer_secret)?))
+        Ok((
+            to_api(Ac2cSignerPublicSetupDataWithProof {
+                issuer_public,
+                // TODO: implement correctness proof if needed, or change it to
+                // an indication of why not needed
+                correctness_proof: Ac2cSignerPublicSetupDataCorrectnessProof(
+                    "TODO-proof".to_string(),
+                ),
+            })?,
+            to_api(issuer_secret)?,
+        ))
     })
 }
 
@@ -51,7 +67,9 @@ pub fn sign<S: ShortGroupSignatureScheme>() -> SpecificSign {
             signer_public_data,
             signer_secret_data,
         } = sd;
-        let ip: IssuerPublic<S> = from_api(&signer_public_data.signer_public_setup_data)?;
+        let Ac2cSignerPublicSetupDataWithProof { issuer_public, .. } =
+            from_api(&signer_public_data.signer_public_setup_data)?;
+        let ip: IssuerPublic<S> = issuer_public;
         let mut claim_data = vals_to_claim_data(&signer_public_data.signer_public_schema, vals)?;
         let rev_claim_data = RevocationClaim::from(UNUSED_REVOCATION_LABEL).into();
         claim_data.push(rev_claim_data);
@@ -65,14 +83,17 @@ pub fn sign<S: ShortGroupSignatureScheme>() -> SpecificSign {
         let sig = issuer
             .sign_credential(&claim_data)
             .map_err(|e| convert_to_crypto_library_error("AC2C", "sign", e))?;
-        to_api(sig)
+        to_api(Ac2cSignatureWithProof {
+            signature: sig,
+            correctness_proof: Ac2cSignatureCorrectnessProof("TODO-proof".to_string()),
+        })
     })
 }
 
 pub fn specific_create_blind_signing_info<S: ShortGroupSignatureScheme>(
 ) -> SpecificCreateBlindSigningInfo {
     Arc::new(|_rng_seed, spsd, schema, blind_attrs| {
-        let issuer_public: IssuerPublic<S> = from_api(spsd)?;
+        let Ac2cSignerPublicSetupDataWithProof { issuer_public, .. }: Ac2cSignerPublicSetupDataWithProof<S> = from_api(spsd)?;
         let blind_claims: BTreeMap<String, ClaimData> = blind_attrs
             .iter()
             .map(|idx_val_pair| {
@@ -135,7 +156,10 @@ pub fn specific_sign_with_blinded_attributes<S: ShortGroupSignatureScheme>(
                 .map_err(|e| {
                     convert_to_crypto_library_error("AC2C", "sign_with_blinded_attributes", e)
                 })?;
-            to_api(sig)
+            to_api(Ac2cBlindSignatureWithProof {
+                blind_signature: sig,
+                correctness_proof: Ac2cBlindSignatureCorrectnessProof("TODO-proof".to_string()),
+            })
         },
     )
 }
@@ -149,11 +173,17 @@ pub fn specific_unblind_blinded_signature<S: ShortGroupSignatureScheme>(
                 create_label_claim_pair("sign_with_blinded_attributes, AC2C", schema, idx_val_pair)
             })
             .collect::<VCAResult<BTreeMap<_, _>>>()?;
-        let blinded_sig: BlindCredentialBundle<S> = from_api(blinded_sig)?;
-        let sig = blinded_sig
+        let Ac2cBlindSignatureWithProof {
+            blind_signature, ..
+        }: Ac2cBlindSignatureWithProof<S> = from_api(blinded_sig)?;
+        let blind_sig: BlindCredentialBundle<S> = blind_signature;
+        let sig = blind_sig
             .to_unblinded(&claims, from_api(blinder)?)
             .map_err(|e| convert_to_crypto_library_error("AC2C", "unblind_blinded_signature", e))?;
-        to_api(sig)
+        to_api(Ac2cSignatureWithProof {
+            signature: sig,
+            correctness_proof: Ac2cSignatureCorrectnessProof("TODO-proof".to_string()),
+        })
     })
 }
 
@@ -253,4 +283,38 @@ fn vals_to_claim_data(sdcts: &[ClaimType], vals: &[DataValue]) -> VCAResult<Vec<
             .map(val_to_claim_data)
             .collect::<VCAResult<Vec<_>>>()
     }
+}
+
+// ---------------------------------------------------------------------------
+// Correctness proof verification stubs (placeholder: always Verified)
+
+pub fn verify_signer_public_setup_data_correctness_proof(
+) -> VerifySignerPublicSetupDataCorrectnessProof {
+    Arc::new(|_| {
+        // TODO: determine whether correctness proof is needed, implement verficiation if so
+        Ok(())
+    })
+}
+
+pub fn verify_blind_signing_info_correctness_proof() -> VerifyBlindSigningInfoCorrectnessProof {
+    Arc::new(|_, _, _| {
+        // The AC2C signature schemes include creating and verifying proof of knowledge
+        // of blinding factors.  We do not surface them here.  For example, see:
+        // https://github.com/anoncreds/anoncreds-v2-rs/blob/691297a7f9ffcc1f51a5d30741086402d64544c9/src/knox/bbs/blind_signature_context.rs#L21
+        Ok(())
+    })
+}
+
+pub fn verify_signature_correctness_proof() -> VerifySignatureCorrectnessProof {
+    Arc::new(|_, _| {
+        // TODO: determine whether correctness proof is needed, implement verficiation if so
+        Ok(())
+    })
+}
+
+pub fn verify_blind_signature_correctness_proof() -> VerifyBlindSignatureCorrectnessProof {
+    Arc::new(|_, _| {
+        // TODO: implement correctness proof verification instead of always returning Verified
+        Ok(())
+    })
 }
