@@ -21,7 +21,7 @@ pub struct InRangeResolved {
     pub proving_key: RangeProofProvingKey,
 }
 
-// authPubSPK is redundant because it's the key used to look up authPubData in SharedParams, but is
+// auth_pub_label is redundant because it's the key used to look up authPubData in SharedParams, but is
 // useful for disambiguating multiple encryption requests for the same attribute, and having a
 // concise, human-readable reference for error messages, debugging, etc.
 #[derive(Clone, Eq, PartialEq, Ord, PartialOrd)]

@@ -10,6 +10,11 @@ pub struct CryptoInterface {
     pub create_blind_signing_info: SpecificCreateBlindSigningInfo,
     pub sign_with_blinded_attributes: SpecificSignWithBlindedAttributes,
     pub unblind_blinded_signature: SpecificUnblindBlindedSignature,
+    pub verify_signer_public_setup_data_correctness_proof:
+        VerifySignerPublicSetupDataCorrectnessProof,
+    pub verify_blind_signing_info_correctness_proof: VerifyBlindSigningInfoCorrectnessProof,
+    pub verify_signature_correctness_proof: VerifySignatureCorrectnessProof,
+    pub verify_blind_signature_correctness_proof: VerifyBlindSignatureCorrectnessProof,
     // Range proof setup
     pub create_range_proof_proving_key: CreateRangeProofProvingKey,
     pub get_range_proof_max_value: GetRangeProofMaxValue,

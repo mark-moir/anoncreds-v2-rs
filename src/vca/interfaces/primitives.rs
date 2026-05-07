@@ -61,6 +61,9 @@ pub type SpecificCreateSignerData = Arc<
         + Sync,
 >;
 
+pub type VerifySignerPublicSetupDataCorrectnessProof =
+    Arc<dyn Fn(&SignerPublicSetupData) -> VCAResult<()> + Send + Sync>;
+
 pub type CreateAccumulatorData = Arc<
     dyn Fn(
             Natural, // RNG seed
@@ -76,6 +79,12 @@ pub type SpecificCreateBlindSigningInfo = Arc<
             &[ClaimType],
             &[CredAttrIndexAndDataValue], // Attributes to be blinded
         ) -> VCAResult<BlindSigningInfo>
+        + Send
+        + Sync,
+>;
+
+pub type VerifyBlindSigningInfoCorrectnessProof = Arc<
+    dyn Fn(&SignerPublicSetupData, &[CredAttrIndex], &BlindInfoForSigner) -> VCAResult<()>
         + Send
         + Sync,
 >;
@@ -102,6 +111,12 @@ pub type SpecificSignWithBlindedAttributes = Arc<
         + Send
         + Sync,
 >;
+
+pub type VerifySignatureCorrectnessProof =
+    Arc<dyn Fn(&SignerData, &Signature) -> VCAResult<()> + Send + Sync>;
+
+pub type VerifyBlindSignatureCorrectnessProof =
+    Arc<dyn Fn(&SignerPublicSetupData, &BlindSignature) -> VCAResult<()> + Send + Sync>;
 
 pub type SpecificUnblindBlindedSignature = Arc<
     dyn Fn(
