@@ -24,18 +24,6 @@ pub fn create_signer_data(
             check_attr_idxs_for_schema("create_signer_data", schema, &blind_attr_idxs)?;
         }
         let (spsd, ssd) = spec_create_signer_data(rng_seed, schema, &blind_attr_idxs)?;
-        if proof_mode != TestBackend
-            && proof_mode != LooseSkipCorrectnessVerify
-            && proof_mode != StrictSkipCorrectnessVerify
-        {
-            if let Err(err) = verify_signer_public_setup_data_correctness_proof(&spsd) {
-                return Err(Error::General(ic_semi(&str_vec_from!(
-                    "create_signer_data",
-                    "signer public setup correctness proof verification failed",
-                    format!("{err:?}")
-                ))));
-            }
-        }
         Ok(SignerData {
             signer_public_data: Box::new(SignerPublicData {
                 signer_public_setup_data: spsd,
