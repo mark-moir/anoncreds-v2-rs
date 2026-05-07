@@ -29,6 +29,7 @@ import java.io.IOException;
 import com.example.vca.client.model.AccumulatorAddRemoveRequest;
 import com.example.vca.client.model.AccumulatorAddRemoveResponse;
 import com.example.vca.client.model.AuthorityData;
+import com.example.vca.client.model.BlindSignature;
 import com.example.vca.client.model.BlindSigningInfo;
 import com.example.vca.client.model.CreateAccumulatorResponse;
 import com.example.vca.client.model.CreateBlindSigningInfoRequest;
@@ -38,11 +39,16 @@ import com.example.vca.client.model.Error;
 import com.example.vca.client.model.GetAccumulatorWitnessRequest;
 import com.example.vca.client.model.SignRequest;
 import com.example.vca.client.model.SignWithBlindedAttributesRequest;
+import com.example.vca.client.model.Signature;
 import com.example.vca.client.model.SignerData;
 import com.example.vca.client.model.UnblindBlindedSignatureRequest;
 import com.example.vca.client.model.UpdateAccumulatorWitnessRequest;
+import com.example.vca.client.model.VerifyBlindSignatureCorrectnessProofRequest;
+import com.example.vca.client.model.VerifyBlindSigningInfoCorrectnessProofRequest;
 import com.example.vca.client.model.VerifyDecryptionRequest;
 import com.example.vca.client.model.VerifyProofRequest;
+import com.example.vca.client.model.VerifySignatureCorrectnessProofRequest;
+import com.example.vca.client.model.VerifySignerPublicSetupDataCorrectnessProofRequest;
 import com.example.vca.client.model.Warning;
 import com.example.vca.client.model.WarningsAndDataForVerifier;
 import com.example.vca.client.model.WarningsAndDecryptResponses;
@@ -1728,7 +1734,7 @@ public class DefaultApi {
      * @param signRequest  (required)
      * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (optional)
      * @param rngSeed A seed for a random number generator. Defaults to zero if not given. (optional)
-     * @return String
+     * @return Signature
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      * @http.response.details
      <table border="1">
@@ -1738,8 +1744,8 @@ public class DefaultApi {
         <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
      </table>
      */
-    public String sign(@javax.annotation.Nonnull SignRequest signRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed) throws ApiException {
-        ApiResponse<String> localVarResp = signWithHttpInfo(signRequest, zkpLib, rngSeed);
+    public Signature sign(@javax.annotation.Nonnull SignRequest signRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed) throws ApiException {
+        ApiResponse<Signature> localVarResp = signWithHttpInfo(signRequest, zkpLib, rngSeed);
         return localVarResp.getData();
     }
 
@@ -1749,7 +1755,7 @@ public class DefaultApi {
      * @param signRequest  (required)
      * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (optional)
      * @param rngSeed A seed for a random number generator. Defaults to zero if not given. (optional)
-     * @return ApiResponse&lt;String&gt;
+     * @return ApiResponse&lt;Signature&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      * @http.response.details
      <table border="1">
@@ -1759,9 +1765,9 @@ public class DefaultApi {
         <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
      </table>
      */
-    public ApiResponse<String> signWithHttpInfo(@javax.annotation.Nonnull SignRequest signRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed) throws ApiException {
+    public ApiResponse<Signature> signWithHttpInfo(@javax.annotation.Nonnull SignRequest signRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed) throws ApiException {
         okhttp3.Call localVarCall = signValidateBeforeCall(signRequest, zkpLib, rngSeed, null);
-        Type localVarReturnType = new TypeToken<String>(){}.getType();
+        Type localVarReturnType = new TypeToken<Signature>(){}.getType();
         return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
 
@@ -1782,10 +1788,10 @@ public class DefaultApi {
         <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
      </table>
      */
-    public okhttp3.Call signAsync(@javax.annotation.Nonnull SignRequest signRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed, final ApiCallback<String> _callback) throws ApiException {
+    public okhttp3.Call signAsync(@javax.annotation.Nonnull SignRequest signRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed, final ApiCallback<Signature> _callback) throws ApiException {
 
         okhttp3.Call localVarCall = signValidateBeforeCall(signRequest, zkpLib, rngSeed, _callback);
-        Type localVarReturnType = new TypeToken<String>(){}.getType();
+        Type localVarReturnType = new TypeToken<Signature>(){}.getType();
         localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
         return localVarCall;
     }
@@ -1875,7 +1881,7 @@ public class DefaultApi {
      * @param signWithBlindedAttributesRequest  (required)
      * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (optional)
      * @param rngSeed A seed for a random number generator. Defaults to zero if not given. (optional)
-     * @return String
+     * @return BlindSignature
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      * @http.response.details
      <table border="1">
@@ -1885,8 +1891,8 @@ public class DefaultApi {
         <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
      </table>
      */
-    public String signWithBlindedAttributes(@javax.annotation.Nonnull SignWithBlindedAttributesRequest signWithBlindedAttributesRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed) throws ApiException {
-        ApiResponse<String> localVarResp = signWithBlindedAttributesWithHttpInfo(signWithBlindedAttributesRequest, zkpLib, rngSeed);
+    public BlindSignature signWithBlindedAttributes(@javax.annotation.Nonnull SignWithBlindedAttributesRequest signWithBlindedAttributesRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed) throws ApiException {
+        ApiResponse<BlindSignature> localVarResp = signWithBlindedAttributesWithHttpInfo(signWithBlindedAttributesRequest, zkpLib, rngSeed);
         return localVarResp.getData();
     }
 
@@ -1896,7 +1902,7 @@ public class DefaultApi {
      * @param signWithBlindedAttributesRequest  (required)
      * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (optional)
      * @param rngSeed A seed for a random number generator. Defaults to zero if not given. (optional)
-     * @return ApiResponse&lt;String&gt;
+     * @return ApiResponse&lt;BlindSignature&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      * @http.response.details
      <table border="1">
@@ -1906,9 +1912,9 @@ public class DefaultApi {
         <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
      </table>
      */
-    public ApiResponse<String> signWithBlindedAttributesWithHttpInfo(@javax.annotation.Nonnull SignWithBlindedAttributesRequest signWithBlindedAttributesRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed) throws ApiException {
+    public ApiResponse<BlindSignature> signWithBlindedAttributesWithHttpInfo(@javax.annotation.Nonnull SignWithBlindedAttributesRequest signWithBlindedAttributesRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed) throws ApiException {
         okhttp3.Call localVarCall = signWithBlindedAttributesValidateBeforeCall(signWithBlindedAttributesRequest, zkpLib, rngSeed, null);
-        Type localVarReturnType = new TypeToken<String>(){}.getType();
+        Type localVarReturnType = new TypeToken<BlindSignature>(){}.getType();
         return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
 
@@ -1929,10 +1935,10 @@ public class DefaultApi {
         <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
      </table>
      */
-    public okhttp3.Call signWithBlindedAttributesAsync(@javax.annotation.Nonnull SignWithBlindedAttributesRequest signWithBlindedAttributesRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed, final ApiCallback<String> _callback) throws ApiException {
+    public okhttp3.Call signWithBlindedAttributesAsync(@javax.annotation.Nonnull SignWithBlindedAttributesRequest signWithBlindedAttributesRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed, final ApiCallback<BlindSignature> _callback) throws ApiException {
 
         okhttp3.Call localVarCall = signWithBlindedAttributesValidateBeforeCall(signWithBlindedAttributesRequest, zkpLib, rngSeed, _callback);
-        Type localVarReturnType = new TypeToken<String>(){}.getType();
+        Type localVarReturnType = new TypeToken<BlindSignature>(){}.getType();
         localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
         return localVarCall;
     }
@@ -2022,7 +2028,7 @@ public class DefaultApi {
      * @param unblindBlindedSignatureRequest  (required)
      * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (optional)
      * @param rngSeed A seed for a random number generator. Defaults to zero if not given. (optional)
-     * @return String
+     * @return Signature
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      * @http.response.details
      <table border="1">
@@ -2032,8 +2038,8 @@ public class DefaultApi {
         <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
      </table>
      */
-    public String unblindBlindedSignature(@javax.annotation.Nonnull UnblindBlindedSignatureRequest unblindBlindedSignatureRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed) throws ApiException {
-        ApiResponse<String> localVarResp = unblindBlindedSignatureWithHttpInfo(unblindBlindedSignatureRequest, zkpLib, rngSeed);
+    public Signature unblindBlindedSignature(@javax.annotation.Nonnull UnblindBlindedSignatureRequest unblindBlindedSignatureRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed) throws ApiException {
+        ApiResponse<Signature> localVarResp = unblindBlindedSignatureWithHttpInfo(unblindBlindedSignatureRequest, zkpLib, rngSeed);
         return localVarResp.getData();
     }
 
@@ -2043,7 +2049,7 @@ public class DefaultApi {
      * @param unblindBlindedSignatureRequest  (required)
      * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (optional)
      * @param rngSeed A seed for a random number generator. Defaults to zero if not given. (optional)
-     * @return ApiResponse&lt;String&gt;
+     * @return ApiResponse&lt;Signature&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      * @http.response.details
      <table border="1">
@@ -2053,9 +2059,9 @@ public class DefaultApi {
         <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
      </table>
      */
-    public ApiResponse<String> unblindBlindedSignatureWithHttpInfo(@javax.annotation.Nonnull UnblindBlindedSignatureRequest unblindBlindedSignatureRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed) throws ApiException {
+    public ApiResponse<Signature> unblindBlindedSignatureWithHttpInfo(@javax.annotation.Nonnull UnblindBlindedSignatureRequest unblindBlindedSignatureRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed) throws ApiException {
         okhttp3.Call localVarCall = unblindBlindedSignatureValidateBeforeCall(unblindBlindedSignatureRequest, zkpLib, rngSeed, null);
-        Type localVarReturnType = new TypeToken<String>(){}.getType();
+        Type localVarReturnType = new TypeToken<Signature>(){}.getType();
         return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
 
@@ -2076,10 +2082,10 @@ public class DefaultApi {
         <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
      </table>
      */
-    public okhttp3.Call unblindBlindedSignatureAsync(@javax.annotation.Nonnull UnblindBlindedSignatureRequest unblindBlindedSignatureRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed, final ApiCallback<String> _callback) throws ApiException {
+    public okhttp3.Call unblindBlindedSignatureAsync(@javax.annotation.Nonnull UnblindBlindedSignatureRequest unblindBlindedSignatureRequest, @javax.annotation.Nullable String zkpLib, @javax.annotation.Nullable Integer rngSeed, final ApiCallback<Signature> _callback) throws ApiException {
 
         okhttp3.Call localVarCall = unblindBlindedSignatureValidateBeforeCall(unblindBlindedSignatureRequest, zkpLib, rngSeed, _callback);
-        Type localVarReturnType = new TypeToken<String>(){}.getType();
+        Type localVarReturnType = new TypeToken<Signature>(){}.getType();
         localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
         return localVarCall;
     }
@@ -2224,6 +2230,294 @@ public class DefaultApi {
 
         okhttp3.Call localVarCall = updateAccumulatorWitnessValidateBeforeCall(zkpLib, updateAccumulatorWitnessRequest, _callback);
         Type localVarReturnType = new TypeToken<String>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for verifyBlindSignatureCorrectnessProof
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifyBlindSignatureCorrectnessProofRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call verifyBlindSignatureCorrectnessProofCall(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifyBlindSignatureCorrectnessProofRequest verifyBlindSignatureCorrectnessProofRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = verifyBlindSignatureCorrectnessProofRequest;
+
+        // create path and map variables
+        String localVarPath = "/vca/verifyBlindSignatureCorrectnessProof";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (zkpLib != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("zkpLib", zkpLib));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] {  };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call verifyBlindSignatureCorrectnessProofValidateBeforeCall(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifyBlindSignatureCorrectnessProofRequest verifyBlindSignatureCorrectnessProofRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'zkpLib' is set
+        if (zkpLib == null) {
+            throw new ApiException("Missing the required parameter 'zkpLib' when calling verifyBlindSignatureCorrectnessProof(Async)");
+        }
+
+        // verify the required parameter 'verifyBlindSignatureCorrectnessProofRequest' is set
+        if (verifyBlindSignatureCorrectnessProofRequest == null) {
+            throw new ApiException("Missing the required parameter 'verifyBlindSignatureCorrectnessProofRequest' when calling verifyBlindSignatureCorrectnessProof(Async)");
+        }
+
+        return verifyBlindSignatureCorrectnessProofCall(zkpLib, verifyBlindSignatureCorrectnessProofRequest, _callback);
+
+    }
+
+    /**
+     * 
+     * 
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifyBlindSignatureCorrectnessProofRequest  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object verifyBlindSignatureCorrectnessProof(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifyBlindSignatureCorrectnessProofRequest verifyBlindSignatureCorrectnessProofRequest) throws ApiException {
+        ApiResponse<Object> localVarResp = verifyBlindSignatureCorrectnessProofWithHttpInfo(zkpLib, verifyBlindSignatureCorrectnessProofRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * 
+     * 
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifyBlindSignatureCorrectnessProofRequest  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> verifyBlindSignatureCorrectnessProofWithHttpInfo(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifyBlindSignatureCorrectnessProofRequest verifyBlindSignatureCorrectnessProofRequest) throws ApiException {
+        okhttp3.Call localVarCall = verifyBlindSignatureCorrectnessProofValidateBeforeCall(zkpLib, verifyBlindSignatureCorrectnessProofRequest, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     *  (asynchronously)
+     * 
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifyBlindSignatureCorrectnessProofRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call verifyBlindSignatureCorrectnessProofAsync(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifyBlindSignatureCorrectnessProofRequest verifyBlindSignatureCorrectnessProofRequest, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = verifyBlindSignatureCorrectnessProofValidateBeforeCall(zkpLib, verifyBlindSignatureCorrectnessProofRequest, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for verifyBlindSigningInfoCorrectnessProof
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifyBlindSigningInfoCorrectnessProofRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call verifyBlindSigningInfoCorrectnessProofCall(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifyBlindSigningInfoCorrectnessProofRequest verifyBlindSigningInfoCorrectnessProofRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = verifyBlindSigningInfoCorrectnessProofRequest;
+
+        // create path and map variables
+        String localVarPath = "/vca/verifyBlindSigningInfoCorrectnessProof";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (zkpLib != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("zkpLib", zkpLib));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] {  };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call verifyBlindSigningInfoCorrectnessProofValidateBeforeCall(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifyBlindSigningInfoCorrectnessProofRequest verifyBlindSigningInfoCorrectnessProofRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'zkpLib' is set
+        if (zkpLib == null) {
+            throw new ApiException("Missing the required parameter 'zkpLib' when calling verifyBlindSigningInfoCorrectnessProof(Async)");
+        }
+
+        // verify the required parameter 'verifyBlindSigningInfoCorrectnessProofRequest' is set
+        if (verifyBlindSigningInfoCorrectnessProofRequest == null) {
+            throw new ApiException("Missing the required parameter 'verifyBlindSigningInfoCorrectnessProofRequest' when calling verifyBlindSigningInfoCorrectnessProof(Async)");
+        }
+
+        return verifyBlindSigningInfoCorrectnessProofCall(zkpLib, verifyBlindSigningInfoCorrectnessProofRequest, _callback);
+
+    }
+
+    /**
+     * 
+     * 
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifyBlindSigningInfoCorrectnessProofRequest  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object verifyBlindSigningInfoCorrectnessProof(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifyBlindSigningInfoCorrectnessProofRequest verifyBlindSigningInfoCorrectnessProofRequest) throws ApiException {
+        ApiResponse<Object> localVarResp = verifyBlindSigningInfoCorrectnessProofWithHttpInfo(zkpLib, verifyBlindSigningInfoCorrectnessProofRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * 
+     * 
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifyBlindSigningInfoCorrectnessProofRequest  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> verifyBlindSigningInfoCorrectnessProofWithHttpInfo(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifyBlindSigningInfoCorrectnessProofRequest verifyBlindSigningInfoCorrectnessProofRequest) throws ApiException {
+        okhttp3.Call localVarCall = verifyBlindSigningInfoCorrectnessProofValidateBeforeCall(zkpLib, verifyBlindSigningInfoCorrectnessProofRequest, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     *  (asynchronously)
+     * 
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifyBlindSigningInfoCorrectnessProofRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call verifyBlindSigningInfoCorrectnessProofAsync(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifyBlindSigningInfoCorrectnessProofRequest verifyBlindSigningInfoCorrectnessProofRequest, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = verifyBlindSigningInfoCorrectnessProofValidateBeforeCall(zkpLib, verifyBlindSigningInfoCorrectnessProofRequest, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
         localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
         return localVarCall;
     }
@@ -2512,6 +2806,294 @@ public class DefaultApi {
 
         okhttp3.Call localVarCall = verifyProofValidateBeforeCall(zkpLib, verifyProofRequest, _callback);
         Type localVarReturnType = new TypeToken<WarningsAndDecryptResponses>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for verifySignatureCorrectnessProof
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifySignatureCorrectnessProofRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call verifySignatureCorrectnessProofCall(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifySignatureCorrectnessProofRequest verifySignatureCorrectnessProofRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = verifySignatureCorrectnessProofRequest;
+
+        // create path and map variables
+        String localVarPath = "/vca/verifySignatureCorrectnessProof";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (zkpLib != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("zkpLib", zkpLib));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] {  };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call verifySignatureCorrectnessProofValidateBeforeCall(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifySignatureCorrectnessProofRequest verifySignatureCorrectnessProofRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'zkpLib' is set
+        if (zkpLib == null) {
+            throw new ApiException("Missing the required parameter 'zkpLib' when calling verifySignatureCorrectnessProof(Async)");
+        }
+
+        // verify the required parameter 'verifySignatureCorrectnessProofRequest' is set
+        if (verifySignatureCorrectnessProofRequest == null) {
+            throw new ApiException("Missing the required parameter 'verifySignatureCorrectnessProofRequest' when calling verifySignatureCorrectnessProof(Async)");
+        }
+
+        return verifySignatureCorrectnessProofCall(zkpLib, verifySignatureCorrectnessProofRequest, _callback);
+
+    }
+
+    /**
+     * 
+     * 
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifySignatureCorrectnessProofRequest  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object verifySignatureCorrectnessProof(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifySignatureCorrectnessProofRequest verifySignatureCorrectnessProofRequest) throws ApiException {
+        ApiResponse<Object> localVarResp = verifySignatureCorrectnessProofWithHttpInfo(zkpLib, verifySignatureCorrectnessProofRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * 
+     * 
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifySignatureCorrectnessProofRequest  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> verifySignatureCorrectnessProofWithHttpInfo(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifySignatureCorrectnessProofRequest verifySignatureCorrectnessProofRequest) throws ApiException {
+        okhttp3.Call localVarCall = verifySignatureCorrectnessProofValidateBeforeCall(zkpLib, verifySignatureCorrectnessProofRequest, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     *  (asynchronously)
+     * 
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifySignatureCorrectnessProofRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call verifySignatureCorrectnessProofAsync(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifySignatureCorrectnessProofRequest verifySignatureCorrectnessProofRequest, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = verifySignatureCorrectnessProofValidateBeforeCall(zkpLib, verifySignatureCorrectnessProofRequest, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for verifySignerPublicSetupDataCorrectnessProof
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifySignerPublicSetupDataCorrectnessProofRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call verifySignerPublicSetupDataCorrectnessProofCall(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifySignerPublicSetupDataCorrectnessProofRequest verifySignerPublicSetupDataCorrectnessProofRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = verifySignerPublicSetupDataCorrectnessProofRequest;
+
+        // create path and map variables
+        String localVarPath = "/vca/verifySignerPublicSetupDataCorrectnessProof";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (zkpLib != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("zkpLib", zkpLib));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] {  };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call verifySignerPublicSetupDataCorrectnessProofValidateBeforeCall(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifySignerPublicSetupDataCorrectnessProofRequest verifySignerPublicSetupDataCorrectnessProofRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'zkpLib' is set
+        if (zkpLib == null) {
+            throw new ApiException("Missing the required parameter 'zkpLib' when calling verifySignerPublicSetupDataCorrectnessProof(Async)");
+        }
+
+        // verify the required parameter 'verifySignerPublicSetupDataCorrectnessProofRequest' is set
+        if (verifySignerPublicSetupDataCorrectnessProofRequest == null) {
+            throw new ApiException("Missing the required parameter 'verifySignerPublicSetupDataCorrectnessProofRequest' when calling verifySignerPublicSetupDataCorrectnessProof(Async)");
+        }
+
+        return verifySignerPublicSetupDataCorrectnessProofCall(zkpLib, verifySignerPublicSetupDataCorrectnessProofRequest, _callback);
+
+    }
+
+    /**
+     * 
+     * 
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifySignerPublicSetupDataCorrectnessProofRequest  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object verifySignerPublicSetupDataCorrectnessProof(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifySignerPublicSetupDataCorrectnessProofRequest verifySignerPublicSetupDataCorrectnessProofRequest) throws ApiException {
+        ApiResponse<Object> localVarResp = verifySignerPublicSetupDataCorrectnessProofWithHttpInfo(zkpLib, verifySignerPublicSetupDataCorrectnessProofRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * 
+     * 
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifySignerPublicSetupDataCorrectnessProofRequest  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> verifySignerPublicSetupDataCorrectnessProofWithHttpInfo(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifySignerPublicSetupDataCorrectnessProofRequest verifySignerPublicSetupDataCorrectnessProofRequest) throws ApiException {
+        okhttp3.Call localVarCall = verifySignerPublicSetupDataCorrectnessProofValidateBeforeCall(zkpLib, verifySignerPublicSetupDataCorrectnessProofRequest, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     *  (asynchronously)
+     * 
+     * @param zkpLib Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing). (required)
+     * @param verifySignerPublicSetupDataCorrectnessProofRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td>  </td><td>  -  </td></tr>
+        <tr><td> 0 </td><td>  </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call verifySignerPublicSetupDataCorrectnessProofAsync(@javax.annotation.Nonnull String zkpLib, @javax.annotation.Nonnull VerifySignerPublicSetupDataCorrectnessProofRequest verifySignerPublicSetupDataCorrectnessProofRequest, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = verifySignerPublicSetupDataCorrectnessProofValidateBeforeCall(zkpLib, verifySignerPublicSetupDataCorrectnessProofRequest, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
         localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
         return localVarCall;
     }

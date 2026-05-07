@@ -218,18 +218,10 @@ public class AccumulatorAddRemoveRequest {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("accumulatorData");
-    openapiFields.add("accumulator");
-    openapiFields.add("additions");
-    openapiFields.add("removals");
+    openapiFields = new HashSet<String>(Arrays.asList("accumulatorData", "accumulator", "additions", "removals"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("accumulatorData");
-    openapiRequiredFields.add("accumulator");
-    openapiRequiredFields.add("additions");
-    openapiRequiredFields.add("removals");
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("accumulatorData", "accumulator", "additions", "removals"));
   }
 
   /**
@@ -241,7 +233,7 @@ public class AccumulatorAddRemoveRequest {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!AccumulatorAddRemoveRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in AccumulatorAddRemoveRequest is not found in the empty JSON string", AccumulatorAddRemoveRequest.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in AccumulatorAddRemoveRequest is not found in the empty JSON string", AccumulatorAddRemoveRequest.openapiRequiredFields.toString()));
         }
       }
 
@@ -249,27 +241,27 @@ public class AccumulatorAddRemoveRequest {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!AccumulatorAddRemoveRequest.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `AccumulatorAddRemoveRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `AccumulatorAddRemoveRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : AccumulatorAddRemoveRequest.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       // validate the required field `accumulatorData`
       AccumulatorData.validateJsonElement(jsonObj.get("accumulatorData"));
       if (!jsonObj.get("accumulator").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `accumulator` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulator").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `accumulator` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulator").toString()));
       }
       // ensure the required json array is present
       if (jsonObj.get("removals") == null) {
         throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
       } else if (!jsonObj.get("removals").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `removals` to be an array in the JSON string but got `%s`", jsonObj.get("removals").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `removals` to be an array in the JSON string but got `%s`", jsonObj.get("removals").toString()));
       }
   }
 

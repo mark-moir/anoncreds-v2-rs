@@ -164,14 +164,10 @@ public class CreateSignerDataRequest {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("claimTypes");
-    openapiFields.add("blindedAttributeIndices");
+    openapiFields = new HashSet<String>(Arrays.asList("claimTypes", "blindedAttributeIndices"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("claimTypes");
-    openapiRequiredFields.add("blindedAttributeIndices");
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("claimTypes", "blindedAttributeIndices"));
   }
 
   /**
@@ -183,7 +179,7 @@ public class CreateSignerDataRequest {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!CreateSignerDataRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in CreateSignerDataRequest is not found in the empty JSON string", CreateSignerDataRequest.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in CreateSignerDataRequest is not found in the empty JSON string", CreateSignerDataRequest.openapiRequiredFields.toString()));
         }
       }
 
@@ -191,14 +187,14 @@ public class CreateSignerDataRequest {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!CreateSignerDataRequest.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `CreateSignerDataRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CreateSignerDataRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : CreateSignerDataRequest.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
@@ -206,13 +202,13 @@ public class CreateSignerDataRequest {
       if (jsonObj.get("claimTypes") == null) {
         throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
       } else if (!jsonObj.get("claimTypes").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `claimTypes` to be an array in the JSON string but got `%s`", jsonObj.get("claimTypes").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `claimTypes` to be an array in the JSON string but got `%s`", jsonObj.get("claimTypes").toString()));
       }
       // ensure the required json array is present
       if (jsonObj.get("blindedAttributeIndices") == null) {
         throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
       } else if (!jsonObj.get("blindedAttributeIndices").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `blindedAttributeIndices` to be an array in the JSON string but got `%s`", jsonObj.get("blindedAttributeIndices").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `blindedAttributeIndices` to be an array in the JSON string but got `%s`", jsonObj.get("blindedAttributeIndices").toString()));
       }
   }
 

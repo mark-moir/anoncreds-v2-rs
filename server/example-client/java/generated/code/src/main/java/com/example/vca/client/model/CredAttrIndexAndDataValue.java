@@ -147,14 +147,10 @@ public class CredAttrIndexAndDataValue {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("index");
-    openapiFields.add("value");
+    openapiFields = new HashSet<String>(Arrays.asList("index", "value"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("index");
-    openapiRequiredFields.add("value");
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("index", "value"));
   }
 
   /**
@@ -166,7 +162,7 @@ public class CredAttrIndexAndDataValue {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!CredAttrIndexAndDataValue.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in CredAttrIndexAndDataValue is not found in the empty JSON string", CredAttrIndexAndDataValue.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in CredAttrIndexAndDataValue is not found in the empty JSON string", CredAttrIndexAndDataValue.openapiRequiredFields.toString()));
         }
       }
 
@@ -174,14 +170,14 @@ public class CredAttrIndexAndDataValue {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!CredAttrIndexAndDataValue.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `CredAttrIndexAndDataValue` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CredAttrIndexAndDataValue` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : CredAttrIndexAndDataValue.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();

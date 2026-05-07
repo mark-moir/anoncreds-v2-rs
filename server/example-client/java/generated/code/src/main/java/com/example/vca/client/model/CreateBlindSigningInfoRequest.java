@@ -157,14 +157,10 @@ public class CreateBlindSigningInfoRequest {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("signerPublicData");
-    openapiFields.add("blindedIndicesAndValues");
+    openapiFields = new HashSet<String>(Arrays.asList("signerPublicData", "blindedIndicesAndValues"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("signerPublicData");
-    openapiRequiredFields.add("blindedIndicesAndValues");
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("signerPublicData", "blindedIndicesAndValues"));
   }
 
   /**
@@ -176,7 +172,7 @@ public class CreateBlindSigningInfoRequest {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!CreateBlindSigningInfoRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in CreateBlindSigningInfoRequest is not found in the empty JSON string", CreateBlindSigningInfoRequest.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in CreateBlindSigningInfoRequest is not found in the empty JSON string", CreateBlindSigningInfoRequest.openapiRequiredFields.toString()));
         }
       }
 
@@ -184,14 +180,14 @@ public class CreateBlindSigningInfoRequest {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!CreateBlindSigningInfoRequest.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `CreateBlindSigningInfoRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CreateBlindSigningInfoRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : CreateBlindSigningInfoRequest.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
@@ -199,7 +195,7 @@ public class CreateBlindSigningInfoRequest {
       SignerPublicData.validateJsonElement(jsonObj.get("signerPublicData"));
       // ensure the json data is an array
       if (!jsonObj.get("blindedIndicesAndValues").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `blindedIndicesAndValues` to be an array in the JSON string but got `%s`", jsonObj.get("blindedIndicesAndValues").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `blindedIndicesAndValues` to be an array in the JSON string but got `%s`", jsonObj.get("blindedIndicesAndValues").toString()));
       }
 
       JsonArray jsonArrayblindedIndicesAndValues = jsonObj.getAsJsonArray("blindedIndicesAndValues");

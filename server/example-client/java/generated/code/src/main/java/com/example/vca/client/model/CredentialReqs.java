@@ -329,24 +329,10 @@ public class CredentialReqs {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("signerLabel");
-    openapiFields.add("disclosed");
-    openapiFields.add("inAccum");
-    openapiFields.add("notInAccum");
-    openapiFields.add("inRange");
-    openapiFields.add("encryptedFor");
-    openapiFields.add("equalTo");
+    openapiFields = new HashSet<String>(Arrays.asList("signerLabel", "disclosed", "inAccum", "notInAccum", "inRange", "encryptedFor", "equalTo"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("signerLabel");
-    openapiRequiredFields.add("disclosed");
-    openapiRequiredFields.add("inAccum");
-    openapiRequiredFields.add("notInAccum");
-    openapiRequiredFields.add("inRange");
-    openapiRequiredFields.add("encryptedFor");
-    openapiRequiredFields.add("equalTo");
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("signerLabel", "disclosed", "inAccum", "notInAccum", "inRange", "encryptedFor", "equalTo"));
   }
 
   /**
@@ -358,7 +344,7 @@ public class CredentialReqs {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!CredentialReqs.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in CredentialReqs is not found in the empty JSON string", CredentialReqs.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in CredentialReqs is not found in the empty JSON string", CredentialReqs.openapiRequiredFields.toString()));
         }
       }
 
@@ -366,29 +352,29 @@ public class CredentialReqs {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!CredentialReqs.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `CredentialReqs` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CredentialReqs` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : CredentialReqs.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       if (!jsonObj.get("signerLabel").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `signerLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("signerLabel").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `signerLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("signerLabel").toString()));
       }
       // ensure the required json array is present
       if (jsonObj.get("disclosed") == null) {
         throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
       } else if (!jsonObj.get("disclosed").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `disclosed` to be an array in the JSON string but got `%s`", jsonObj.get("disclosed").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `disclosed` to be an array in the JSON string but got `%s`", jsonObj.get("disclosed").toString()));
       }
       // ensure the json data is an array
       if (!jsonObj.get("inAccum").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `inAccum` to be an array in the JSON string but got `%s`", jsonObj.get("inAccum").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `inAccum` to be an array in the JSON string but got `%s`", jsonObj.get("inAccum").toString()));
       }
 
       JsonArray jsonArrayinAccum = jsonObj.getAsJsonArray("inAccum");
@@ -398,7 +384,7 @@ public class CredentialReqs {
       };
       // ensure the json data is an array
       if (!jsonObj.get("notInAccum").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `notInAccum` to be an array in the JSON string but got `%s`", jsonObj.get("notInAccum").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `notInAccum` to be an array in the JSON string but got `%s`", jsonObj.get("notInAccum").toString()));
       }
 
       JsonArray jsonArraynotInAccum = jsonObj.getAsJsonArray("notInAccum");
@@ -408,7 +394,7 @@ public class CredentialReqs {
       };
       // ensure the json data is an array
       if (!jsonObj.get("inRange").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `inRange` to be an array in the JSON string but got `%s`", jsonObj.get("inRange").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `inRange` to be an array in the JSON string but got `%s`", jsonObj.get("inRange").toString()));
       }
 
       JsonArray jsonArrayinRange = jsonObj.getAsJsonArray("inRange");
@@ -418,7 +404,7 @@ public class CredentialReqs {
       };
       // ensure the json data is an array
       if (!jsonObj.get("encryptedFor").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `encryptedFor` to be an array in the JSON string but got `%s`", jsonObj.get("encryptedFor").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `encryptedFor` to be an array in the JSON string but got `%s`", jsonObj.get("encryptedFor").toString()));
       }
 
       JsonArray jsonArrayencryptedFor = jsonObj.getAsJsonArray("encryptedFor");
@@ -428,7 +414,7 @@ public class CredentialReqs {
       };
       // ensure the json data is an array
       if (!jsonObj.get("equalTo").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `equalTo` to be an array in the JSON string but got `%s`", jsonObj.get("equalTo").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `equalTo` to be an array in the JSON string but got `%s`", jsonObj.get("equalTo").toString()));
       }
 
       JsonArray jsonArrayequalTo = jsonObj.getAsJsonArray("equalTo");

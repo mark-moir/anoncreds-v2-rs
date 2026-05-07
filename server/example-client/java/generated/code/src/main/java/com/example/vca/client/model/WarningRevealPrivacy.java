@@ -205,14 +205,10 @@ public class WarningRevealPrivacy {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("tag");
-    openapiFields.add("contents");
+    openapiFields = new HashSet<String>(Arrays.asList("tag", "contents"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("tag");
-    openapiRequiredFields.add("contents");
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("tag", "contents"));
   }
 
   /**
@@ -224,7 +220,7 @@ public class WarningRevealPrivacy {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!WarningRevealPrivacy.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in WarningRevealPrivacy is not found in the empty JSON string", WarningRevealPrivacy.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in WarningRevealPrivacy is not found in the empty JSON string", WarningRevealPrivacy.openapiRequiredFields.toString()));
         }
       }
 
@@ -232,19 +228,19 @@ public class WarningRevealPrivacy {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!WarningRevealPrivacy.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `WarningRevealPrivacy` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WarningRevealPrivacy` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : WarningRevealPrivacy.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       if (!jsonObj.get("tag").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `tag` to be a primitive type in the JSON string but got `%s`", jsonObj.get("tag").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `tag` to be a primitive type in the JSON string but got `%s`", jsonObj.get("tag").toString()));
       }
       // validate the required field `tag`
       TagEnum.validateJsonElement(jsonObj.get("tag"));
@@ -252,7 +248,7 @@ public class WarningRevealPrivacy {
       if (jsonObj.get("contents") == null) {
         throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
       } else if (!jsonObj.get("contents").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `contents` to be an array in the JSON string but got `%s`", jsonObj.get("contents").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `contents` to be an array in the JSON string but got `%s`", jsonObj.get("contents").toString()));
       }
   }
 

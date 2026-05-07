@@ -13,7 +13,7 @@
 package com.example.vca.client.model;
 
 import java.util.Objects;
-import com.example.vca.client.model.DataValue;
+import com.example.vca.client.model.Signature;
 import com.example.vca.client.model.SignerData;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
@@ -21,9 +21,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -49,56 +47,29 @@ import java.util.Set;
 import com.example.vca.client.JSON;
 
 /**
- * Sign the given values using the secret data, setup data and claim types (i.e., schema) in the given SignerData.
+ * Verify a Signature correctness proof.
  */
-public class SignRequest {
-  public static final String SERIALIZED_NAME_VALUES = "values";
-  @SerializedName(SERIALIZED_NAME_VALUES)
-  @javax.annotation.Nonnull
-  private List<DataValue> values = new ArrayList<>();
-
+public class VerifySignatureCorrectnessProofRequest {
   public static final String SERIALIZED_NAME_SIGNER_DATA = "signerData";
   @SerializedName(SERIALIZED_NAME_SIGNER_DATA)
   @javax.annotation.Nonnull
   private SignerData signerData;
 
-  public SignRequest() {
-  }
-
-  public SignRequest values(@javax.annotation.Nonnull List<DataValue> values) {
-    this.values = values;
-    return this;
-  }
-
-  public SignRequest addValuesItem(DataValue valuesItem) {
-    if (this.values == null) {
-      this.values = new ArrayList<>();
-    }
-    this.values.add(valuesItem);
-    return this;
-  }
-
-  /**
-   * The values to be signed.
-   * @return values
-   */
+  public static final String SERIALIZED_NAME_SIGNATURE = "signature";
+  @SerializedName(SERIALIZED_NAME_SIGNATURE)
   @javax.annotation.Nonnull
-  public List<DataValue> getValues() {
-    return values;
+  private Signature signature;
+
+  public VerifySignatureCorrectnessProofRequest() {
   }
 
-  public void setValues(@javax.annotation.Nonnull List<DataValue> values) {
-    this.values = values;
-  }
-
-
-  public SignRequest signerData(@javax.annotation.Nonnull SignerData signerData) {
+  public VerifySignatureCorrectnessProofRequest signerData(@javax.annotation.Nonnull SignerData signerData) {
     this.signerData = signerData;
     return this;
   }
 
   /**
-   * See SignerData.
+   * Get signerData
    * @return signerData
    */
   @javax.annotation.Nonnull
@@ -111,6 +82,25 @@ public class SignRequest {
   }
 
 
+  public VerifySignatureCorrectnessProofRequest signature(@javax.annotation.Nonnull Signature signature) {
+    this.signature = signature;
+    return this;
+  }
+
+  /**
+   * Get signature
+   * @return signature
+   */
+  @javax.annotation.Nonnull
+  public Signature getSignature() {
+    return signature;
+  }
+
+  public void setSignature(@javax.annotation.Nonnull Signature signature) {
+    this.signature = signature;
+  }
+
+
 
   @Override
   public boolean equals(Object o) {
@@ -120,22 +110,22 @@ public class SignRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    SignRequest signRequest = (SignRequest) o;
-    return Objects.equals(this.values, signRequest.values) &&
-        Objects.equals(this.signerData, signRequest.signerData);
+    VerifySignatureCorrectnessProofRequest verifySignatureCorrectnessProofRequest = (VerifySignatureCorrectnessProofRequest) o;
+    return Objects.equals(this.signerData, verifySignatureCorrectnessProofRequest.signerData) &&
+        Objects.equals(this.signature, verifySignatureCorrectnessProofRequest.signature);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(values, signerData);
+    return Objects.hash(signerData, signature);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class SignRequest {\n");
-    sb.append("    values: ").append(toIndentedString(values)).append("\n");
+    sb.append("class VerifySignatureCorrectnessProofRequest {\n");
     sb.append("    signerData: ").append(toIndentedString(signerData)).append("\n");
+    sb.append("    signature: ").append(toIndentedString(signature)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -157,74 +147,66 @@ public class SignRequest {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>(Arrays.asList("values", "signerData"));
+    openapiFields = new HashSet<String>(Arrays.asList("signerData", "signature"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>(Arrays.asList("values", "signerData"));
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("signerData", "signature"));
   }
 
   /**
    * Validates the JSON Element and throws an exception if issues found
    *
    * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to SignRequest
+   * @throws IOException if the JSON Element is invalid with respect to VerifySignatureCorrectnessProofRequest
    */
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
-        if (!SignRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in SignRequest is not found in the empty JSON string", SignRequest.openapiRequiredFields.toString()));
+        if (!VerifySignatureCorrectnessProofRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in VerifySignatureCorrectnessProofRequest is not found in the empty JSON string", VerifySignatureCorrectnessProofRequest.openapiRequiredFields.toString()));
         }
       }
 
       Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!SignRequest.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SignRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        if (!VerifySignatureCorrectnessProofRequest.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `VerifySignatureCorrectnessProofRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
-      for (String requiredField : SignRequest.openapiRequiredFields) {
+      for (String requiredField : VerifySignatureCorrectnessProofRequest.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
           throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
-      // ensure the json data is an array
-      if (!jsonObj.get("values").isJsonArray()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `values` to be an array in the JSON string but got `%s`", jsonObj.get("values").toString()));
-      }
-
-      JsonArray jsonArrayvalues = jsonObj.getAsJsonArray("values");
-      // validate the required field `values` (array)
-      for (int i = 0; i < jsonArrayvalues.size(); i++) {
-        DataValue.validateJsonElement(jsonArrayvalues.get(i));
-      };
       // validate the required field `signerData`
       SignerData.validateJsonElement(jsonObj.get("signerData"));
+      // validate the required field `signature`
+      Signature.validateJsonElement(jsonObj.get("signature"));
   }
 
   public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
     @SuppressWarnings("unchecked")
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!SignRequest.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'SignRequest' and its subtypes
+       if (!VerifySignatureCorrectnessProofRequest.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'VerifySignatureCorrectnessProofRequest' and its subtypes
        }
        final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<SignRequest> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(SignRequest.class));
+       final TypeAdapter<VerifySignatureCorrectnessProofRequest> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(VerifySignatureCorrectnessProofRequest.class));
 
-       return (TypeAdapter<T>) new TypeAdapter<SignRequest>() {
+       return (TypeAdapter<T>) new TypeAdapter<VerifySignatureCorrectnessProofRequest>() {
            @Override
-           public void write(JsonWriter out, SignRequest value) throws IOException {
+           public void write(JsonWriter out, VerifySignatureCorrectnessProofRequest value) throws IOException {
              JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
              elementAdapter.write(out, obj);
            }
 
            @Override
-           public SignRequest read(JsonReader in) throws IOException {
+           public VerifySignatureCorrectnessProofRequest read(JsonReader in) throws IOException {
              JsonElement jsonElement = elementAdapter.read(in);
              validateJsonElement(jsonElement);
              return thisAdapter.fromJsonTree(jsonElement);
@@ -235,18 +217,18 @@ public class SignRequest {
   }
 
   /**
-   * Create an instance of SignRequest given an JSON string
+   * Create an instance of VerifySignatureCorrectnessProofRequest given an JSON string
    *
    * @param jsonString JSON string
-   * @return An instance of SignRequest
-   * @throws IOException if the JSON string is invalid with respect to SignRequest
+   * @return An instance of VerifySignatureCorrectnessProofRequest
+   * @throws IOException if the JSON string is invalid with respect to VerifySignatureCorrectnessProofRequest
    */
-  public static SignRequest fromJson(String jsonString) throws IOException {
-    return JSON.getGson().fromJson(jsonString, SignRequest.class);
+  public static VerifySignatureCorrectnessProofRequest fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, VerifySignatureCorrectnessProofRequest.class);
   }
 
   /**
-   * Convert an instance of SignRequest to an JSON string
+   * Convert an instance of VerifySignatureCorrectnessProofRequest to an JSON string
    *
    * @return JSON string
    */

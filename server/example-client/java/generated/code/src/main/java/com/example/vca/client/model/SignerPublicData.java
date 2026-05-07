@@ -14,6 +14,7 @@ package com.example.vca.client.model;
 
 import java.util.Objects;
 import com.example.vca.client.model.ClaimType;
+import com.example.vca.client.model.SignerPublicSetupData;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -54,7 +55,7 @@ public class SignerPublicData {
   public static final String SERIALIZED_NAME_SIGNER_PUBLIC_SETUP_DATA = "signerPublicSetupData";
   @SerializedName(SERIALIZED_NAME_SIGNER_PUBLIC_SETUP_DATA)
   @javax.annotation.Nonnull
-  private String signerPublicSetupData;
+  private SignerPublicSetupData signerPublicSetupData;
 
   public static final String SERIALIZED_NAME_SIGNER_PUBLIC_SCHEMA = "signerPublicSchema";
   @SerializedName(SERIALIZED_NAME_SIGNER_PUBLIC_SCHEMA)
@@ -69,21 +70,21 @@ public class SignerPublicData {
   public SignerPublicData() {
   }
 
-  public SignerPublicData signerPublicSetupData(@javax.annotation.Nonnull String signerPublicSetupData) {
+  public SignerPublicData signerPublicSetupData(@javax.annotation.Nonnull SignerPublicSetupData signerPublicSetupData) {
     this.signerPublicSetupData = signerPublicSetupData;
     return this;
   }
 
   /**
-   * Data resulting from a Signer&#39;s setup.
+   * Get signerPublicSetupData
    * @return signerPublicSetupData
    */
   @javax.annotation.Nonnull
-  public String getSignerPublicSetupData() {
+  public SignerPublicSetupData getSignerPublicSetupData() {
     return signerPublicSetupData;
   }
 
-  public void setSignerPublicSetupData(@javax.annotation.Nonnull String signerPublicSetupData) {
+  public void setSignerPublicSetupData(@javax.annotation.Nonnull SignerPublicSetupData signerPublicSetupData) {
     this.signerPublicSetupData = signerPublicSetupData;
   }
 
@@ -190,16 +191,10 @@ public class SignerPublicData {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("signerPublicSetupData");
-    openapiFields.add("signerPublicSchema");
-    openapiFields.add("signerBlindedAttrIdxs");
+    openapiFields = new HashSet<String>(Arrays.asList("signerPublicSetupData", "signerPublicSchema", "signerBlindedAttrIdxs"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("signerPublicSetupData");
-    openapiRequiredFields.add("signerPublicSchema");
-    openapiRequiredFields.add("signerBlindedAttrIdxs");
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("signerPublicSetupData", "signerPublicSchema", "signerBlindedAttrIdxs"));
   }
 
   /**
@@ -211,7 +206,7 @@ public class SignerPublicData {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!SignerPublicData.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in SignerPublicData is not found in the empty JSON string", SignerPublicData.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in SignerPublicData is not found in the empty JSON string", SignerPublicData.openapiRequiredFields.toString()));
         }
       }
 
@@ -219,31 +214,30 @@ public class SignerPublicData {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!SignerPublicData.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `SignerPublicData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SignerPublicData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : SignerPublicData.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (!jsonObj.get("signerPublicSetupData").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `signerPublicSetupData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("signerPublicSetupData").toString()));
-      }
+      // validate the required field `signerPublicSetupData`
+      SignerPublicSetupData.validateJsonElement(jsonObj.get("signerPublicSetupData"));
       // ensure the required json array is present
       if (jsonObj.get("signerPublicSchema") == null) {
         throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
       } else if (!jsonObj.get("signerPublicSchema").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `signerPublicSchema` to be an array in the JSON string but got `%s`", jsonObj.get("signerPublicSchema").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `signerPublicSchema` to be an array in the JSON string but got `%s`", jsonObj.get("signerPublicSchema").toString()));
       }
       // ensure the required json array is present
       if (jsonObj.get("signerBlindedAttrIdxs") == null) {
         throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
       } else if (!jsonObj.get("signerBlindedAttrIdxs").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `signerBlindedAttrIdxs` to be an array in the JSON string but got `%s`", jsonObj.get("signerBlindedAttrIdxs").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `signerBlindedAttrIdxs` to be an array in the JSON string but got `%s`", jsonObj.get("signerBlindedAttrIdxs").toString()));
       }
   }
 

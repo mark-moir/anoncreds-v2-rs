@@ -173,16 +173,10 @@ public class EqInfo {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("fromIndex");
-    openapiFields.add("toLabel");
-    openapiFields.add("toIndex");
+    openapiFields = new HashSet<String>(Arrays.asList("fromIndex", "toLabel", "toIndex"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("fromIndex");
-    openapiRequiredFields.add("toLabel");
-    openapiRequiredFields.add("toIndex");
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("fromIndex", "toLabel", "toIndex"));
   }
 
   /**
@@ -194,7 +188,7 @@ public class EqInfo {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!EqInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in EqInfo is not found in the empty JSON string", EqInfo.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in EqInfo is not found in the empty JSON string", EqInfo.openapiRequiredFields.toString()));
         }
       }
 
@@ -202,19 +196,19 @@ public class EqInfo {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!EqInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `EqInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `EqInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : EqInfo.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       if (!jsonObj.get("toLabel").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `toLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("toLabel").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `toLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("toLabel").toString()));
       }
   }
 

@@ -13,6 +13,7 @@
 package com.example.vca.client.model;
 
 import java.util.Objects;
+import com.example.vca.client.model.BlindSignature;
 import com.example.vca.client.model.ClaimType;
 import com.example.vca.client.model.CredAttrIndexAndDataValue;
 import com.google.gson.TypeAdapter;
@@ -65,7 +66,7 @@ public class UnblindBlindedSignatureRequest {
   public static final String SERIALIZED_NAME_BLIND_SIGNATURE = "blindSignature";
   @SerializedName(SERIALIZED_NAME_BLIND_SIGNATURE)
   @javax.annotation.Nonnull
-  private String blindSignature;
+  private BlindSignature blindSignature;
 
   public static final String SERIALIZED_NAME_INFO_FOR_UNBLINDING = "infoForUnblinding";
   @SerializedName(SERIALIZED_NAME_INFO_FOR_UNBLINDING)
@@ -129,7 +130,7 @@ public class UnblindBlindedSignatureRequest {
   }
 
 
-  public UnblindBlindedSignatureRequest blindSignature(@javax.annotation.Nonnull String blindSignature) {
+  public UnblindBlindedSignatureRequest blindSignature(@javax.annotation.Nonnull BlindSignature blindSignature) {
     this.blindSignature = blindSignature;
     return this;
   }
@@ -139,11 +140,11 @@ public class UnblindBlindedSignatureRequest {
    * @return blindSignature
    */
   @javax.annotation.Nonnull
-  public String getBlindSignature() {
+  public BlindSignature getBlindSignature() {
     return blindSignature;
   }
 
-  public void setBlindSignature(@javax.annotation.Nonnull String blindSignature) {
+  public void setBlindSignature(@javax.annotation.Nonnull BlindSignature blindSignature) {
     this.blindSignature = blindSignature;
   }
 
@@ -217,18 +218,10 @@ public class UnblindBlindedSignatureRequest {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("claimTypes");
-    openapiFields.add("blindedIndicesAndValues");
-    openapiFields.add("blindSignature");
-    openapiFields.add("infoForUnblinding");
+    openapiFields = new HashSet<String>(Arrays.asList("claimTypes", "blindedIndicesAndValues", "blindSignature", "infoForUnblinding"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("claimTypes");
-    openapiRequiredFields.add("blindedIndicesAndValues");
-    openapiRequiredFields.add("blindSignature");
-    openapiRequiredFields.add("infoForUnblinding");
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("claimTypes", "blindedIndicesAndValues", "blindSignature", "infoForUnblinding"));
   }
 
   /**
@@ -240,7 +233,7 @@ public class UnblindBlindedSignatureRequest {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!UnblindBlindedSignatureRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in UnblindBlindedSignatureRequest is not found in the empty JSON string", UnblindBlindedSignatureRequest.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in UnblindBlindedSignatureRequest is not found in the empty JSON string", UnblindBlindedSignatureRequest.openapiRequiredFields.toString()));
         }
       }
 
@@ -248,14 +241,14 @@ public class UnblindBlindedSignatureRequest {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!UnblindBlindedSignatureRequest.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `UnblindBlindedSignatureRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `UnblindBlindedSignatureRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : UnblindBlindedSignatureRequest.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
@@ -263,11 +256,11 @@ public class UnblindBlindedSignatureRequest {
       if (jsonObj.get("claimTypes") == null) {
         throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
       } else if (!jsonObj.get("claimTypes").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `claimTypes` to be an array in the JSON string but got `%s`", jsonObj.get("claimTypes").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `claimTypes` to be an array in the JSON string but got `%s`", jsonObj.get("claimTypes").toString()));
       }
       // ensure the json data is an array
       if (!jsonObj.get("blindedIndicesAndValues").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `blindedIndicesAndValues` to be an array in the JSON string but got `%s`", jsonObj.get("blindedIndicesAndValues").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `blindedIndicesAndValues` to be an array in the JSON string but got `%s`", jsonObj.get("blindedIndicesAndValues").toString()));
       }
 
       JsonArray jsonArrayblindedIndicesAndValues = jsonObj.getAsJsonArray("blindedIndicesAndValues");
@@ -275,11 +268,10 @@ public class UnblindBlindedSignatureRequest {
       for (int i = 0; i < jsonArrayblindedIndicesAndValues.size(); i++) {
         CredAttrIndexAndDataValue.validateJsonElement(jsonArrayblindedIndicesAndValues.get(i));
       };
-      if (!jsonObj.get("blindSignature").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `blindSignature` to be a primitive type in the JSON string but got `%s`", jsonObj.get("blindSignature").toString()));
-      }
+      // validate the required field `blindSignature`
+      BlindSignature.validateJsonElement(jsonObj.get("blindSignature"));
       if (!jsonObj.get("infoForUnblinding").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `infoForUnblinding` to be a primitive type in the JSON string but got `%s`", jsonObj.get("infoForUnblinding").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `infoForUnblinding` to be a primitive type in the JSON string but got `%s`", jsonObj.get("infoForUnblinding").toString()));
       }
   }
 

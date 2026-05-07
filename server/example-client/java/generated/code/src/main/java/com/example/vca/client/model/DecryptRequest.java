@@ -145,14 +145,10 @@ public class DecryptRequest {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("authoritySecretData");
-    openapiFields.add("authorityDecryptionKey");
+    openapiFields = new HashSet<String>(Arrays.asList("authoritySecretData", "authorityDecryptionKey"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("authoritySecretData");
-    openapiRequiredFields.add("authorityDecryptionKey");
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("authoritySecretData", "authorityDecryptionKey"));
   }
 
   /**
@@ -164,7 +160,7 @@ public class DecryptRequest {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!DecryptRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in DecryptRequest is not found in the empty JSON string", DecryptRequest.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in DecryptRequest is not found in the empty JSON string", DecryptRequest.openapiRequiredFields.toString()));
         }
       }
 
@@ -172,22 +168,22 @@ public class DecryptRequest {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!DecryptRequest.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `DecryptRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `DecryptRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : DecryptRequest.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       if (!jsonObj.get("authoritySecretData").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `authoritySecretData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("authoritySecretData").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `authoritySecretData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("authoritySecretData").toString()));
       }
       if (!jsonObj.get("authorityDecryptionKey").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `authorityDecryptionKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("authorityDecryptionKey").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `authorityDecryptionKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("authorityDecryptionKey").toString()));
       }
   }
 

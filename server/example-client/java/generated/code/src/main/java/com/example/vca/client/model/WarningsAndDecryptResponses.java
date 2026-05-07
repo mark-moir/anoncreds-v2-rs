@@ -167,14 +167,10 @@ public class WarningsAndDecryptResponses {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("warnings");
-    openapiFields.add("decryptResponses");
+    openapiFields = new HashSet<String>(Arrays.asList("warnings", "decryptResponses"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("warnings");
-    openapiRequiredFields.add("decryptResponses");
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("warnings", "decryptResponses"));
   }
 
   /**
@@ -186,7 +182,7 @@ public class WarningsAndDecryptResponses {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!WarningsAndDecryptResponses.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in WarningsAndDecryptResponses is not found in the empty JSON string", WarningsAndDecryptResponses.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in WarningsAndDecryptResponses is not found in the empty JSON string", WarningsAndDecryptResponses.openapiRequiredFields.toString()));
         }
       }
 
@@ -194,20 +190,20 @@ public class WarningsAndDecryptResponses {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!WarningsAndDecryptResponses.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `WarningsAndDecryptResponses` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WarningsAndDecryptResponses` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : WarningsAndDecryptResponses.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       // ensure the json data is an array
       if (!jsonObj.get("warnings").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `warnings` to be an array in the JSON string but got `%s`", jsonObj.get("warnings").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `warnings` to be an array in the JSON string but got `%s`", jsonObj.get("warnings").toString()));
       }
 
       JsonArray jsonArraywarnings = jsonObj.getAsJsonArray("warnings");

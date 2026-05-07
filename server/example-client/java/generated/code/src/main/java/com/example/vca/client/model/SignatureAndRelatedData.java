@@ -14,6 +14,7 @@ package com.example.vca.client.model;
 
 import java.util.Objects;
 import com.example.vca.client.model.DataValue;
+import com.example.vca.client.model.Signature;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -56,7 +57,7 @@ public class SignatureAndRelatedData {
   public static final String SERIALIZED_NAME_SIGNATURE = "signature";
   @SerializedName(SERIALIZED_NAME_SIGNATURE)
   @javax.annotation.Nonnull
-  private String signature;
+  private Signature signature;
 
   public static final String SERIALIZED_NAME_VALUES = "values";
   @SerializedName(SERIALIZED_NAME_VALUES)
@@ -71,7 +72,7 @@ public class SignatureAndRelatedData {
   public SignatureAndRelatedData() {
   }
 
-  public SignatureAndRelatedData signature(@javax.annotation.Nonnull String signature) {
+  public SignatureAndRelatedData signature(@javax.annotation.Nonnull Signature signature) {
     this.signature = signature;
     return this;
   }
@@ -81,11 +82,11 @@ public class SignatureAndRelatedData {
    * @return signature
    */
   @javax.annotation.Nonnull
-  public String getSignature() {
+  public Signature getSignature() {
     return signature;
   }
 
-  public void setSignature(@javax.annotation.Nonnull String signature) {
+  public void setSignature(@javax.annotation.Nonnull Signature signature) {
     this.signature = signature;
   }
 
@@ -192,16 +193,10 @@ public class SignatureAndRelatedData {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("signature");
-    openapiFields.add("values");
-    openapiFields.add("accumulatorWitnesses");
+    openapiFields = new HashSet<String>(Arrays.asList("signature", "values", "accumulatorWitnesses"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("signature");
-    openapiRequiredFields.add("values");
-    openapiRequiredFields.add("accumulatorWitnesses");
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("signature", "values", "accumulatorWitnesses"));
   }
 
   /**
@@ -213,7 +208,7 @@ public class SignatureAndRelatedData {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!SignatureAndRelatedData.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in SignatureAndRelatedData is not found in the empty JSON string", SignatureAndRelatedData.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in SignatureAndRelatedData is not found in the empty JSON string", SignatureAndRelatedData.openapiRequiredFields.toString()));
         }
       }
 
@@ -221,23 +216,22 @@ public class SignatureAndRelatedData {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!SignatureAndRelatedData.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `SignatureAndRelatedData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SignatureAndRelatedData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : SignatureAndRelatedData.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (!jsonObj.get("signature").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `signature` to be a primitive type in the JSON string but got `%s`", jsonObj.get("signature").toString()));
-      }
+      // validate the required field `signature`
+      Signature.validateJsonElement(jsonObj.get("signature"));
       // ensure the json data is an array
       if (!jsonObj.get("values").isJsonArray()) {
-        throw new IllegalArgumentException(String.format("Expected the field `values` to be an array in the JSON string but got `%s`", jsonObj.get("values").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `values` to be an array in the JSON string but got `%s`", jsonObj.get("values").toString()));
       }
 
       JsonArray jsonArrayvalues = jsonObj.getAsJsonArray("values");

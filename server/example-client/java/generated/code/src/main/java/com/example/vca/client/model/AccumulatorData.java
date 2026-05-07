@@ -145,14 +145,10 @@ public class AccumulatorData {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("accumulatorPublicData");
-    openapiFields.add("accumulatorSecretData");
+    openapiFields = new HashSet<String>(Arrays.asList("accumulatorPublicData", "accumulatorSecretData"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("accumulatorPublicData");
-    openapiRequiredFields.add("accumulatorSecretData");
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("accumulatorPublicData", "accumulatorSecretData"));
   }
 
   /**
@@ -164,7 +160,7 @@ public class AccumulatorData {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!AccumulatorData.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in AccumulatorData is not found in the empty JSON string", AccumulatorData.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in AccumulatorData is not found in the empty JSON string", AccumulatorData.openapiRequiredFields.toString()));
         }
       }
 
@@ -172,22 +168,22 @@ public class AccumulatorData {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!AccumulatorData.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `AccumulatorData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `AccumulatorData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : AccumulatorData.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       if (!jsonObj.get("accumulatorPublicData").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `accumulatorPublicData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulatorPublicData").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `accumulatorPublicData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulatorPublicData").toString()));
       }
       if (!jsonObj.get("accumulatorSecretData").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `accumulatorSecretData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulatorSecretData").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `accumulatorSecretData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulatorSecretData").toString()));
       }
   }
 

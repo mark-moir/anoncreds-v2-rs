@@ -116,7 +116,7 @@ public class SharedParamValue extends AbstractOpenApiSchema {
                         log.log(Level.FINER, "Input data matches schema 'SPVOne'");
                     } catch (Exception e) {
                         // deserialization failed, continue
-                        errorMessages.add(String.format("Deserialization for SPVOne failed with `%s`.", e.getMessage()));
+                        errorMessages.add(String.format(java.util.Locale.ROOT, "Deserialization for SPVOne failed with `%s`.", e.getMessage()));
                         log.log(Level.FINER, "Input data does not match schema 'SPVOne'", e);
                     }
                     // deserialize SPVList
@@ -128,7 +128,7 @@ public class SharedParamValue extends AbstractOpenApiSchema {
                         log.log(Level.FINER, "Input data matches schema 'SPVList'");
                     } catch (Exception e) {
                         // deserialization failed, continue
-                        errorMessages.add(String.format("Deserialization for SPVList failed with `%s`.", e.getMessage()));
+                        errorMessages.add(String.format(java.util.Locale.ROOT, "Deserialization for SPVList failed with `%s`.", e.getMessage()));
                         log.log(Level.FINER, "Input data does not match schema 'SPVList'", e);
                     }
 
@@ -138,7 +138,7 @@ public class SharedParamValue extends AbstractOpenApiSchema {
                         return ret;
                     }
 
-                    throw new IOException(String.format("Failed deserialization for SharedParamValue: %d classes match result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", match, errorMessages, jsonElement.toString()));
+                    throw new IOException(String.format(java.util.Locale.ROOT, "Failed deserialization for SharedParamValue: %d classes match result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", match, errorMessages, jsonElement.toString()));
                 }
             }.nullSafe();
         }
@@ -237,7 +237,7 @@ public class SharedParamValue extends AbstractOpenApiSchema {
             SPVOne.validateJsonElement(jsonElement);
             validCount++;
         } catch (Exception e) {
-            errorMessages.add(String.format("Deserialization for SPVOne failed with `%s`.", e.getMessage()));
+            errorMessages.add(String.format(java.util.Locale.ROOT, "Deserialization for SPVOne failed with `%s`.", e.getMessage()));
             // continue to the next one
         }
         // validate the json string with SPVList
@@ -245,11 +245,11 @@ public class SharedParamValue extends AbstractOpenApiSchema {
             SPVList.validateJsonElement(jsonElement);
             validCount++;
         } catch (Exception e) {
-            errorMessages.add(String.format("Deserialization for SPVList failed with `%s`.", e.getMessage()));
+            errorMessages.add(String.format(java.util.Locale.ROOT, "Deserialization for SPVList failed with `%s`.", e.getMessage()));
             // continue to the next one
         }
         if (validCount != 1) {
-            throw new IOException(String.format("The JSON string is invalid for SharedParamValue with oneOf schemas: SPVOne, SPVList. %d class(es) match the result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", validCount, errorMessages, jsonElement.toString()));
+            throw new IOException(String.format(java.util.Locale.ROOT, "The JSON string is invalid for SharedParamValue with oneOf schemas: SPVOne, SPVList. %d class(es) match the result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", validCount, errorMessages, jsonElement.toString()));
         }
     }
 

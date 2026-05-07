@@ -172,16 +172,10 @@ public class GetAccumulatorWitnessRequest {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>();
-    openapiFields.add("accumulatorData");
-    openapiFields.add("accumulator");
-    openapiFields.add("accumulatorElement");
+    openapiFields = new HashSet<String>(Arrays.asList("accumulatorData", "accumulator", "accumulatorElement"));
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>();
-    openapiRequiredFields.add("accumulatorData");
-    openapiRequiredFields.add("accumulator");
-    openapiRequiredFields.add("accumulatorElement");
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("accumulatorData", "accumulator", "accumulatorElement"));
   }
 
   /**
@@ -193,7 +187,7 @@ public class GetAccumulatorWitnessRequest {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!GetAccumulatorWitnessRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format("The required field(s) %s in GetAccumulatorWitnessRequest is not found in the empty JSON string", GetAccumulatorWitnessRequest.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in GetAccumulatorWitnessRequest is not found in the empty JSON string", GetAccumulatorWitnessRequest.openapiRequiredFields.toString()));
         }
       }
 
@@ -201,24 +195,24 @@ public class GetAccumulatorWitnessRequest {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!GetAccumulatorWitnessRequest.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `GetAccumulatorWitnessRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `GetAccumulatorWitnessRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : GetAccumulatorWitnessRequest.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       // validate the required field `accumulatorData`
       AccumulatorData.validateJsonElement(jsonObj.get("accumulatorData"));
       if (!jsonObj.get("accumulator").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `accumulator` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulator").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `accumulator` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulator").toString()));
       }
       if (!jsonObj.get("accumulatorElement").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `accumulatorElement` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulatorElement").toString()));
+        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `accumulatorElement` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulatorElement").toString()));
       }
   }
 
