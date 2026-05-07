@@ -51,8 +51,8 @@ CLOSED: [2026-05-07 Thu 11:54]
 *** DONE tests/vca/test_framework/steps.rs:278                - verify blind_signing_info_correctness_proof in test harness
 CLOSED: [2026-05-07 Thu]
     - step now errors if blind_signing_info_correctness_proof is missing
-*** TODO tests/vca/zkp_functionality_tests/blind_signing_common.rs:130 - verify blind signing info correctness proof before signing
-    // TODO: verify BlindSigninginfocorrectnessproof in blindinfo via api
+*** DONE tests/vca/zkp_functionality_tests/blind_signing_common.rs:130 - verify blind signing info correctness proof before signing
+    (api.verify_blind_signing_info_correctness_proof.clone())(
 ** BlindSigningCorrectnessProof related
 *** DONE src/vca/zkp_backends/dnc/to_from_api/signer_to_from_api.rs:100 - update to/from conversion when BlindInfoForSigner becomes structured
 CLOSED: [2026-05-06 Wed]
