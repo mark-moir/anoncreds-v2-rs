@@ -804,10 +804,6 @@ pub enum ProofMode {
     Loose,
     // Forbid warnings
     Strict,
-    // Allow warnings and skip correctness-proof verification
-    LooseSkipCorrectnessVerify,
-    // Forbid warnings but skip correctness-proof verification
-    StrictSkipCorrectnessVerify,
     // Allow warnings and also suppress errors from General, enabling testing backend calls even
     // when General would throw an error for honest provers
     TestBackend,
