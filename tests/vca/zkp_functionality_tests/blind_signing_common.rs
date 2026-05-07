@@ -127,6 +127,8 @@ pub fn run_blind_sign(
     let (bsi_good, bsi_alt, signer_data, non_blinded, schema) = build_blind_infos(&api)?;
     let blind_info = bifs_builder(&bsi_good, &bsi_alt)?;
 
+    // TODO: verify BlindSigninginfocorrectnessproof in blindinfo via api
+
     let blinded_sig = (api.sign_with_blinded_attributes.clone())(
         0,
         &non_blinded,
