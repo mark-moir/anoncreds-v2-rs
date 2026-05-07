@@ -129,10 +129,10 @@ pub fn sign(
     )
 }
 
+/// Sign with blinded attributes.  Caller is assumed to have verified the BlindInfoForSigner
+/// correctness proof before signing
 pub fn sign_with_blinded_attributes(
     spec_sign_wba: SpecificSignWithBlindedAttributes,
-    verify_blind_signing_info_correctness_proof: VerifyBlindSigningInfoCorrectnessProof,
-    verify_blind_signature_correctness_proof: VerifyBlindSignatureCorrectnessProof,
 ) -> SignWithBlindedAttributes {
     Arc::new(move |rng_seed, non_blinded_attrs, bifs, sd, proof_mode| {
         let SignerData {
@@ -164,30 +164,6 @@ pub fn sign_with_blinded_attributes(
                     format!("{needed_idxs:?}"),
                     "but given",
                     format!("{non_blinded_attrs:?}")
-                ))));
-            }
-        }
-        // Verify BlindInfoForSigner correctness proof before signing
-        if proof_mode != TestBackend
-            && proof_mode != LooseSkipCorrectnessVerify
-            && proof_mode != StrictSkipCorrectnessVerify {
-            let blinded_attr_idxs: Vec<CredAttrIndex> = (0..signer_public_schema.len())
-                .filter(|i| {
-                    !non_blinded_attrs
-                        .iter()
-                        .any(|CredAttrIndexAndDataValue { index, .. }| *index as usize == *i)
-                })
-                .map(|i| i as CredAttrIndex)
-                .collect();
-            if let Err(err) = verify_blind_signing_info_correctness_proof(
-                &signer_public_setup_data,
-                blinded_attr_idxs.as_slice(),
-                bifs,
-            ) {
-                return Err(Error::General(ic_semi(&str_vec_from!(
-                    "sign_with_blinded_attributes",
-                    "blind signing info correctness proof verification failed",
-                    format!("{err:?}")
                 ))));
             }
         }

@@ -40,11 +40,7 @@ pub fn implement_vca_api_using(
         create_signer_data: create_signer_data(csd.clone(), vspsdcp.clone()),
         sign: sign(ss.clone(), vscp.clone()),
         create_blind_signing_info: create_blind_signing_info(cbsi.clone(), vbsi_cp.clone()),
-        sign_with_blinded_attributes: sign_with_blinded_attributes(
-            swba.clone(),
-            vbsi_cp.clone(),
-            vbscp.clone(),
-        ),
+        sign_with_blinded_attributes: sign_with_blinded_attributes(swba.clone()),
         unblind_blinded_signature: unblind_blinded_signature(ubs.clone()),
         verify_signer_public_setup_data_correctness_proof: vspsdcp.clone(),
         verify_blind_signing_info_correctness_proof: vbsi_cp.clone(),
