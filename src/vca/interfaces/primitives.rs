@@ -99,6 +99,9 @@ pub type SpecificSign = Arc<
         + Sync,
 >;
 
+pub type VerifySignatureCorrectnessProof =
+    Arc<dyn Fn(&SignerData, &Signature) -> VCAResult<()> + Send + Sync>;
+
 pub type SpecificSignWithBlindedAttributes = Arc<
     dyn Fn(
             Natural, // RNG seed
@@ -111,9 +114,6 @@ pub type SpecificSignWithBlindedAttributes = Arc<
         + Send
         + Sync,
 >;
-
-pub type VerifySignatureCorrectnessProof =
-    Arc<dyn Fn(&SignerData, &Signature) -> VCAResult<()> + Send + Sync>;
 
 pub type VerifyBlindSignatureCorrectnessProof =
     Arc<dyn Fn(&SignerPublicSetupData, &BlindSignature) -> VCAResult<()> + Send + Sync>;

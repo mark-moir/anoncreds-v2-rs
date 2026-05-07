@@ -171,6 +171,127 @@ fn signWithBlindedAttributes(
 
 // ------------------------------------------------------------------------------
 
+/// Verify a SignerPublicSetupData correctness proof.
+#[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
+struct VerifySignerPublicSetupDataCorrectnessProofRequest {
+    signerPublicSetupData: SignerPublicSetupData,
+}
+
+#[openapi()]
+#[post(
+    "/vca/verifySignerPublicSetupDataCorrectnessProof?<zkp..>",
+    data = "<dat>"
+)]
+fn verifySignerPublicSetupDataCorrectnessProof(
+    zkp: ZkpLibQueryParam,
+    dat: crate::DataResult<'_, VerifySignerPublicSetupDataCorrectnessProofRequest>,
+) -> Result<Json<()>, (Status, Json<misc::Error>)> {
+    let api = getApiFromQP(zkp, "verifySignerPublicSetupDataCorrectnessProof")?;
+    let dat = dat.map_or_else(
+        |e| {
+            err(
+                format!("{:?}", e),
+                "verifySignerPublicSetupDataCorrectnessProof",
+            )
+        },
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.verify_signer_public_setup_data_correctness_proof;
+    op(&dat.signerPublicSetupData).map_or_else(
+        |e| vcaErr(e, "verifySignerPublicSetupDataCorrectnessProof"),
+        |_| Ok(Json(())),
+    )
+}
+
+// ------------------------------------------------------------------------------
+
+/// Verify a BlindSigningInfo correctness proof.
+#[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
+struct VerifyBlindSigningInfoCorrectnessProofRequest {
+    signerPublicSetupData: SignerPublicSetupData,
+    blindedAttributeIndices: Vec<CredAttrIndex>,
+    blindInfoForSigner: BlindInfoForSigner,
+}
+
+#[openapi()]
+#[post("/vca/verifyBlindSigningInfoCorrectnessProof?<zkp..>", data = "<dat>")]
+fn verifyBlindSigningInfoCorrectnessProof(
+    zkp: ZkpLibQueryParam,
+    dat: crate::DataResult<'_, VerifyBlindSigningInfoCorrectnessProofRequest>,
+) -> Result<Json<()>, (Status, Json<misc::Error>)> {
+    let api = getApiFromQP(zkp, "verifyBlindSigningInfoCorrectnessProof")?;
+    let dat = dat.map_or_else(
+        |e| err(format!("{:?}", e), "verifyBlindSigningInfoCorrectnessProof"),
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.verify_blind_signing_info_correctness_proof;
+    op(
+        &dat.signerPublicSetupData,
+        &dat.blindedAttributeIndices,
+        &dat.blindInfoForSigner,
+    )
+    .map_or_else(
+        |e| vcaErr(e, "verifyBlindSigningInfoCorrectnessProof"),
+        |_| Ok(Json(())),
+    )
+}
+
+// ------------------------------------------------------------------------------
+
+/// Verify a Signature correctness proof.
+#[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
+struct VerifySignatureCorrectnessProofRequest {
+    signerData: SignerData,
+    signature: Signature,
+}
+
+#[openapi()]
+#[post("/vca/verifySignatureCorrectnessProof?<zkp..>", data = "<dat>")]
+fn verifySignatureCorrectnessProof(
+    zkp: ZkpLibQueryParam,
+    dat: crate::DataResult<'_, VerifySignatureCorrectnessProofRequest>,
+) -> Result<Json<()>, (Status, Json<misc::Error>)> {
+    let api = getApiFromQP(zkp, "verifySignatureCorrectnessProof")?;
+    let dat = dat.map_or_else(
+        |e| err(format!("{:?}", e), "verifySignatureCorrectnessProof"),
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.verify_signature_correctness_proof;
+    op(&dat.signerData, &dat.signature).map_or_else(
+        |e| vcaErr(e, "verifySignatureCorrectnessProof"),
+        |_| Ok(Json(())),
+    )
+}
+
+// ------------------------------------------------------------------------------
+
+/// Verify a BlindSignature correctness proof.
+#[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
+struct VerifyBlindSignatureCorrectnessProofRequest {
+    signerPublicSetupData: SignerPublicSetupData,
+    blindSignature: BlindSignature,
+}
+
+#[openapi()]
+#[post("/vca/verifyBlindSignatureCorrectnessProof?<zkp..>", data = "<dat>")]
+fn verifyBlindSignatureCorrectnessProof(
+    zkp: ZkpLibQueryParam,
+    dat: crate::DataResult<'_, VerifyBlindSignatureCorrectnessProofRequest>,
+) -> Result<Json<()>, (Status, Json<misc::Error>)> {
+    let api = getApiFromQP(zkp, "verifyBlindSignatureCorrectnessProof")?;
+    let dat = dat.map_or_else(
+        |e| err(format!("{:?}", e), "verifyBlindSignatureCorrectnessProof"),
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.verify_blind_signature_correctness_proof;
+    op(&dat.signerPublicSetupData, &dat.blindSignature).map_or_else(
+        |e| vcaErr(e, "verifyBlindSignatureCorrectnessProof"),
+        |_| Ok(Json(())),
+    )
+}
+
+// ------------------------------------------------------------------------------
+
 /// Supplies blinded attributes, InfoForUnblinding and the BlindSignature to be unblinded.
 #[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
 struct UnblindBlindedSignatureRequest {
@@ -597,10 +718,14 @@ async fn main() {
             "/",
             openapi_get_routes![
                 createSignerData,
+                verifySignerPublicSetupDataCorrectnessProof,
                 createBlindSigningInfo,
+                verifyBlindSigningInfoCorrectnessProof,
                 createAccumulatorData,
                 sign,
+                verifySignatureCorrectnessProof,
                 signWithBlindedAttributes,
+                verifyBlindSignatureCorrectnessProof,
                 unblindBlindedSignature,
                 createAccumulatorElement,
                 accumulatorAddRemove,
