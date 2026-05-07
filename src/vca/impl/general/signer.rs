@@ -12,7 +12,10 @@ use std::rc::Rc;
 use std::sync::Arc;
 // ----------------------------------------------------------------------------
 
-pub fn create_signer_data(spec_create_signer_data: SpecificCreateSignerData) -> CreateSignerData {
+pub fn create_signer_data(
+    spec_create_signer_data: SpecificCreateSignerData,
+    verify_signer_public_setup_data_correctness_proof: VerifySignerPublicSetupDataCorrectnessProof,
+) -> CreateSignerData {
     Arc::new(move |rng_seed, schema, blind_attr_idxs, proof_mode| {
         // Keep indices sorted to facilitate comparison when checking correct indices provided
         let mut blind_attr_idxs: Vec<_> = blind_attr_idxs.to_vec();
@@ -21,6 +24,18 @@ pub fn create_signer_data(spec_create_signer_data: SpecificCreateSignerData) -> 
             check_attr_idxs_for_schema("create_signer_data", schema, &blind_attr_idxs)?;
         }
         let (spsd, ssd) = spec_create_signer_data(rng_seed, schema, &blind_attr_idxs)?;
+        if proof_mode != TestBackend
+            && proof_mode != LooseSkipCorrectnessVerify
+            && proof_mode != StrictSkipCorrectnessVerify
+        {
+            if let Err(err) = verify_signer_public_setup_data_correctness_proof(&spsd) {
+                return Err(Error::General(ic_semi(&str_vec_from!(
+                    "create_signer_data",
+                    "signer public setup correctness proof verification failed",
+                    format!("{err:?}")
+                ))));
+            }
+        }
         Ok(SignerData {
             signer_public_data: Box::new(SignerPublicData {
                 signer_public_setup_data: spsd,
@@ -34,6 +49,7 @@ pub fn create_signer_data(spec_create_signer_data: SpecificCreateSignerData) -> 
 
 pub fn create_blind_signing_info(
     spec_create_blind_signing_info: SpecificCreateBlindSigningInfo,
+    verify_blind_signing_info_correctness_proof: VerifyBlindSigningInfoCorrectnessProof,
 ) -> CreateBlindSigningInfo {
     Arc::new(
         move |rng_seed,
@@ -70,7 +86,10 @@ pub fn create_blind_signing_info(
     )
 }
 
-pub fn sign(spec_sign: SpecificSign) -> Sign {
+pub fn sign(
+    spec_sign: SpecificSign,
+    verify_signature_correctness_proof: VerifySignatureCorrectnessProof,
+) -> Sign {
     Arc::new(
         move |rng_seed,
               vals,
@@ -92,13 +111,28 @@ pub fn sign(spec_sign: SpecificSign) -> Sign {
                     pairs.as_slice(),
                 )?;
             }
-            spec_sign(rng_seed, vals, sd)
+            let sig = spec_sign(rng_seed, vals, sd)?;
+            if prf_mode != TestBackend
+                && prf_mode != LooseSkipCorrectnessVerify
+                && prf_mode != StrictSkipCorrectnessVerify
+            {
+                if let Err(err) = verify_signature_correctness_proof(sd, &sig) {
+                    return Err(Error::General(ic_semi(&str_vec_from!(
+                        "sign",
+                        "signature correctness proof verification failed",
+                        format!("{err:?}")
+                    ))));
+                }
+            }
+            Ok(sig)
         },
     )
 }
 
 pub fn sign_with_blinded_attributes(
     spec_sign_wba: SpecificSignWithBlindedAttributes,
+    verify_blind_signing_info_correctness_proof: VerifyBlindSigningInfoCorrectnessProof,
+    verify_blind_signature_correctness_proof: VerifyBlindSignatureCorrectnessProof,
 ) -> SignWithBlindedAttributes {
     Arc::new(move |rng_seed, non_blinded_attrs, bifs, sd, proof_mode| {
         let SignerData {
@@ -130,6 +164,30 @@ pub fn sign_with_blinded_attributes(
                     format!("{needed_idxs:?}"),
                     "but given",
                     format!("{non_blinded_attrs:?}")
+                ))));
+            }
+        }
+        // Verify BlindInfoForSigner correctness proof before signing
+        if proof_mode != TestBackend
+            && proof_mode != LooseSkipCorrectnessVerify
+            && proof_mode != StrictSkipCorrectnessVerify {
+            let blinded_attr_idxs: Vec<CredAttrIndex> = (0..signer_public_schema.len())
+                .filter(|i| {
+                    !non_blinded_attrs
+                        .iter()
+                        .any(|CredAttrIndexAndDataValue { index, .. }| *index as usize == *i)
+                })
+                .map(|i| i as CredAttrIndex)
+                .collect();
+            if let Err(err) = verify_blind_signing_info_correctness_proof(
+                &signer_public_setup_data,
+                blinded_attr_idxs.as_slice(),
+                bifs,
+            ) {
+                return Err(Error::General(ic_semi(&str_vec_from!(
+                    "sign_with_blinded_attributes",
+                    "blind signing info correctness proof verification failed",
+                    format!("{err:?}")
                 ))));
             }
         }
