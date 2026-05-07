@@ -76,7 +76,6 @@ pub fn create_blind_signing_info(
 
 pub fn sign(
     spec_sign: SpecificSign,
-    verify_signature_correctness_proof: VerifySignatureCorrectnessProof,
 ) -> Sign {
     Arc::new(
         move |rng_seed,
@@ -99,20 +98,7 @@ pub fn sign(
                     pairs.as_slice(),
                 )?;
             }
-            let sig = spec_sign(rng_seed, vals, sd)?;
-            if prf_mode != TestBackend
-                && prf_mode != LooseSkipCorrectnessVerify
-                && prf_mode != StrictSkipCorrectnessVerify
-            {
-                if let Err(err) = verify_signature_correctness_proof(sd, &sig) {
-                    return Err(Error::General(ic_semi(&str_vec_from!(
-                        "sign",
-                        "signature correctness proof verification failed",
-                        format!("{err:?}")
-                    ))));
-                }
-            }
-            Ok(sig)
+            spec_sign(rng_seed, vals, sd)
         },
     )
 }
