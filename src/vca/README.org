@@ -54,6 +54,12 @@ From an application/user perspective, our abstraction is defined by the
 - By using the ~implement_vca_api_using~ function in [[./api_utils.rs][./api_utils.rs]] and providing an instance of
   ~CryptoInterface~, such as ~CRYPTO_INTERFACE_AC2C~ (defined in [[./zkp_backends/ac2c/crypto_interface.rs][./zkp_backends/ac2c/crypto_interface.rs]]) and calling
   its methods directly.  See [[connecting-zkp-libary-to-vca]] for more details.
+- The API also surfaces helper functions to check "correctness proofs" on inputs
+  (e.g., ~verify_signer_public_setup_data_correctness_proof~,
+  ~verify_blind_signing_info_correctness_proof~,
+  ~verify_signature_correctness_proof~ and
+  ~verify_blind_signature_correctness_proof~).  These are currently stubs for the AC2C backend and
+  partially implemented for DNC; see the sections below for intended usage.
 - By accessing the functionality via a Swagger/OpenAPI interface. We have built an HTTP/REST
   server serving such an interface.  See [[../../server/README.org][../../server/README.org]].
 - Via our test framework, described below.  We recommend this approach as the easiest way to get
@@ -815,8 +821,12 @@ The =create_signer_data= implementation
 - =SignerSecretData=
   - an opaque representation of the AC2C secret data
 - =SignerPublicData=
-  - an opaque representation of the AC2C public data
+  - =SignerPublicSetupData= (opaque AC2C public setup data and a correctness proof)
   - a vector of =ClaimType= (i.e., the "schema")
+  - a list of blinded attribute indices
+
+The API also exposes ~verify_signer_public_setup_data_correctness_proof~ to validate the correctness
+proof carried inside ~SignerPublicSetupData~.
 
 An Issuer would securely store the private data and make the public data available.
 
@@ -852,16 +862,12 @@ with
 =creater_blind_signing_data= returns =BlindInfoForSigner=
 (the commitment to the attribute values), which is given to =sign_with_blinded_attributes= (above).
 
-Note that ZKP backends must include in =BlindInfoForSigner= a proof of knowledge of the blinding
-factors used when committing to attribute values, which must be verified by the ZKP backend
-implementation of =sign_with_blinded_attributes=.  A possible future enhancement to VCA would be to
-explicitly surface these proofs in the API.  In that case, for example, an implementation of
-AnonCreds (v1) over VCA could populate the [Blinded Link Secret Correctness
-Proof](https://anoncreds.github.io/anoncreds-spec/#the-blinded-link-secret-correctness-proof) with
-such a proof.  Our prototype implementation of AnonCreds over VCA (not yet publicly available, but
-hopefully soon) populates it with dummy data to comply with the AnonCreds interface, knowing that
-the required proving and verifying is done by the ZKP backend in =create_blind_signing_info= and
-=sign_with_blinded_attributes=, respectively.
+Note that =BlindInfoForSigner= contains a blinding commitment *and* a correctness proof
+(~blindSigningInfoCorrectnessProof~).  Callers can check that proof using
+~verify_blind_signing_info_correctness_proof~ before invoking =sign_with_blinded_attributes=.  The
+DNC backend produces and verifies this proof; the AC2C backend currently treats the proof as a
+stub because the underlying library creates and verifies such a proof, which is not yet exposed
+via the the correctness proof field of ~SignerPublicSetupData~.
 
 The AC2C implementation of =sign_with_blinded_attributes= is in [[./zkp_backends/ac2c/signer.rs][./zkp_backends/ac2c/signer.rs]].
 The =sign_with_blinded_attributes= implementation
@@ -881,6 +887,12 @@ mechanism does not include proving and verifying knowledge of the blinding facto
 reason, the DNC backend does so explicitly via =create_blind_info_correctness_proof=, which is called
 by =specific_create_blind_signing_info=, and =verify_blind_info_correctness_proof=, which is called
 by =specific_sign_with_blinded_attributes=.
+
+The =Signature= and =BlindSignature= types now each include a companion correctness-proof field
+(~signatureCorrectnessProof~ and ~blindSignatureCorrectnessProof~).  The API surfaces
+~verify_signature_correctness_proof~ and ~verify_blind_signature_correctness_proof~ which callers can
+use to check these.  Both backends currently return placeholder proofs, so these verifiers are
+stubs for now, but the structure is in place for future concrete proofs.
 
 # --------------------------------------------------
 ** Unblinding a blinded signature
