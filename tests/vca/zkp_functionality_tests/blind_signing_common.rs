@@ -94,6 +94,8 @@ pub fn non_blinded_vals() -> Vec<api::CredAttrIndexAndDataValue> {
     .collect()
 }
 
+const TEST_NONCE: &str = "test-nonce";
+
 pub fn build_blind_infos(
     api: &VcaApi,
 ) -> VCAResult<(
@@ -111,8 +113,11 @@ pub fn build_blind_infos(
     let non_blinded = non_blinded_vals();
 
     let sd = create_signer_data(0, &schema, &blinded_idx, Strict)?;
-    let bsi_good = create_blind_info(0, &sd.signer_public_data, &blinded_vals_good(), Strict)?;
-    let bsi_alt = create_blind_info(0, &sd.signer_public_data, &blinded_vals_alt(), Strict)?;
+    let nonce = TEST_NONCE.to_string();
+    let bsi_good =
+        create_blind_info(0, &nonce, &sd.signer_public_data, &blinded_vals_good(), Strict)?;
+    let bsi_alt =
+        create_blind_info(0, &nonce, &sd.signer_public_data, &blinded_vals_alt(), Strict)?;
 
     Ok((bsi_good, bsi_alt, sd, non_blinded, schema))
 }
@@ -130,6 +135,7 @@ pub fn run_blind_sign(
     (api.verify_blind_signing_info_correctness_proof.clone())(
         &signer_data.signer_public_data.signer_public_setup_data,
         &signer_data.signer_public_data.signer_blinded_attr_idxs,
+        &TEST_NONCE.to_string(),
         &blind_info.blind_info_for_signer,
     )?;
 

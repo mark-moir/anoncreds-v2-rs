@@ -41,7 +41,7 @@ pub fn create_blind_signing_info(
 ) -> CreateBlindSigningInfo {
     Arc::new(
         move |rng_seed,
-              // TODO: nonce,
+              nonce,
               SignerPublicData {
                   signer_public_setup_data,
                   signer_public_schema,
@@ -67,7 +67,7 @@ pub fn create_blind_signing_info(
             }
             spec_create_blind_signing_info(
                 rng_seed,
-                // TODO: &Nonce
+                nonce,
                 signer_public_setup_data,
                 signer_public_schema,
                 blinded_attrs,

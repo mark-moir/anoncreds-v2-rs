@@ -16,14 +16,18 @@ CLOSED: [2026-05-06 Wed]
 *** DONE - update server and examples due to type changes
 CLOSED: [2026-05-08 Fri 14:03]
 - State "DONE"       from "TODO"       [2026-05-08 Fri 14:03]
-*** TODO src/vca/impl/general/signer.rs:44                     - add nonce input to create_blind_signing_info
-    // TODO: nonce,
-*** TODO src/vca/impl/general/signer.rs:70                     - pass nonce through when building blind signing info
-    // TODO: &Nonce
-*** TODO src/vca/zkp_backends/dnc/signer.rs:213                - thread nonce into DNC blind signing info creation
-    Arc::new(|rng_seed, /* TODO: nonce */ spsd, schema, blind_attrs| {
-*** TODO src/vca/zkp_backends/dnc/signer.rs:223                - include nonce contribution in blinded message commitment
-    // TODO: add one more Fr hashed from Nonce
+*** DONE src/vca/impl/general/signer.rs:44                     - add nonce input to create_blind_signing_info
+CLOSED: [2026-05-08 Fri]
+    - API now takes explicit Nonce argument (propagated to specific create), removing placeholder.
+*** DONE src/vca/impl/general/signer.rs:70                     - pass nonce through when building blind signing info
+CLOSED: [2026-05-08 Fri]
+    - General layer threads caller-supplied nonce into SpecificCreateBlindSigningInfo.
+*** DONE src/vca/zkp_backends/dnc/signer.rs:213                - thread nonce into DNC blind signing info creation
+CLOSED: [2026-05-08 Fri]
+    - SpecificCreateBlindSigningInfo now accepts nonce and mixes it into blinder.
+*** DONE src/vca/zkp_backends/dnc/signer.rs:223                - include nonce contribution in blinded message commitment
+CLOSED: [2026-05-08 Fri]
+    - Blinder includes field element derived from caller nonce.
 
 ** Correctness proof verification stubs
 *** DONE src/vca/zkp_backends/dnc/signer.rs:362               - implement blind signing info correctness verification (currently returns Verified)

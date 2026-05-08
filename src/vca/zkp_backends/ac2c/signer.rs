@@ -92,7 +92,7 @@ pub fn sign<S: ShortGroupSignatureScheme>() -> SpecificSign {
 
 pub fn specific_create_blind_signing_info<S: ShortGroupSignatureScheme>(
 ) -> SpecificCreateBlindSigningInfo {
-    Arc::new(|_rng_seed, spsd, schema, blind_attrs| {
+    Arc::new(|_rng_seed, _nonce, spsd, schema, blind_attrs| {
         let Ac2cSignerPublicSetupDataWithProof { issuer_public, .. }: Ac2cSignerPublicSetupDataWithProof<S> = from_api(spsd)?;
         let blind_claims: BTreeMap<String, ClaimData> = blind_attrs
             .iter()
@@ -297,7 +297,7 @@ pub fn verify_signer_public_setup_data_correctness_proof(
 }
 
 pub fn verify_blind_signing_info_correctness_proof() -> VerifyBlindSigningInfoCorrectnessProof {
-    Arc::new(|_, _, _| {
+    Arc::new(|_, _, _, _| {
         // The AC2C signature schemes include creating and verifying proof of knowledge
         // of blinding factors.  We do not surface them here.  For example, see:
         // https://github.com/anoncreds/anoncreds-v2-rs/blob/691297a7f9ffcc1f51a5d30741086402d64544c9/src/knox/bbs/blind_signature_context.rs#L21

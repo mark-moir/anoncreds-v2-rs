@@ -100,10 +100,16 @@ pub fn sign() -> SpecificSign {
 //
 //   https://github.com/docknetwork/crypto-wasm-ts/blob/master/src/anonymous-credentials/README.md#blinded-credentials
 
+fn challenge_bytes_for(nonce: &str) -> Vec<u8> {
+    format!("dnc_blind_info_correctness:{nonce}").into()
+}
+
+
 /// Create a proof of knowledge of the blinder used to blind some messages.
 fn create_blind_info_correctness_proof(
     spsd: &SignerPublicSetupData,
     blinded_attributes: &[(usize, &Fr)],
+    nonce: &str,
     v_prime_blinder: &Fr,
     u_commitment: &G1Affine,
 ) -> VCAResult<BlindInfoCorrectnessProof> {
@@ -133,7 +139,7 @@ fn create_blind_info_correctness_proof(
         statements,
         MetaStatements::new(),
         vec![],
-        Some(b"dnc_blind_info_correctness".to_vec()),
+        Some(challenge_bytes_for(nonce)),
     );
     proof_spec.validate().map_err(|e| {
         Error::General(ic_semi(&str_vec_from!(
@@ -166,6 +172,7 @@ fn create_blind_info_correctness_proof(
 fn verify_blind_info_correctness_proof(
     sp: &SignatureParamsG1<Bls12_381>,
     blinded_attr_idxs: &[CredAttrIndex],
+    nonce: &str,
     u_commitment: &G1Affine,
     proof: &BlindInfoCorrectnessProof,
 ) -> VCAResult<()> {
@@ -173,6 +180,7 @@ fn verify_blind_info_correctness_proof(
         .iter()
         .map(|idx| sp.h[*idx as usize])
         .collect::<Vec<_>>();
+    // Base for the blinder
     bases.push(sp.h_0);
 
     let mut statements = Statements::<Bls12_381>::new();
@@ -185,7 +193,7 @@ fn verify_blind_info_correctness_proof(
         statements,
         MetaStatements::new(),
         vec![],
-        Some(b"dnc_blind_info_correctness".to_vec()),
+        Some(challenge_bytes_for(nonce)),
     );
     proof_spec.validate().map_err(|e| {
         Error::General(ic_semi(&str_vec_from!(
@@ -210,17 +218,18 @@ fn verify_blind_info_correctness_proof(
 }
 
 pub fn specific_create_blind_signing_info() -> SpecificCreateBlindSigningInfo {
-    Arc::new(|rng_seed, /* TODO: nonce */ spsd, schema, blind_attrs| {
+    Arc::new(|rng_seed, nonce, spsd, schema, blind_attrs| {
         let (sp, _) = from_api(spsd)?;
         let mut rng = StdRng::seed_from_u64(rng_seed);
-        let blinder = Fr::rand(&mut rng);
+        let mut blinder = Fr::rand(&mut rng);
+
         let committed_messages_0: Vec<(usize, Fr)> =
             create_index_fr_pairs("create_blind_signing_info, DNC", blind_attrs, schema)?;
-        let committed_messages = committed_messages_0
+        let mut committed_messages = committed_messages_0
             .iter()
             .map(|(x, y)| (*x, y))
             .collect::<Vec<(usize, &Fr)>>();
-        // TODO: add one more Fr hashed from Nonce
+        // in committed_messages
         let blinding_info = sp
             .commit_to_messages(committed_messages.clone(), &blinder)
             .map_err(|e| {
@@ -233,6 +242,7 @@ pub fn specific_create_blind_signing_info() -> SpecificCreateBlindSigningInfo {
         let blinding_info_correctness_proof = create_blind_info_correctness_proof(
             spsd,
             committed_messages.as_slice(),
+            nonce,
             &blinder,
             &blinding_info,
         )?;
@@ -349,7 +359,7 @@ pub fn verify_signer_public_setup_data_correctness_proof(
 
 pub fn verify_blind_signing_info_correctness_proof() -> VerifyBlindSigningInfoCorrectnessProof {
     Arc::new(
-        |signer_public_setup_data, blind_attr_idxs, blind_info_for_signer| {
+        |signer_public_setup_data, blind_attr_idxs, nonce, blind_info_for_signer| {
             // Convert inputs back to concrete types
             let DncSignerPublicSetupData { sig_params: sp, .. } =
                 from_api(signer_public_setup_data)?;
@@ -361,6 +371,7 @@ pub fn verify_blind_signing_info_correctness_proof() -> VerifyBlindSigningInfoCo
             match verify_blind_info_correctness_proof(
                 &sp,
                 blind_attr_idxs,
+                nonce,
                 &blinding_info,
                 &blinding_info_correctness_proof,
             ) {

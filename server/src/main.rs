@@ -71,6 +71,9 @@ struct CreateBlindSigningInfoRequest {
     /// See SignerPublicData.
     signerPublicData: SignerPublicData,
 
+    /// Nonce binding the correctness proof.
+    nonce: String,
+
     /// The values to be blind signed.
     blindedIndicesAndValues: Vec<CredAttrIndexAndDataValue>,
 }
@@ -93,6 +96,7 @@ fn createBlindSigningInfo(
     let op = api.create_blind_signing_info;
     op(
         seed,
+        &dat.nonce,
         &dat.signerPublicData,
         &dat.blindedIndicesAndValues,
         ProofMode::Strict,
@@ -214,6 +218,7 @@ fn verifySignerPublicSetupDataCorrectnessProof(
 struct VerifyBlindSigningInfoCorrectnessProofRequest {
     signerPublicSetupData: SignerPublicSetupData,
     blindedAttributeIndices: Vec<CredAttrIndex>,
+    nonce: String,
     blindInfoForSigner: BlindInfoForSigner,
 }
 
@@ -232,6 +237,7 @@ fn verifyBlindSigningInfoCorrectnessProof(
     op(
         &dat.signerPublicSetupData,
         &dat.blindedAttributeIndices,
+        &dat.nonce,
         &dat.blindInfoForSigner,
     )
     .map_or_else(
