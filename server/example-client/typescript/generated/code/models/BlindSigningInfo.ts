@@ -13,6 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
+import type { BlindInfoForSigner } from './BlindInfoForSigner';
+import {
+    BlindInfoForSignerFromJSON,
+    BlindInfoForSignerFromJSONTyped,
+    BlindInfoForSignerToJSON,
+    BlindInfoForSignerToJSONTyped,
+} from './BlindInfoForSigner';
 import type { CredAttrIndexAndDataValue } from './CredAttrIndexAndDataValue';
 import {
     CredAttrIndexAndDataValueFromJSON,
@@ -28,11 +35,11 @@ import {
  */
 export interface BlindSigningInfo {
     /**
-     * Info sent by requester to Signer to create blind signature
-     * @type {string}
+     * 
+     * @type {BlindInfoForSigner}
      * @memberof BlindSigningInfo
      */
-    blindInfoForSigner: string;
+    blindInfoForSigner: BlindInfoForSigner;
     /**
      * 
      * @type {Array<CredAttrIndexAndDataValue>}
@@ -67,7 +74,7 @@ export function BlindSigningInfoFromJSONTyped(json: any, ignoreDiscriminator: bo
     }
     return {
         
-        'blindInfoForSigner': json['blindInfoForSigner'],
+        'blindInfoForSigner': BlindInfoForSignerFromJSON(json['blindInfoForSigner']),
         'blindedAttributes': ((json['blindedAttributes'] as Array<any>).map(CredAttrIndexAndDataValueFromJSON)),
         'infoForUnblinding': json['infoForUnblinding'],
     };
@@ -84,7 +91,7 @@ export function BlindSigningInfoToJSONTyped(value?: BlindSigningInfo | null, ign
 
     return {
         
-        'blindInfoForSigner': value['blindInfoForSigner'],
+        'blindInfoForSigner': BlindInfoForSignerToJSON(value['blindInfoForSigner']),
         'blindedAttributes': ((value['blindedAttributes'] as Array<any>).map(CredAttrIndexAndDataValueToJSON)),
         'infoForUnblinding': value['infoForUnblinding'],
     };

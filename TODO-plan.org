@@ -13,7 +13,9 @@ CLOSED: [2026-05-06 Wed]
 CLOSED: [2026-05-06 Wed]
     - Correctness proof removed from BlindSigningInfo; lives inside BlindInfoForSigner
 
-*** TODO                                                       - update server and examples due to type changes
+*** DONE - update server and examples due to type changes
+CLOSED: [2026-05-08 Fri 14:03]
+- State "DONE"       from "TODO"       [2026-05-08 Fri 14:03]
 
 ** Correctness proof verification stubs
 *** DONE src/vca/zkp_backends/dnc/signer.rs:362               - implement blind signing info correctness verification (currently returns Verified)

@@ -13,13 +13,10 @@ export const DNC      : string   = "DNC";
 
 export type Accumulator          = string;
 export type AccumulatorElement   = string;
-export type BlindInfoForSigner   = string;
-export type BlindSignature       = string;
 export type HolderID             = string;
 export type InfoForUnblinding    = string;
 export type RangeProofProvingKey = string;
 export type MembershipProvingKey = string;
-export type Signature            = string;
 
 export type ApiErrorMessage = {
   reason   : string,
@@ -56,7 +53,7 @@ export interface VCA {
     rngSeed : number,
     sd      : GENERATED.SignerData,
     vs      : GENERATED.DataValue[]
-  ) => Promise<Signature>;
+  ) => Promise<GENERATED.Signature>;
 
   createBlindSigningInfo: (
     rngSeed : number,
@@ -68,15 +65,15 @@ export interface VCA {
     rngSeed    : number,
     sd         : GENERATED.SignerData,
     nonblinded : GENERATED.CredAttrIndexAndDataValue[],
-    blindInfo  : BlindInfoForSigner,
-  ) => Promise<BlindSignature>,
+    blindInfo  : GENERATED.BlindInfoForSigner,
+  ) => Promise<GENERATED.BlindSignature>,
 
   unblindBlindedSignature: (
     cts               : GENERATED.ClaimType[],
     blinded           : GENERATED.CredAttrIndexAndDataValue[],
     infoForUnblinding : InfoForUnblinding,
-    blindSig          : BlindSignature,
-  ) => Promise<Signature>,
+    blindSig          : GENERATED.BlindSignature,
+  ) => Promise<GENERATED.Signature>,
 
   createProof: (
     proofReqs : Map<string, GENERATED.CredentialReqs>,

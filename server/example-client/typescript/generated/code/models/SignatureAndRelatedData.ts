@@ -20,6 +20,13 @@ import {
     DataValueToJSON,
     DataValueToJSONTyped,
 } from './DataValue';
+import type { Signature } from './Signature';
+import {
+    SignatureFromJSON,
+    SignatureFromJSONTyped,
+    SignatureToJSON,
+    SignatureToJSONTyped,
+} from './Signature';
 
 /**
  * A Signature and other related data, including attribute values signed and witnesses for accumlators.
@@ -29,10 +36,10 @@ import {
 export interface SignatureAndRelatedData {
     /**
      * The signature from a Signer signing data values.
-     * @type {string}
+     * @type {Signature}
      * @memberof SignatureAndRelatedData
      */
-    signature: string;
+    signature: Signature;
     /**
      * The data values used to produce the signature.
      * @type {Array<DataValue>}
@@ -67,7 +74,7 @@ export function SignatureAndRelatedDataFromJSONTyped(json: any, ignoreDiscrimina
     }
     return {
         
-        'signature': json['signature'],
+        'signature': SignatureFromJSON(json['signature']),
         'values': ((json['values'] as Array<any>).map(DataValueFromJSON)),
         'accumulatorWitnesses': json['accumulatorWitnesses'],
     };
@@ -84,7 +91,7 @@ export function SignatureAndRelatedDataToJSONTyped(value?: SignatureAndRelatedDa
 
     return {
         
-        'signature': value['signature'],
+        'signature': SignatureToJSON(value['signature']),
         'values': ((value['values'] as Array<any>).map(DataValueToJSON)),
         'accumulatorWitnesses': value['accumulatorWitnesses'],
     };
