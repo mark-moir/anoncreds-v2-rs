@@ -75,6 +75,7 @@ pub type CreateAccumulatorData = Arc<
 pub type SpecificCreateBlindSigningInfo = Arc<
     dyn Fn(
             Natural, // RNG seed
+            // TODO: &Nonce,
             &SignerPublicSetupData,
             &[ClaimType],
             &[CredAttrIndexAndDataValue], // Attributes to be blinded
@@ -84,7 +85,12 @@ pub type SpecificCreateBlindSigningInfo = Arc<
 >;
 
 pub type VerifyBlindSigningInfoCorrectnessProof = Arc<
-    dyn Fn(&SignerPublicSetupData, &[CredAttrIndex], &BlindInfoForSigner) -> VCAResult<()>
+    dyn Fn(
+            &SignerPublicSetupData,
+            &[CredAttrIndex],
+            // TODO: Nonce,
+            &BlindInfoForSigner
+        ) -> VCAResult<()>
         + Send
         + Sync,
 >;
@@ -92,6 +98,7 @@ pub type VerifyBlindSigningInfoCorrectnessProof = Arc<
 pub type SpecificSign = Arc<
     dyn Fn(
             Natural, // RNG seed
+            // TODO: Nonce for generating correctness proof
             &[DataValue],
             &SignerData,
         ) -> VCAResult<Signature>
@@ -100,11 +107,16 @@ pub type SpecificSign = Arc<
 >;
 
 pub type VerifySignatureCorrectnessProof =
+    // TODO: Nonce for verifying correctness proof?
     Arc<dyn Fn(&SignerData, &Signature) -> VCAResult<()> + Send + Sync>;
 
+// TODO: reorder arguments following convention of creation order, also
+// check other primitves and nonprimitives
 pub type SpecificSignWithBlindedAttributes = Arc<
     dyn Fn(
             Natural, // RNG seed
+             // TODO: &Nonce for verifying BlindInfoForSigner correctness proof
+             // TODO: &Nonce for generating BlindSignature correctness proof
             &[ClaimType],
             &[CredAttrIndexAndDataValue], // Non-blinded attributes
             &BlindInfoForSigner,
@@ -116,6 +128,7 @@ pub type SpecificSignWithBlindedAttributes = Arc<
 >;
 
 pub type VerifyBlindSignatureCorrectnessProof =
+    // TODO: Nonce for verifying correctness proof?
     Arc<dyn Fn(&SignerPublicSetupData, &BlindSignature) -> VCAResult<()> + Send + Sync>;
 
 pub type SpecificUnblindBlindedSignature = Arc<

@@ -210,7 +210,7 @@ fn verify_blind_info_correctness_proof(
 }
 
 pub fn specific_create_blind_signing_info() -> SpecificCreateBlindSigningInfo {
-    Arc::new(|rng_seed, spsd, schema, blind_attrs| {
+    Arc::new(|rng_seed, /* TODO: nonce */ spsd, schema, blind_attrs| {
         let (sp, _) = from_api(spsd)?;
         let mut rng = StdRng::seed_from_u64(rng_seed);
         let blinder = Fr::rand(&mut rng);
@@ -220,6 +220,7 @@ pub fn specific_create_blind_signing_info() -> SpecificCreateBlindSigningInfo {
             .iter()
             .map(|(x, y)| (*x, y))
             .collect::<Vec<(usize, &Fr)>>();
+        // TODO: add one more Fr hashed from Nonce
         let blinding_info = sp
             .commit_to_messages(committed_messages.clone(), &blinder)
             .map_err(|e| {

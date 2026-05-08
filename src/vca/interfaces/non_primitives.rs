@@ -23,6 +23,7 @@ pub type CreateSignerData = Arc<
 pub type CreateBlindSigningInfo = Arc<
     dyn Fn(
             Natural, // RNG seed
+            // TODO: &Nonce,
             &SignerPublicData,
             &[CredAttrIndexAndDataValue], // Blinded attributes
             ProofMode,
