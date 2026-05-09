@@ -51,6 +51,29 @@ macro_rules! blind_signing_happy_path {
     };
 }
 
+#[macro_export]
+macro_rules! blind_signing_nonce_mismatch {
+    ($name:ident, $crypto:expr, ignore) => {
+        #[test]
+        #[ignore]
+        fn $name() {
+            use $crate::vca::zkp_functionality_tests::blind_signing_common as common;
+            let api = common::api_for($crypto);
+            let res = common::run_blind_sign_with_nonce_mismatch(api);
+            assert!(res.is_err(), "expected nonce mismatch to fail");
+        }
+    };
+    ($name:ident, $crypto:expr, run) => {
+        #[test]
+        fn $name() {
+            use $crate::vca::zkp_functionality_tests::blind_signing_common as common;
+            let api = common::api_for($crypto);
+            let res = common::run_blind_sign_with_nonce_mismatch(api);
+            assert!(res.is_err(), "expected nonce mismatch to fail");
+        }
+    };
+}
+
 pub fn schema() -> Vec<api::ClaimType> {
     vec![
         api::ClaimType::CTText,
@@ -173,6 +196,19 @@ pub fn run_blind_sign_roundtrip<T: Clone>(
 
 pub fn do_not_tamper<T>(g: T, _a: T) -> T {
     g
+}
+
+pub fn run_blind_sign_with_nonce_mismatch(api: VcaApi) -> VCAResult<()> {
+    let (bsi_good, _, signer_data, _non_blinded, _schema) = build_blind_infos(&api)?;
+
+    // use a different nonce when verifying to force failure
+    let bad_nonce = "other-nonce".to_string();
+    (api.verify_blind_signing_info_correctness_proof.clone())(
+        &signer_data.signer_public_data.signer_public_setup_data,
+        &signer_data.signer_public_data.signer_blinded_attr_idxs,
+        &bad_nonce,
+        &bsi_good.blind_info_for_signer,
+    )
 }
 
 pub fn api_for(crypto: &credx::vca::interfaces::crypto_interface::CryptoInterface) -> VcaApi {

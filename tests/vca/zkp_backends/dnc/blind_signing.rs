@@ -5,14 +5,14 @@ use credx::vca::zkp_backends::dnc::crypto_interface::CRYPTO_INTERFACE_DNC;
 use credx::vca::zkp_backends::dnc::types::{BlindInfoCorrectnessProof, DncBlindInfoForSigner};
 use proof_system::statement_proof::StatementProof;
 
-use crate::vca::zkp_functionality_tests::blind_signing_common::{
-    from_api_identity, to_api_identity,
+use crate::{
+    blind_signing_happy_path, blind_signing_nonce_mismatch, gen_blind_signing_tests,
 };
-use crate::{blind_signing_happy_path, gen_blind_signing_tests};
 use credx::vca::Error;
 
-// Happy path
+// General tests (happy path + nonce mismatch)
 blind_signing_happy_path!(blind_sign_roundtrip_ok_dnc, &CRYPTO_INTERFACE_DNC);
+blind_signing_nonce_mismatch!(blind_sign_nonce_mismatch_dnc, &CRYPTO_INTERFACE_DNC, run);
 
 fn dnc_tamper_commitment(
     mut good: api::BlindSigningInfo,
@@ -47,6 +47,6 @@ pub fn expect_blind_info_failure(e: &Error) -> bool {
 }
 
 gen_blind_signing_tests!(
-    dnc_tamper_commitment, &CRYPTO_INTERFACE_DNC, api::BlindSigningInfo, dnc_tamper_commitment, from_api_identity, to_api_identity, Some(expect_blind_info_failure);
-    dnc_tamper_proof,       &CRYPTO_INTERFACE_DNC, api::BlindSigningInfo, dnc_tamper_proof,       from_api_identity, to_api_identity, Some(expect_blind_info_failure);
+    dnc_tamper_commitment, &CRYPTO_INTERFACE_DNC, api::BlindSigningInfo, dnc_tamper_commitment, crate::vca::zkp_functionality_tests::blind_signing_common::from_api_identity, crate::vca::zkp_functionality_tests::blind_signing_common::to_api_identity, Some(expect_blind_info_failure);
+    dnc_tamper_proof,       &CRYPTO_INTERFACE_DNC, api::BlindSigningInfo, dnc_tamper_proof,       crate::vca::zkp_functionality_tests::blind_signing_common::from_api_identity, crate::vca::zkp_functionality_tests::blind_signing_common::to_api_identity, Some(expect_blind_info_failure);
 );
