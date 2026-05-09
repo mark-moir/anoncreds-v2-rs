@@ -134,11 +134,13 @@ public class X {
             final BlindSigningInfo dBlindSigningInfo =
                 api.createBlindSigningInfo(new CreateBlindSigningInfoRequest()
                                            .signerPublicData(dSignerData.getSignerPublicData())
+                                           .nonce(TestData.NONCE)
                                            .blindedIndicesAndValues(TestData.dBlindedIndicesAndVals()),
                                            zkpLib, 0);
             final BlindSigningInfo sBlindSigningInfo =
                 api.createBlindSigningInfo(new CreateBlindSigningInfoRequest()
                                            .signerPublicData(sSignerData.getSignerPublicData())
+                                           .nonce(TestData.NONCE)
                                            .blindedIndicesAndValues(TestData.sBlindedIndicesAndVals()),
                                            zkpLib, 0);
             final BlindSignature dBlindSignature =

@@ -183,10 +183,16 @@ public class BlindSigningInfo {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>(Arrays.asList("blindInfoForSigner", "blindedAttributes", "infoForUnblinding"));
+    openapiFields = new HashSet<String>();
+    openapiFields.add("blindInfoForSigner");
+    openapiFields.add("blindedAttributes");
+    openapiFields.add("infoForUnblinding");
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>(Arrays.asList("blindInfoForSigner", "blindedAttributes", "infoForUnblinding"));
+    openapiRequiredFields = new HashSet<String>();
+    openapiRequiredFields.add("blindInfoForSigner");
+    openapiRequiredFields.add("blindedAttributes");
+    openapiRequiredFields.add("infoForUnblinding");
   }
 
   /**
@@ -198,7 +204,7 @@ public class BlindSigningInfo {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!BlindSigningInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in BlindSigningInfo is not found in the empty JSON string", BlindSigningInfo.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format("The required field(s) %s in BlindSigningInfo is not found in the empty JSON string", BlindSigningInfo.openapiRequiredFields.toString()));
         }
       }
 
@@ -206,14 +212,14 @@ public class BlindSigningInfo {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!BlindSigningInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `BlindSigningInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `BlindSigningInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : BlindSigningInfo.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
@@ -221,7 +227,7 @@ public class BlindSigningInfo {
       BlindInfoForSigner.validateJsonElement(jsonObj.get("blindInfoForSigner"));
       // ensure the json data is an array
       if (!jsonObj.get("blindedAttributes").isJsonArray()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `blindedAttributes` to be an array in the JSON string but got `%s`", jsonObj.get("blindedAttributes").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `blindedAttributes` to be an array in the JSON string but got `%s`", jsonObj.get("blindedAttributes").toString()));
       }
 
       JsonArray jsonArrayblindedAttributes = jsonObj.getAsJsonArray("blindedAttributes");
@@ -230,7 +236,7 @@ public class BlindSigningInfo {
         CredAttrIndexAndDataValue.validateJsonElement(jsonArrayblindedAttributes.get(i));
       };
       if (!jsonObj.get("infoForUnblinding").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `infoForUnblinding` to be a primitive type in the JSON string but got `%s`", jsonObj.get("infoForUnblinding").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `infoForUnblinding` to be a primitive type in the JSON string but got `%s`", jsonObj.get("infoForUnblinding").toString()));
       }
   }
 

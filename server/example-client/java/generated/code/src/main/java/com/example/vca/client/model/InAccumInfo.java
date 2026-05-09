@@ -224,10 +224,20 @@ public class InAccumInfo {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>(Arrays.asList("index", "accumulatorPublicDataLabel", "membershipProvingKeyLabel", "accumulatorLabel", "accumulatorSeqNumLabel"));
+    openapiFields = new HashSet<String>();
+    openapiFields.add("index");
+    openapiFields.add("accumulatorPublicDataLabel");
+    openapiFields.add("membershipProvingKeyLabel");
+    openapiFields.add("accumulatorLabel");
+    openapiFields.add("accumulatorSeqNumLabel");
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>(Arrays.asList("index", "accumulatorPublicDataLabel", "membershipProvingKeyLabel", "accumulatorLabel", "accumulatorSeqNumLabel"));
+    openapiRequiredFields = new HashSet<String>();
+    openapiRequiredFields.add("index");
+    openapiRequiredFields.add("accumulatorPublicDataLabel");
+    openapiRequiredFields.add("membershipProvingKeyLabel");
+    openapiRequiredFields.add("accumulatorLabel");
+    openapiRequiredFields.add("accumulatorSeqNumLabel");
   }
 
   /**
@@ -239,7 +249,7 @@ public class InAccumInfo {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!InAccumInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in InAccumInfo is not found in the empty JSON string", InAccumInfo.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format("The required field(s) %s in InAccumInfo is not found in the empty JSON string", InAccumInfo.openapiRequiredFields.toString()));
         }
       }
 
@@ -247,28 +257,28 @@ public class InAccumInfo {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!InAccumInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `InAccumInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `InAccumInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : InAccumInfo.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       if (!jsonObj.get("accumulatorPublicDataLabel").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `accumulatorPublicDataLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulatorPublicDataLabel").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `accumulatorPublicDataLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulatorPublicDataLabel").toString()));
       }
       if (!jsonObj.get("membershipProvingKeyLabel").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `membershipProvingKeyLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("membershipProvingKeyLabel").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `membershipProvingKeyLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("membershipProvingKeyLabel").toString()));
       }
       if (!jsonObj.get("accumulatorLabel").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `accumulatorLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulatorLabel").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `accumulatorLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulatorLabel").toString()));
       }
       if (!jsonObj.get("accumulatorSeqNumLabel").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `accumulatorSeqNumLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulatorSeqNumLabel").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `accumulatorSeqNumLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accumulatorSeqNumLabel").toString()));
       }
   }
 

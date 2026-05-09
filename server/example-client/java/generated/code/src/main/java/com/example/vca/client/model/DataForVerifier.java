@@ -156,10 +156,14 @@ public class DataForVerifier {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>(Arrays.asList("revealedIdxsAndVals", "proof"));
+    openapiFields = new HashSet<String>();
+    openapiFields.add("revealedIdxsAndVals");
+    openapiFields.add("proof");
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>(Arrays.asList("revealedIdxsAndVals", "proof"));
+    openapiRequiredFields = new HashSet<String>();
+    openapiRequiredFields.add("revealedIdxsAndVals");
+    openapiRequiredFields.add("proof");
   }
 
   /**
@@ -171,7 +175,7 @@ public class DataForVerifier {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!DataForVerifier.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in DataForVerifier is not found in the empty JSON string", DataForVerifier.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format("The required field(s) %s in DataForVerifier is not found in the empty JSON string", DataForVerifier.openapiRequiredFields.toString()));
         }
       }
 
@@ -179,19 +183,19 @@ public class DataForVerifier {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!DataForVerifier.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `DataForVerifier` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `DataForVerifier` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : DataForVerifier.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       if (!jsonObj.get("proof").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `proof` to be a primitive type in the JSON string but got `%s`", jsonObj.get("proof").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `proof` to be a primitive type in the JSON string but got `%s`", jsonObj.get("proof").toString()));
       }
   }
 

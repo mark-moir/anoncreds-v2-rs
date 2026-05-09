@@ -206,10 +206,14 @@ public class SPVList {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>(Arrays.asList("tag", "contents"));
+    openapiFields = new HashSet<String>();
+    openapiFields.add("tag");
+    openapiFields.add("contents");
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>(Arrays.asList("tag", "contents"));
+    openapiRequiredFields = new HashSet<String>();
+    openapiRequiredFields.add("tag");
+    openapiRequiredFields.add("contents");
   }
 
   /**
@@ -221,7 +225,7 @@ public class SPVList {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!SPVList.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in SPVList is not found in the empty JSON string", SPVList.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format("The required field(s) %s in SPVList is not found in the empty JSON string", SPVList.openapiRequiredFields.toString()));
         }
       }
 
@@ -229,25 +233,25 @@ public class SPVList {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!SPVList.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SPVList` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `SPVList` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : SPVList.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       if (!jsonObj.get("tag").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `tag` to be a primitive type in the JSON string but got `%s`", jsonObj.get("tag").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `tag` to be a primitive type in the JSON string but got `%s`", jsonObj.get("tag").toString()));
       }
       // validate the required field `tag`
       TagEnum.validateJsonElement(jsonObj.get("tag"));
       // ensure the json data is an array
       if (!jsonObj.get("contents").isJsonArray()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `contents` to be an array in the JSON string but got `%s`", jsonObj.get("contents").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `contents` to be an array in the JSON string but got `%s`", jsonObj.get("contents").toString()));
       }
 
       JsonArray jsonArraycontents = jsonObj.getAsJsonArray("contents");

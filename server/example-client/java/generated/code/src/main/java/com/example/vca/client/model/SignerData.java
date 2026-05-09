@@ -146,10 +146,14 @@ public class SignerData {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>(Arrays.asList("signerPublicData", "signerSecretData"));
+    openapiFields = new HashSet<String>();
+    openapiFields.add("signerPublicData");
+    openapiFields.add("signerSecretData");
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>(Arrays.asList("signerPublicData", "signerSecretData"));
+    openapiRequiredFields = new HashSet<String>();
+    openapiRequiredFields.add("signerPublicData");
+    openapiRequiredFields.add("signerSecretData");
   }
 
   /**
@@ -161,7 +165,7 @@ public class SignerData {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!SignerData.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in SignerData is not found in the empty JSON string", SignerData.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format("The required field(s) %s in SignerData is not found in the empty JSON string", SignerData.openapiRequiredFields.toString()));
         }
       }
 
@@ -169,21 +173,21 @@ public class SignerData {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!SignerData.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SignerData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `SignerData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : SignerData.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       // validate the required field `signerPublicData`
       SignerPublicData.validateJsonElement(jsonObj.get("signerPublicData"));
       if (!jsonObj.get("signerSecretData").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `signerSecretData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("signerSecretData").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `signerSecretData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("signerSecretData").toString()));
       }
   }
 

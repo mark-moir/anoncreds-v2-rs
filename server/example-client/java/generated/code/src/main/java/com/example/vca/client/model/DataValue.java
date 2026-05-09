@@ -113,7 +113,7 @@ public class DataValue extends AbstractOpenApiSchema {
                         log.log(Level.FINER, "Input data matches schema 'DVInt'");
                     } catch (Exception e) {
                         // deserialization failed, continue
-                        errorMessages.add(String.format(java.util.Locale.ROOT, "Deserialization for DVInt failed with `%s`.", e.getMessage()));
+                        errorMessages.add(String.format("Deserialization for DVInt failed with `%s`.", e.getMessage()));
                         log.log(Level.FINER, "Input data does not match schema 'DVInt'", e);
                     }
                     // deserialize DVText
@@ -125,7 +125,7 @@ public class DataValue extends AbstractOpenApiSchema {
                         log.log(Level.FINER, "Input data matches schema 'DVText'");
                     } catch (Exception e) {
                         // deserialization failed, continue
-                        errorMessages.add(String.format(java.util.Locale.ROOT, "Deserialization for DVText failed with `%s`.", e.getMessage()));
+                        errorMessages.add(String.format("Deserialization for DVText failed with `%s`.", e.getMessage()));
                         log.log(Level.FINER, "Input data does not match schema 'DVText'", e);
                     }
 
@@ -135,7 +135,7 @@ public class DataValue extends AbstractOpenApiSchema {
                         return ret;
                     }
 
-                    throw new IOException(String.format(java.util.Locale.ROOT, "Failed deserialization for DataValue: %d classes match result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", match, errorMessages, jsonElement.toString()));
+                    throw new IOException(String.format("Failed deserialization for DataValue: %d classes match result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", match, errorMessages, jsonElement.toString()));
                 }
             }.nullSafe();
         }
@@ -234,7 +234,7 @@ public class DataValue extends AbstractOpenApiSchema {
             DVInt.validateJsonElement(jsonElement);
             validCount++;
         } catch (Exception e) {
-            errorMessages.add(String.format(java.util.Locale.ROOT, "Deserialization for DVInt failed with `%s`.", e.getMessage()));
+            errorMessages.add(String.format("Deserialization for DVInt failed with `%s`.", e.getMessage()));
             // continue to the next one
         }
         // validate the json string with DVText
@@ -242,11 +242,11 @@ public class DataValue extends AbstractOpenApiSchema {
             DVText.validateJsonElement(jsonElement);
             validCount++;
         } catch (Exception e) {
-            errorMessages.add(String.format(java.util.Locale.ROOT, "Deserialization for DVText failed with `%s`.", e.getMessage()));
+            errorMessages.add(String.format("Deserialization for DVText failed with `%s`.", e.getMessage()));
             // continue to the next one
         }
         if (validCount != 1) {
-            throw new IOException(String.format(java.util.Locale.ROOT, "The JSON string is invalid for DataValue with oneOf schemas: DVInt, DVText. %d class(es) match the result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", validCount, errorMessages, jsonElement.toString()));
+            throw new IOException(String.format("The JSON string is invalid for DataValue with oneOf schemas: DVInt, DVText. %d class(es) match the result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", validCount, errorMessages, jsonElement.toString()));
         }
     }
 

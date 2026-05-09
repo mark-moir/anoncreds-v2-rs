@@ -198,10 +198,18 @@ public class InRangeInfo {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>(Arrays.asList("index", "minLabel", "maxLabel", "rangeProvingKeyLabel"));
+    openapiFields = new HashSet<String>();
+    openapiFields.add("index");
+    openapiFields.add("minLabel");
+    openapiFields.add("maxLabel");
+    openapiFields.add("rangeProvingKeyLabel");
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>(Arrays.asList("index", "minLabel", "maxLabel", "rangeProvingKeyLabel"));
+    openapiRequiredFields = new HashSet<String>();
+    openapiRequiredFields.add("index");
+    openapiRequiredFields.add("minLabel");
+    openapiRequiredFields.add("maxLabel");
+    openapiRequiredFields.add("rangeProvingKeyLabel");
   }
 
   /**
@@ -213,7 +221,7 @@ public class InRangeInfo {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!InRangeInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in InRangeInfo is not found in the empty JSON string", InRangeInfo.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format("The required field(s) %s in InRangeInfo is not found in the empty JSON string", InRangeInfo.openapiRequiredFields.toString()));
         }
       }
 
@@ -221,25 +229,25 @@ public class InRangeInfo {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!InRangeInfo.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `InRangeInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `InRangeInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : InRangeInfo.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       if (!jsonObj.get("minLabel").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `minLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("minLabel").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `minLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("minLabel").toString()));
       }
       if (!jsonObj.get("maxLabel").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `maxLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("maxLabel").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `maxLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("maxLabel").toString()));
       }
       if (!jsonObj.get("rangeProvingKeyLabel").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `rangeProvingKeyLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("rangeProvingKeyLabel").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `rangeProvingKeyLabel` to be a primitive type in the JSON string but got `%s`", jsonObj.get("rangeProvingKeyLabel").toString()));
       }
   }
 

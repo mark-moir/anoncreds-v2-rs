@@ -48,6 +48,12 @@ export interface VerifyBlindSigningInfoCorrectnessProofRequest {
     blindedAttributeIndices: Array<number>;
     /**
      * 
+     * @type {string}
+     * @memberof VerifyBlindSigningInfoCorrectnessProofRequest
+     */
+    nonce: string;
+    /**
+     * 
      * @type {BlindInfoForSigner}
      * @memberof VerifyBlindSigningInfoCorrectnessProofRequest
      */
@@ -60,6 +66,7 @@ export interface VerifyBlindSigningInfoCorrectnessProofRequest {
 export function instanceOfVerifyBlindSigningInfoCorrectnessProofRequest(value: object): value is VerifyBlindSigningInfoCorrectnessProofRequest {
     if (!('signerPublicSetupData' in value) || value['signerPublicSetupData'] === undefined) return false;
     if (!('blindedAttributeIndices' in value) || value['blindedAttributeIndices'] === undefined) return false;
+    if (!('nonce' in value) || value['nonce'] === undefined) return false;
     if (!('blindInfoForSigner' in value) || value['blindInfoForSigner'] === undefined) return false;
     return true;
 }
@@ -76,6 +83,7 @@ export function VerifyBlindSigningInfoCorrectnessProofRequestFromJSONTyped(json:
         
         'signerPublicSetupData': SignerPublicSetupDataFromJSON(json['signerPublicSetupData']),
         'blindedAttributeIndices': json['blindedAttributeIndices'],
+        'nonce': json['nonce'],
         'blindInfoForSigner': BlindInfoForSignerFromJSON(json['blindInfoForSigner']),
     };
 }
@@ -93,6 +101,7 @@ export function VerifyBlindSigningInfoCorrectnessProofRequestToJSONTyped(value?:
         
         'signerPublicSetupData': SignerPublicSetupDataToJSON(value['signerPublicSetupData']),
         'blindedAttributeIndices': value['blindedAttributeIndices'],
+        'nonce': value['nonce'],
         'blindInfoForSigner': BlindInfoForSignerToJSON(value['blindInfoForSigner']),
     };
 }

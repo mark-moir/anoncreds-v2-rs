@@ -147,10 +147,14 @@ public class VerifyBlindSignatureCorrectnessProofRequest {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>(Arrays.asList("signerPublicSetupData", "blindSignature"));
+    openapiFields = new HashSet<String>();
+    openapiFields.add("signerPublicSetupData");
+    openapiFields.add("blindSignature");
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>(Arrays.asList("signerPublicSetupData", "blindSignature"));
+    openapiRequiredFields = new HashSet<String>();
+    openapiRequiredFields.add("signerPublicSetupData");
+    openapiRequiredFields.add("blindSignature");
   }
 
   /**
@@ -162,7 +166,7 @@ public class VerifyBlindSignatureCorrectnessProofRequest {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!VerifyBlindSignatureCorrectnessProofRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in VerifyBlindSignatureCorrectnessProofRequest is not found in the empty JSON string", VerifyBlindSignatureCorrectnessProofRequest.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format("The required field(s) %s in VerifyBlindSignatureCorrectnessProofRequest is not found in the empty JSON string", VerifyBlindSignatureCorrectnessProofRequest.openapiRequiredFields.toString()));
         }
       }
 
@@ -170,14 +174,14 @@ public class VerifyBlindSignatureCorrectnessProofRequest {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!VerifyBlindSignatureCorrectnessProofRequest.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `VerifyBlindSignatureCorrectnessProofRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `VerifyBlindSignatureCorrectnessProofRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : VerifyBlindSignatureCorrectnessProofRequest.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();

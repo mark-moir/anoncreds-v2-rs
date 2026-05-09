@@ -115,7 +115,7 @@ public class Warning extends AbstractOpenApiSchema {
                         log.log(Level.FINER, "Input data matches schema 'WarningUnsupportedFeature'");
                     } catch (Exception e) {
                         // deserialization failed, continue
-                        errorMessages.add(String.format(java.util.Locale.ROOT, "Deserialization for WarningUnsupportedFeature failed with `%s`.", e.getMessage()));
+                        errorMessages.add(String.format("Deserialization for WarningUnsupportedFeature failed with `%s`.", e.getMessage()));
                         log.log(Level.FINER, "Input data does not match schema 'WarningUnsupportedFeature'", e);
                     }
                     // deserialize WarningRevealPrivacy
@@ -127,7 +127,7 @@ public class Warning extends AbstractOpenApiSchema {
                         log.log(Level.FINER, "Input data matches schema 'WarningRevealPrivacy'");
                     } catch (Exception e) {
                         // deserialization failed, continue
-                        errorMessages.add(String.format(java.util.Locale.ROOT, "Deserialization for WarningRevealPrivacy failed with `%s`.", e.getMessage()));
+                        errorMessages.add(String.format("Deserialization for WarningRevealPrivacy failed with `%s`.", e.getMessage()));
                         log.log(Level.FINER, "Input data does not match schema 'WarningRevealPrivacy'", e);
                     }
 
@@ -137,7 +137,7 @@ public class Warning extends AbstractOpenApiSchema {
                         return ret;
                     }
 
-                    throw new IOException(String.format(java.util.Locale.ROOT, "Failed deserialization for Warning: %d classes match result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", match, errorMessages, jsonElement.toString()));
+                    throw new IOException(String.format("Failed deserialization for Warning: %d classes match result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", match, errorMessages, jsonElement.toString()));
                 }
             }.nullSafe();
         }
@@ -236,7 +236,7 @@ public class Warning extends AbstractOpenApiSchema {
             WarningUnsupportedFeature.validateJsonElement(jsonElement);
             validCount++;
         } catch (Exception e) {
-            errorMessages.add(String.format(java.util.Locale.ROOT, "Deserialization for WarningUnsupportedFeature failed with `%s`.", e.getMessage()));
+            errorMessages.add(String.format("Deserialization for WarningUnsupportedFeature failed with `%s`.", e.getMessage()));
             // continue to the next one
         }
         // validate the json string with WarningRevealPrivacy
@@ -244,11 +244,11 @@ public class Warning extends AbstractOpenApiSchema {
             WarningRevealPrivacy.validateJsonElement(jsonElement);
             validCount++;
         } catch (Exception e) {
-            errorMessages.add(String.format(java.util.Locale.ROOT, "Deserialization for WarningRevealPrivacy failed with `%s`.", e.getMessage()));
+            errorMessages.add(String.format("Deserialization for WarningRevealPrivacy failed with `%s`.", e.getMessage()));
             // continue to the next one
         }
         if (validCount != 1) {
-            throw new IOException(String.format(java.util.Locale.ROOT, "The JSON string is invalid for Warning with oneOf schemas: WarningUnsupportedFeature, WarningRevealPrivacy. %d class(es) match the result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", validCount, errorMessages, jsonElement.toString()));
+            throw new IOException(String.format("The JSON string is invalid for Warning with oneOf schemas: WarningUnsupportedFeature, WarningRevealPrivacy. %d class(es) match the result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", validCount, errorMessages, jsonElement.toString()));
         }
     }
 

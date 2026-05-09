@@ -145,10 +145,14 @@ public class BlindSignature {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>(Arrays.asList("blindSignature", "blindSignatureCorrectnessProof"));
+    openapiFields = new HashSet<String>();
+    openapiFields.add("blindSignature");
+    openapiFields.add("blindSignatureCorrectnessProof");
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>(Arrays.asList("blindSignature", "blindSignatureCorrectnessProof"));
+    openapiRequiredFields = new HashSet<String>();
+    openapiRequiredFields.add("blindSignature");
+    openapiRequiredFields.add("blindSignatureCorrectnessProof");
   }
 
   /**
@@ -160,7 +164,7 @@ public class BlindSignature {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!BlindSignature.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in BlindSignature is not found in the empty JSON string", BlindSignature.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format("The required field(s) %s in BlindSignature is not found in the empty JSON string", BlindSignature.openapiRequiredFields.toString()));
         }
       }
 
@@ -168,22 +172,22 @@ public class BlindSignature {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!BlindSignature.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `BlindSignature` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `BlindSignature` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : BlindSignature.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       if (!jsonObj.get("blindSignature").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `blindSignature` to be a primitive type in the JSON string but got `%s`", jsonObj.get("blindSignature").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `blindSignature` to be a primitive type in the JSON string but got `%s`", jsonObj.get("blindSignature").toString()));
       }
       if (!jsonObj.get("blindSignatureCorrectnessProof").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `blindSignatureCorrectnessProof` to be a primitive type in the JSON string but got `%s`", jsonObj.get("blindSignatureCorrectnessProof").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `blindSignatureCorrectnessProof` to be a primitive type in the JSON string but got `%s`", jsonObj.get("blindSignatureCorrectnessProof").toString()));
       }
   }
 

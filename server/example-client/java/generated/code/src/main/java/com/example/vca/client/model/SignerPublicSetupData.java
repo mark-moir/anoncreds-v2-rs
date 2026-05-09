@@ -145,10 +145,14 @@ public class SignerPublicSetupData {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>(Arrays.asList("signerPublicSetupData", "signerPublicSetupDataCorrectnessProof"));
+    openapiFields = new HashSet<String>();
+    openapiFields.add("signerPublicSetupData");
+    openapiFields.add("signerPublicSetupDataCorrectnessProof");
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>(Arrays.asList("signerPublicSetupData", "signerPublicSetupDataCorrectnessProof"));
+    openapiRequiredFields = new HashSet<String>();
+    openapiRequiredFields.add("signerPublicSetupData");
+    openapiRequiredFields.add("signerPublicSetupDataCorrectnessProof");
   }
 
   /**
@@ -160,7 +164,7 @@ public class SignerPublicSetupData {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!SignerPublicSetupData.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in SignerPublicSetupData is not found in the empty JSON string", SignerPublicSetupData.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format("The required field(s) %s in SignerPublicSetupData is not found in the empty JSON string", SignerPublicSetupData.openapiRequiredFields.toString()));
         }
       }
 
@@ -168,22 +172,22 @@ public class SignerPublicSetupData {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!SignerPublicSetupData.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SignerPublicSetupData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `SignerPublicSetupData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : SignerPublicSetupData.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       if (!jsonObj.get("signerPublicSetupData").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `signerPublicSetupData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("signerPublicSetupData").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `signerPublicSetupData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("signerPublicSetupData").toString()));
       }
       if (!jsonObj.get("signerPublicSetupDataCorrectnessProof").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `signerPublicSetupDataCorrectnessProof` to be a primitive type in the JSON string but got `%s`", jsonObj.get("signerPublicSetupDataCorrectnessProof").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `signerPublicSetupDataCorrectnessProof` to be a primitive type in the JSON string but got `%s`", jsonObj.get("signerPublicSetupDataCorrectnessProof").toString()));
       }
   }
 

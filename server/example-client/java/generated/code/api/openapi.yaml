@@ -40,20 +40,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateSignerDataRequest"
+              $ref: '#/components/schemas/CreateSignerDataRequest'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SignerData"
+                $ref: '#/components/schemas/SignerData'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Create the secret and public data used to sign and verify credentials.
       x-content-type: application/json
@@ -78,20 +78,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifySignerPublicSetupDataCorrectnessProofRequest"
+              $ref: '#/components/schemas/VerifySignerPublicSetupDataCorrectnessProofRequest'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EmptyResponse"
+                $ref: '#/components/schemas/EmptyResponse'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       x-content-type: application/json
       x-accepts:
@@ -131,20 +131,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateBlindSigningInfoRequest"
+              $ref: '#/components/schemas/CreateBlindSigningInfoRequest'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BlindSigningInfo"
+                $ref: '#/components/schemas/BlindSigningInfo'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Create BlindSigningInfo
       x-content-type: application/json
@@ -169,20 +169,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifyBlindSigningInfoCorrectnessProofRequest"
+              $ref: '#/components/schemas/VerifyBlindSigningInfoCorrectnessProofRequest'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EmptyResponse"
+                $ref: '#/components/schemas/EmptyResponse'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       x-content-type: application/json
       x-accepts:
@@ -223,13 +223,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CreateAccumulatorResponse"
+                $ref: '#/components/schemas/CreateAccumulatorResponse'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Create an accumulator and its associated secret/public data.
       x-accepts:
@@ -269,20 +269,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SignRequest"
+              $ref: '#/components/schemas/SignRequest'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Signature"
+                $ref: '#/components/schemas/Signature'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Create a signature from the given values and SignerData.
       x-content-type: application/json
@@ -307,20 +307,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifySignatureCorrectnessProofRequest"
+              $ref: '#/components/schemas/VerifySignatureCorrectnessProofRequest'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EmptyResponse"
+                $ref: '#/components/schemas/EmptyResponse'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       x-content-type: application/json
       x-accepts:
@@ -360,20 +360,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SignWithBlindedAttributesRequest"
+              $ref: '#/components/schemas/SignWithBlindedAttributesRequest'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BlindSignature"
+                $ref: '#/components/schemas/BlindSignature'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: "Create a BlindSignature from the given non-blinded values, blinding\
         \ info and SignerData."
@@ -399,20 +399,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifyBlindSignatureCorrectnessProofRequest"
+              $ref: '#/components/schemas/VerifyBlindSignatureCorrectnessProofRequest'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EmptyResponse"
+                $ref: '#/components/schemas/EmptyResponse'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       x-content-type: application/json
       x-accepts:
@@ -452,20 +452,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UnblindBlindedSignatureRequest"
+              $ref: '#/components/schemas/UnblindBlindedSignatureRequest'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Signature"
+                $ref: '#/components/schemas/Signature'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Unblinded a blinded signature.
       x-content-type: application/json
@@ -498,13 +498,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccumulatorElement"
+                $ref: '#/components/schemas/AccumulatorElement'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Create an accumulator element from the given text.
       x-content-type: application/json
@@ -530,20 +530,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AccumulatorAddRemoveRequest"
+              $ref: '#/components/schemas/AccumulatorAddRemoveRequest'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccumulatorAddRemoveResponse"
+                $ref: '#/components/schemas/AccumulatorAddRemoveResponse'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Add and/or remove elements from an accumulator.
       x-content-type: application/json
@@ -569,20 +569,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateAccumulatorWitnessRequest"
+              $ref: '#/components/schemas/UpdateAccumulatorWitnessRequest'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccumulatorMembershipWitness"
+                $ref: '#/components/schemas/AccumulatorMembershipWitness'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Update an accumulator witness.
       x-content-type: application/json
@@ -608,20 +608,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/GetAccumulatorWitnessRequest"
+              $ref: '#/components/schemas/GetAccumulatorWitnessRequest'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccumulatorMembershipWitness"
+                $ref: '#/components/schemas/AccumulatorMembershipWitness'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Get an accumulator witness for an element that already exists in the
         accumulator.
@@ -664,13 +664,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MembershipProvingKey"
+                $ref: '#/components/schemas/MembershipProvingKey'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Create accumulator membership proving key.
       x-accepts:
@@ -711,13 +711,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RangeProofProvingKey"
+                $ref: '#/components/schemas/RangeProofProvingKey'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Create range proof proving key.
       x-accepts:
@@ -751,7 +751,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Get the maximum value supported in range proofs for the specific zkpLib.
       x-accepts:
@@ -792,13 +792,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AuthorityData"
+                $ref: '#/components/schemas/AuthorityData'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Create authority data.  Used in verifiable encryption.
       x-accepts:
@@ -823,20 +823,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateProofRequest"
+              $ref: '#/components/schemas/CreateProofRequest'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WarningsAndDataForVerifier"
+                $ref: '#/components/schemas/WarningsAndDataForVerifier'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Create a proof with respect to proof requirements from a Verifier.
       x-content-type: application/json
@@ -862,20 +862,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifyProofRequest"
+              $ref: '#/components/schemas/VerifyProofRequest'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WarningsAndDecryptResponses"
+                $ref: '#/components/schemas/WarningsAndDecryptResponses'
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Verify a proof with respect to proof requirments.
       x-content-type: application/json
@@ -901,7 +901,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifyDecryptionRequest"
+              $ref: '#/components/schemas/VerifyDecryptionRequest'
         required: true
       responses:
         "200":
@@ -909,14 +909,14 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/Warning"
+                  $ref: '#/components/schemas/Warning'
                 type: array
           description: ""
         default:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: ""
       summary: Verify a decryption.
       x-content-type: application/json
@@ -940,7 +940,7 @@ components:
           - 0
       properties:
         signerPublicData:
-          $ref: "#/components/schemas/SignerPublicData"
+          $ref: '#/components/schemas/SignerPublicData'
         signerSecretData:
           description: A Signer's secret keys.
           type: string
@@ -962,10 +962,10 @@ components:
         - 0
       properties:
         signerPublicSetupData:
-          $ref: "#/components/schemas/SignerPublicSetupData"
+          $ref: '#/components/schemas/SignerPublicSetupData'
         signerPublicSchema:
           items:
-            $ref: "#/components/schemas/ClaimType"
+            $ref: '#/components/schemas/ClaimType'
           type: array
         signerBlindedAttrIdxs:
           items:
@@ -1034,7 +1034,7 @@ components:
         claimTypes:
           description: The schema.
           items:
-            $ref: "#/components/schemas/ClaimType"
+            $ref: '#/components/schemas/ClaimType'
           type: array
         blindedAttributeIndices:
           description: The attributes to be blinded.
@@ -1057,7 +1057,7 @@ components:
           signerPublicSetupDataCorrectnessProof: signerPublicSetupDataCorrectnessProof
       properties:
         signerPublicSetupData:
-          $ref: "#/components/schemas/SignerPublicSetupData"
+          $ref: '#/components/schemas/SignerPublicSetupData'
       required:
       - signerPublicSetupData
       type: object
@@ -1078,10 +1078,10 @@ components:
             tag: DVInt
       properties:
         blindInfoForSigner:
-          $ref: "#/components/schemas/BlindInfoForSigner"
+          $ref: '#/components/schemas/BlindInfoForSigner'
         blindedAttributes:
           items:
-            $ref: "#/components/schemas/CredAttrIndexAndDataValue"
+            $ref: '#/components/schemas/CredAttrIndexAndDataValue'
           type: array
         infoForUnblinding:
           description: Data retained by requester to unblind blind signature
@@ -1125,7 +1125,7 @@ components:
           minimum: 0.0
           type: integer
         value:
-          $ref: "#/components/schemas/DataValue"
+          $ref: '#/components/schemas/DataValue'
       required:
       - index
       - value
@@ -1133,8 +1133,8 @@ components:
     DataValue:
       description: An int or text value.
       oneOf:
-      - $ref: "#/components/schemas/DataValue_oneOf"
-      - $ref: "#/components/schemas/DataValue_oneOf_1"
+      - $ref: '#/components/schemas/DataValue_oneOf'
+      - $ref: '#/components/schemas/DataValue_oneOf_1'
     InfoForUnblinding:
       description: Data retained by requester to unblind blind signature
       type: string
@@ -1152,18 +1152,23 @@ components:
           value:
             contents: 0
             tag: DVInt
+        nonce: nonce
       properties:
         signerPublicData:
           allOf:
-          - $ref: "#/components/schemas/SignerPublicData"
+          - $ref: '#/components/schemas/SignerPublicData'
           description: See SignerPublicData.
+        nonce:
+          description: Nonce binding the correctness proof.
+          type: string
         blindedIndicesAndValues:
           description: The values to be blind signed.
           items:
-            $ref: "#/components/schemas/CredAttrIndexAndDataValue"
+            $ref: '#/components/schemas/CredAttrIndexAndDataValue'
           type: array
       required:
       - blindedIndicesAndValues
+      - nonce
       - signerPublicData
       type: object
     VerifyBlindSigningInfoCorrectnessProofRequest:
@@ -1178,20 +1183,24 @@ components:
         blindedAttributeIndices:
         - 0
         - 0
+        nonce: nonce
       properties:
         signerPublicSetupData:
-          $ref: "#/components/schemas/SignerPublicSetupData"
+          $ref: '#/components/schemas/SignerPublicSetupData'
         blindedAttributeIndices:
           items:
             format: uint64
             minimum: 0.0
             type: integer
           type: array
+        nonce:
+          type: string
         blindInfoForSigner:
-          $ref: "#/components/schemas/BlindInfoForSigner"
+          $ref: '#/components/schemas/BlindInfoForSigner'
       required:
       - blindInfoForSigner
       - blindedAttributeIndices
+      - nonce
       - signerPublicSetupData
       type: object
     CreateAccumulatorResponse:
@@ -1203,7 +1212,7 @@ components:
         accumulator: accumulator
       properties:
         accumulatorData:
-          $ref: "#/components/schemas/AccumulatorData"
+          $ref: '#/components/schemas/AccumulatorData'
         accumulator:
           description: The value of an accumulator.
           type: string
@@ -1268,11 +1277,11 @@ components:
         values:
           description: The values to be signed.
           items:
-            $ref: "#/components/schemas/DataValue"
+            $ref: '#/components/schemas/DataValue'
           type: array
         signerData:
           allOf:
-          - $ref: "#/components/schemas/SignerData"
+          - $ref: '#/components/schemas/SignerData'
           description: See SignerData.
       required:
       - signerData
@@ -1298,9 +1307,9 @@ components:
           signatureCorrectnessProof: signatureCorrectnessProof
       properties:
         signerData:
-          $ref: "#/components/schemas/SignerData"
+          $ref: '#/components/schemas/SignerData'
         signature:
-          $ref: "#/components/schemas/Signature"
+          $ref: '#/components/schemas/Signature'
       required:
       - signature
       - signerData
@@ -1344,13 +1353,13 @@ components:
         nonBlindedAttributes:
           description: The values to be signed.
           items:
-            $ref: "#/components/schemas/CredAttrIndexAndDataValue"
+            $ref: '#/components/schemas/CredAttrIndexAndDataValue'
           type: array
         blindInfoForSigner:
-          $ref: "#/components/schemas/BlindInfoForSigner"
+          $ref: '#/components/schemas/BlindInfoForSigner'
         signerData:
           allOf:
-          - $ref: "#/components/schemas/SignerData"
+          - $ref: '#/components/schemas/SignerData'
           description: See SignerData.
       required:
       - blindInfoForSigner
@@ -1368,9 +1377,9 @@ components:
           blindSignature: blindSignature
       properties:
         signerPublicSetupData:
-          $ref: "#/components/schemas/SignerPublicSetupData"
+          $ref: '#/components/schemas/SignerPublicSetupData'
         blindSignature:
-          $ref: "#/components/schemas/BlindSignature"
+          $ref: '#/components/schemas/BlindSignature'
       required:
       - blindSignature
       - signerPublicSetupData
@@ -1397,20 +1406,20 @@ components:
         claimTypes:
           description: The schema.
           items:
-            $ref: "#/components/schemas/ClaimType"
+            $ref: '#/components/schemas/ClaimType'
           type: array
         blindedIndicesAndValues:
           description: Blinded attributes. Same as used for CreateBlindSigningInfoRequest.
           items:
-            $ref: "#/components/schemas/CredAttrIndexAndDataValue"
+            $ref: '#/components/schemas/CredAttrIndexAndDataValue'
           type: array
         blindSignature:
           allOf:
-          - $ref: "#/components/schemas/BlindSignature"
+          - $ref: '#/components/schemas/BlindSignature'
           description: The signature to be unblinded.
         infoForUnblinding:
           allOf:
-          - $ref: "#/components/schemas/InfoForUnblinding"
+          - $ref: '#/components/schemas/InfoForUnblinding'
           description: See InfoForUnblinding.
       required:
       - blindSignature
@@ -1434,16 +1443,16 @@ components:
       properties:
         witnessUpdateInfo:
           allOf:
-          - $ref: "#/components/schemas/AccumulatorWitnessUpdateInfo"
+          - $ref: '#/components/schemas/AccumulatorWitnessUpdateInfo'
           description: Data to use to update existing witnesses.
         witnessesForNew:
           additionalProperties:
-            $ref: "#/components/schemas/AccumulatorMembershipWitness"
+            $ref: '#/components/schemas/AccumulatorMembershipWitness'
           description: A new witnesses for each element added.
           type: object
         accumulator:
           allOf:
-          - $ref: "#/components/schemas/Accumulator"
+          - $ref: '#/components/schemas/Accumulator'
           description: Updated accumulator value.
       required:
       - accumulator
@@ -1472,15 +1481,15 @@ components:
       properties:
         accumulatorData:
           allOf:
-          - $ref: "#/components/schemas/AccumulatorData"
+          - $ref: '#/components/schemas/AccumulatorData'
           description: See Accumulator Data.
         accumulator:
           allOf:
-          - $ref: "#/components/schemas/Accumulator"
+          - $ref: '#/components/schemas/Accumulator'
           description: See Accumulator.
         additions:
           additionalProperties:
-            $ref: "#/components/schemas/AccumulatorElement"
+            $ref: '#/components/schemas/AccumulatorElement'
           description: "Elements to be added. This is a map associating each element\
             \ to be added with an (ephemeral) ID that can be used by the requester\
             \ (e.g., Signer/Issuer) to determine who should receive the returned witness."
@@ -1488,7 +1497,7 @@ components:
         removals:
           description: Elements to be removed.
           items:
-            $ref: "#/components/schemas/AccumulatorElement"
+            $ref: '#/components/schemas/AccumulatorElement'
           type: array
       required:
       - accumulator
@@ -1506,15 +1515,15 @@ components:
       properties:
         witness:
           allOf:
-          - $ref: "#/components/schemas/AccumulatorMembershipWitness"
+          - $ref: '#/components/schemas/AccumulatorMembershipWitness'
           description: The existing witness before the update.
         element:
           allOf:
-          - $ref: "#/components/schemas/AccumulatorElement"
+          - $ref: '#/components/schemas/AccumulatorElement'
           description: The element used to create the existing witness.
         witnessUpdateInfo:
           allOf:
-          - $ref: "#/components/schemas/AccumulatorWitnessUpdateInfo"
+          - $ref: '#/components/schemas/AccumulatorWitnessUpdateInfo'
           description: Data returned from accumulatorAddRemove.
       required:
       - element
@@ -1532,15 +1541,15 @@ components:
       properties:
         accumulatorData:
           allOf:
-          - $ref: "#/components/schemas/AccumulatorData"
+          - $ref: '#/components/schemas/AccumulatorData'
           description: Public/secret info.
         accumulator:
           allOf:
-          - $ref: "#/components/schemas/Accumulator"
+          - $ref: '#/components/schemas/Accumulator'
           description: The accumulator.
         accumulatorElement:
           allOf:
-          - $ref: "#/components/schemas/AccumulatorElement"
+          - $ref: '#/components/schemas/AccumulatorElement'
           description: The element.
       required:
       - accumulator
@@ -1562,15 +1571,15 @@ components:
       properties:
         authorityPublicData:
           allOf:
-          - $ref: "#/components/schemas/AuthorityPublicData"
+          - $ref: '#/components/schemas/AuthorityPublicData'
           description: An Authority's public key.
         authoritySecretData:
           allOf:
-          - $ref: "#/components/schemas/AuthoritySecretData"
+          - $ref: '#/components/schemas/AuthoritySecretData'
           description: An Authority's secret key.
         authorityDecryptionKey:
           allOf:
-          - $ref: "#/components/schemas/AuthorityDecryptionKey"
+          - $ref: '#/components/schemas/AuthorityDecryptionKey'
           description: An Authority's decryption key.
       required:
       - authorityDecryptionKey
@@ -1599,11 +1608,11 @@ components:
         warnings:
           description: A list of warnings.
           items:
-            $ref: "#/components/schemas/Warning"
+            $ref: '#/components/schemas/Warning'
           type: array
         dataForVerifier:
           allOf:
-          - $ref: "#/components/schemas/DataForVerifier"
+          - $ref: '#/components/schemas/DataForVerifier'
           description: Data to be sent to Verifier.
       required:
       - dataForVerifier
@@ -1611,22 +1620,22 @@ components:
       type: object
     Warning:
       oneOf:
-      - $ref: "#/components/schemas/Warning_oneOf"
-      - $ref: "#/components/schemas/Warning_oneOf_1"
+      - $ref: '#/components/schemas/Warning_oneOf'
+      - $ref: '#/components/schemas/Warning_oneOf_1'
     DataForVerifier:
       description: Data returned from 'createProof'.
       properties:
         revealedIdxsAndVals:
           additionalProperties:
             additionalProperties:
-              $ref: "#/components/schemas/DataValue"
+              $ref: '#/components/schemas/DataValue'
             type: object
           description: Data values disclosed by (two-level map keyed by CredentialLabel
             and CredAttrIndex).
           type: object
         proof:
           allOf:
-          - $ref: "#/components/schemas/Proof"
+          - $ref: '#/components/schemas/Proof'
           description: A proof.
       required:
       - proof
@@ -1665,17 +1674,17 @@ components:
       properties:
         proofReqs:
           additionalProperties:
-            $ref: "#/components/schemas/CredentialReqs"
+            $ref: '#/components/schemas/CredentialReqs'
           description: Proof requirements as specified by the Verifier.
           type: object
         sharedParams:
           additionalProperties:
-            $ref: "#/components/schemas/SharedParamValue"
+            $ref: '#/components/schemas/SharedParamValue'
           description: "A map of parameter names to values (e.g., public keys)."
           type: object
         sigsAndRelatedData:
           additionalProperties:
-            $ref: "#/components/schemas/SignatureAndRelatedData"
+            $ref: '#/components/schemas/SignatureAndRelatedData'
           description: A map of credential labels to SignatureAndRelatedData.
           type: object
         nonce:
@@ -1703,31 +1712,31 @@ components:
           type: string
         disclosed:
           allOf:
-          - $ref: "#/components/schemas/Disclosed"
+          - $ref: '#/components/schemas/Disclosed'
           description: Specifies which attributes are to be selectively disclosed.
         inAccum:
           allOf:
-          - $ref: "#/components/schemas/InAccum"
+          - $ref: '#/components/schemas/InAccum'
           description: Specifies which attributes are to be proved PRESENT in a specified
             accumulator.
         notInAccum:
           allOf:
-          - $ref: "#/components/schemas/NotInAccum"
+          - $ref: '#/components/schemas/NotInAccum'
           description: Specifies which attributes are to be proved ABSENT from a specified
             accumulator.
         inRange:
           allOf:
-          - $ref: "#/components/schemas/InRange"
+          - $ref: '#/components/schemas/InRange'
           description: Specifies which attributes are to be proved to be within a
             specified range.
         encryptedFor:
           allOf:
-          - $ref: "#/components/schemas/EncryptedFor"
+          - $ref: '#/components/schemas/EncryptedFor'
           description: Specifies which attributes are to be encrypted for a specified
             Authority.
         equalTo:
           allOf:
-          - $ref: "#/components/schemas/EqualTo"
+          - $ref: '#/components/schemas/EqualTo'
           description: Specifies which attributes in this credential are to be proved
             equal to other specified attributes (usually in other credentials).
       required:
@@ -1750,7 +1759,7 @@ components:
       description: "A list of 'InAccumInfo', each indicating an attribute to be proved\
         \ present in an accumulator and SharedParam keys for relevant parameters."
       items:
-        $ref: "#/components/schemas/InAccumInfo"
+        $ref: '#/components/schemas/InAccumInfo'
       type: array
     InAccumInfo:
       description: Used to prove accumulator membership.
@@ -1784,7 +1793,7 @@ components:
       description: "Requirements for attributes to be proved ABSENT from an accumulator.\
         \  Out of date, not currently supported."
       items:
-        $ref: "#/components/schemas/IndexAndLabel"
+        $ref: '#/components/schemas/IndexAndLabel'
       type: array
     IndexAndLabel:
       description: An index-label pair.
@@ -1805,7 +1814,7 @@ components:
       description: "A list of 'InRangeInfo', each indicating an attribute to be proved\
         \ to be within a range and SharedParam keys for relevant parameters."
       items:
-        $ref: "#/components/schemas/InRangeInfo"
+        $ref: '#/components/schemas/InRangeInfo'
       type: array
     InRangeInfo:
       description: Information for range proof requirements.
@@ -1838,13 +1847,13 @@ components:
       description: "A list of index-label pairs, each of which specifies an attribute\
         \ to be encrypted and SharedParam key to obtain the Authority's public information."
       items:
-        $ref: "#/components/schemas/IndexAndLabel"
+        $ref: '#/components/schemas/IndexAndLabel'
       type: array
     EqualTo:
       description: "A list of 'EqInfo', each of which specifies an attribute to be\
         \ proved equal to another specified attribute."
       items:
-        $ref: "#/components/schemas/EqInfo"
+        $ref: '#/components/schemas/EqInfo'
       type: array
     EqInfo:
       description: Information specifying equalities between values in different credentials.
@@ -1873,8 +1882,8 @@ components:
     SharedParamValue:
       description: Either a single value or a list of of values.
       oneOf:
-      - $ref: "#/components/schemas/SharedParamValue_oneOf"
-      - $ref: "#/components/schemas/SharedParamValue_oneOf_1"
+      - $ref: '#/components/schemas/SharedParamValue_oneOf'
+      - $ref: '#/components/schemas/SharedParamValue_oneOf_1'
     SignatureAndRelatedData:
       description: "A Signature and other related data, including attribute values\
         \ signed and witnesses for accumlators."
@@ -1888,16 +1897,16 @@ components:
       properties:
         signature:
           allOf:
-          - $ref: "#/components/schemas/Signature"
+          - $ref: '#/components/schemas/Signature'
           description: The signature from a Signer signing data values.
         values:
           description: The data values used to produce the signature.
           items:
-            $ref: "#/components/schemas/DataValue"
+            $ref: '#/components/schemas/DataValue'
           type: array
         accumulatorWitnesses:
           additionalProperties:
-            $ref: "#/components/schemas/AccumulatorMembershipWitness"
+            $ref: '#/components/schemas/AccumulatorMembershipWitness'
           description: Accumulator witnesses.
           type: object
       required:
@@ -1924,13 +1933,13 @@ components:
           description: "Warnings, e.g., unsupported features, potentially unintended\
             \ requests, etc."
           items:
-            $ref: "#/components/schemas/Warning"
+            $ref: '#/components/schemas/Warning'
           type: array
         decryptResponses:
           additionalProperties:
             additionalProperties:
               additionalProperties:
-                $ref: "#/components/schemas/DecryptResponse"
+                $ref: '#/components/schemas/DecryptResponse'
               type: object
             type: object
           description: "Data values decrypted (three-level map keyed by CredentialLabel,\
@@ -1951,7 +1960,7 @@ components:
           type: string
         decryptionProof:
           allOf:
-          - $ref: "#/components/schemas/DecryptionProof"
+          - $ref: '#/components/schemas/DecryptionProof'
           description: A proof that the value is correctly decrypted from proof created
             by Prover.
       required:
@@ -1991,23 +2000,23 @@ components:
       properties:
         proofReqs:
           additionalProperties:
-            $ref: "#/components/schemas/CredentialReqs"
+            $ref: '#/components/schemas/CredentialReqs'
           description: Agreed proof requirements.
           type: object
         sharedParams:
           additionalProperties:
-            $ref: "#/components/schemas/SharedParamValue"
+            $ref: '#/components/schemas/SharedParamValue'
           description: A map from parameter labels to associated parameter values.
           type: object
         dataForVerifier:
           allOf:
-          - $ref: "#/components/schemas/DataForVerifier"
+          - $ref: '#/components/schemas/DataForVerifier'
           description: See DataForVerifier.
         decryptRequests:
           additionalProperties:
             additionalProperties:
               additionalProperties:
-                $ref: "#/components/schemas/DecryptRequest"
+                $ref: '#/components/schemas/DecryptRequest'
               type: object
             type: object
           description: A map from credential label to a map of credential attributed
@@ -2031,11 +2040,11 @@ components:
       properties:
         authoritySecretData:
           allOf:
-          - $ref: "#/components/schemas/AuthoritySecretData"
+          - $ref: '#/components/schemas/AuthoritySecretData'
           description: Authority secret data.
         authorityDecryptionKey:
           allOf:
-          - $ref: "#/components/schemas/AuthorityDecryptionKey"
+          - $ref: '#/components/schemas/AuthorityDecryptionKey'
           description: Authority decryption key.
       required:
       - authorityDecryptionKey
@@ -2072,28 +2081,28 @@ components:
       properties:
         proofReqs:
           additionalProperties:
-            $ref: "#/components/schemas/CredentialReqs"
+            $ref: '#/components/schemas/CredentialReqs'
           description: Agreed proof requirements.
           type: object
         sharedParams:
           additionalProperties:
-            $ref: "#/components/schemas/SharedParamValue"
+            $ref: '#/components/schemas/SharedParamValue'
           description: A map from parameter labels to associated parameter values.
           type: object
         dataForVerifier:
           allOf:
-          - $ref: "#/components/schemas/DataForVerifier"
+          - $ref: '#/components/schemas/DataForVerifier'
           description: See DataForVerifier.
         decryptionKeys:
           additionalProperties:
-            $ref: "#/components/schemas/AuthorityDecryptionKey"
+            $ref: '#/components/schemas/AuthorityDecryptionKey'
           description: Map from Authority label to decryption key.
           type: object
         decryptResponses:
           additionalProperties:
             additionalProperties:
               additionalProperties:
-                $ref: "#/components/schemas/DecryptResponse"
+                $ref: '#/components/schemas/DecryptResponse'
               type: object
             type: object
           description: Map from credential label to credential attribute index to
@@ -2183,7 +2192,7 @@ components:
           - SPVOne
           type: string
         contents:
-          $ref: "#/components/schemas/DataValue"
+          $ref: '#/components/schemas/DataValue'
       required:
       - contents
       - tag
@@ -2196,7 +2205,7 @@ components:
           type: string
         contents:
           items:
-            $ref: "#/components/schemas/DataValue"
+            $ref: '#/components/schemas/DataValue'
           type: array
       required:
       - contents

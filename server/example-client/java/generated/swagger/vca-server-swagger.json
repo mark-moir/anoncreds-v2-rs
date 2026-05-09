@@ -1378,6 +1378,7 @@
         "type": "object",
         "required": [
           "blindedIndicesAndValues",
+          "nonce",
           "signerPublicData"
         ],
         "properties": {
@@ -1388,6 +1389,10 @@
                 "$ref": "#/components/schemas/SignerPublicData"
               }
             ]
+          },
+          "nonce": {
+            "description": "Nonce binding the correctness proof.",
+            "type": "string"
           },
           "blindedIndicesAndValues": {
             "description": "The values to be blind signed.",
@@ -1404,6 +1409,7 @@
         "required": [
           "blindInfoForSigner",
           "blindedAttributeIndices",
+          "nonce",
           "signerPublicSetupData"
         ],
         "properties": {
@@ -1417,6 +1423,9 @@
               "format": "uint64",
               "minimum": 0.0
             }
+          },
+          "nonce": {
+            "type": "string"
           },
           "blindInfoForSigner": {
             "$ref": "#/components/schemas/BlindInfoForSigner"

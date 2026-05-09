@@ -171,10 +171,16 @@ public class AuthorityData {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>(Arrays.asList("authorityPublicData", "authoritySecretData", "authorityDecryptionKey"));
+    openapiFields = new HashSet<String>();
+    openapiFields.add("authorityPublicData");
+    openapiFields.add("authoritySecretData");
+    openapiFields.add("authorityDecryptionKey");
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>(Arrays.asList("authorityPublicData", "authoritySecretData", "authorityDecryptionKey"));
+    openapiRequiredFields = new HashSet<String>();
+    openapiRequiredFields.add("authorityPublicData");
+    openapiRequiredFields.add("authoritySecretData");
+    openapiRequiredFields.add("authorityDecryptionKey");
   }
 
   /**
@@ -186,7 +192,7 @@ public class AuthorityData {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!AuthorityData.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in AuthorityData is not found in the empty JSON string", AuthorityData.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format("The required field(s) %s in AuthorityData is not found in the empty JSON string", AuthorityData.openapiRequiredFields.toString()));
         }
       }
 
@@ -194,25 +200,25 @@ public class AuthorityData {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!AuthorityData.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `AuthorityData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `AuthorityData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : AuthorityData.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       if (!jsonObj.get("authorityPublicData").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `authorityPublicData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("authorityPublicData").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `authorityPublicData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("authorityPublicData").toString()));
       }
       if (!jsonObj.get("authoritySecretData").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `authoritySecretData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("authoritySecretData").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `authoritySecretData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("authoritySecretData").toString()));
       }
       if (!jsonObj.get("authorityDecryptionKey").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "Expected the field `authorityDecryptionKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("authorityDecryptionKey").toString()));
+        throw new IllegalArgumentException(String.format("Expected the field `authorityDecryptionKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("authorityDecryptionKey").toString()));
       }
   }
 

@@ -108,9 +108,9 @@ export class X {
       dSignerData = await x.ci.createSignerData(0, TestData.dCTs(x.zkpLib), TestData.DL_BLINDED_INDICES);
       sSignerData = await x.ci.createSignerData(1, TestData.sCTs(x.zkpLib), TestData.SUB_BLINDED_INDICES);
       const dBlindSigningInfo = await x.ci.createBlindSigningInfo(
-        0, dSignerData.signerPublicData, TestData.dBlindedIndicesAndVals());
+        0, TestData.NONCE, dSignerData.signerPublicData, TestData.dBlindedIndicesAndVals());
       const sBlindSigningInfo = await x.ci.createBlindSigningInfo(
-        0, sSignerData.signerPublicData, TestData.sBlindedIndicesAndVals());
+        0, TestData.NONCE, sSignerData.signerPublicData, TestData.sBlindedIndicesAndVals());
       const dBlindSignature   = await x.ci.signWithBlindedAttributes(
         0, dSignerData, TestData.dNonBlindedIndicesAndVals(), dBlindSigningInfo.blindInfoForSigner);
       const sBlindSignature   = await x.ci.signWithBlindedAttributes(

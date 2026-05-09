@@ -57,6 +57,7 @@ export interface VCA {
 
   createBlindSigningInfo: (
     rngSeed : number,
+    nonce   : string,
     spd     : GENERATED.SignerPublicData,
     blinded : GENERATED.CredAttrIndexAndDataValue[],
   ) => Promise<GENERATED.BlindSigningInfo>,
@@ -183,11 +184,12 @@ export function defineCryptoInterfaceWith(zkpLib: string, port: string) : VCA {
       }
     },
 
-    createBlindSigningInfo: async (rngSeed, spd, blinded) => {
+    createBlindSigningInfo: async (rngSeed, nonce, spd, blinded) => {
       try {
         //console.log("enter createBlindeSigningInfo");
         const x = await network.createBlindSigningInfo(
           { createBlindSigningInfoRequest : {
+              nonce                 : nonce,
               signerPublicData        : spd,
               blindedIndicesAndValues : blinded },
             rngSeed : rngSeed,
@@ -412,4 +414,3 @@ async function handleError(zkpLib: string, location: string, error : any) : Prom
     throw new ApiError("zkpLib is: " + zkpLib, errStr, { reason: "UNKNOWN", location: location });
   }
 }
-

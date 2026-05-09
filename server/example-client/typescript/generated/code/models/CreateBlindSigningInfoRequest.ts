@@ -41,6 +41,12 @@ export interface CreateBlindSigningInfoRequest {
      */
     signerPublicData: SignerPublicData;
     /**
+     * Nonce binding the correctness proof.
+     * @type {string}
+     * @memberof CreateBlindSigningInfoRequest
+     */
+    nonce: string;
+    /**
      * The values to be blind signed.
      * @type {Array<CredAttrIndexAndDataValue>}
      * @memberof CreateBlindSigningInfoRequest
@@ -53,6 +59,7 @@ export interface CreateBlindSigningInfoRequest {
  */
 export function instanceOfCreateBlindSigningInfoRequest(value: object): value is CreateBlindSigningInfoRequest {
     if (!('signerPublicData' in value) || value['signerPublicData'] === undefined) return false;
+    if (!('nonce' in value) || value['nonce'] === undefined) return false;
     if (!('blindedIndicesAndValues' in value) || value['blindedIndicesAndValues'] === undefined) return false;
     return true;
 }
@@ -68,6 +75,7 @@ export function CreateBlindSigningInfoRequestFromJSONTyped(json: any, ignoreDisc
     return {
         
         'signerPublicData': SignerPublicDataFromJSON(json['signerPublicData']),
+        'nonce': json['nonce'],
         'blindedIndicesAndValues': ((json['blindedIndicesAndValues'] as Array<any>).map(CredAttrIndexAndDataValueFromJSON)),
     };
 }
@@ -84,6 +92,7 @@ export function CreateBlindSigningInfoRequestToJSONTyped(value?: CreateBlindSign
     return {
         
         'signerPublicData': SignerPublicDataToJSON(value['signerPublicData']),
+        'nonce': value['nonce'],
         'blindedIndicesAndValues': ((value['blindedIndicesAndValues'] as Array<any>).map(CredAttrIndexAndDataValueToJSON)),
     };
 }

@@ -120,10 +120,12 @@ public class VerifySignerPublicSetupDataCorrectnessProofRequest {
 
   static {
     // a set of all properties/fields (JSON key names)
-    openapiFields = new HashSet<String>(Arrays.asList("signerPublicSetupData"));
+    openapiFields = new HashSet<String>();
+    openapiFields.add("signerPublicSetupData");
 
     // a set of required properties/fields (JSON key names)
-    openapiRequiredFields = new HashSet<String>(Arrays.asList("signerPublicSetupData"));
+    openapiRequiredFields = new HashSet<String>();
+    openapiRequiredFields.add("signerPublicSetupData");
   }
 
   /**
@@ -135,7 +137,7 @@ public class VerifySignerPublicSetupDataCorrectnessProofRequest {
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
       if (jsonElement == null) {
         if (!VerifySignerPublicSetupDataCorrectnessProofRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field(s) %s in VerifySignerPublicSetupDataCorrectnessProofRequest is not found in the empty JSON string", VerifySignerPublicSetupDataCorrectnessProofRequest.openapiRequiredFields.toString()));
+          throw new IllegalArgumentException(String.format("The required field(s) %s in VerifySignerPublicSetupDataCorrectnessProofRequest is not found in the empty JSON string", VerifySignerPublicSetupDataCorrectnessProofRequest.openapiRequiredFields.toString()));
         }
       }
 
@@ -143,14 +145,14 @@ public class VerifySignerPublicSetupDataCorrectnessProofRequest {
       // check to see if the JSON string contains additional fields
       for (Map.Entry<String, JsonElement> entry : entries) {
         if (!VerifySignerPublicSetupDataCorrectnessProofRequest.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The field `%s` in the JSON string is not defined in the `VerifySignerPublicSetupDataCorrectnessProofRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The field `%s` in the JSON string is not defined in the `VerifySignerPublicSetupDataCorrectnessProofRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
 
       // check to make sure all required properties/fields are present in the JSON string
       for (String requiredField : VerifySignerPublicSetupDataCorrectnessProofRequest.openapiRequiredFields) {
         if (jsonElement.getAsJsonObject().get(requiredField) == null) {
-          throw new IllegalArgumentException(String.format(java.util.Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+          throw new IllegalArgumentException(String.format("The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
