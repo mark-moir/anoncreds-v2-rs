@@ -46,13 +46,13 @@ CLOSED: [2026-05-07 Thu 11:55]
     // TODO: implement correctness proof verification instead of always returning Verified
 *** TODO src/vca/zkp_backends/dnc/signer.rs:391               - implement signature correctness verification (currently returns Verified)
     // TODO: implement correctness proof verification instead of always returning Verified
-*** TODO src/vca/zkp_backends/dnc/signer.rs:397               - implement blind signature correctness verification (currently returns Verified)
+*** TODO src/vca/zkp_backends/dnc/signer.rs:398               - implement blind signature correctness verification (currently returns Verified)
     // TODO: implement correctness proof verification instead of always returning Verified
 *** TODO src/vca/zkp_backends/ac2c/signer.rs:294              - implement signer public setup correctness verification (currently returns Verified)
     // TODO: implement correctness proof verification instead of always returning Verified
-*** TODO src/vca/zkp_backends/ac2c/signer.rs:310              - implement signature correctness verification (currently returns Verified)
+*** TODO src/vca/zkp_backends/ac2c/signer.rs:318              - implement signature correctness verification (currently returns Verified)
     // TODO: implement correctness proof verification instead of always returning Verified
-*** TODO src/vca/zkp_backends/ac2c/signer.rs:317              - implement blind signature correctness verification (currently returns Verified)
+*** TODO src/vca/zkp_backends/ac2c/signer.rs:325              - implement blind signature correctness verification (currently returns Verified)
     // TODO: implement correctness proof verification instead of always returning Verified
 *** DONE src/vca/impl/general/signer.rs:91                    - avoid verifying blind signing info we just built; signer should verify
 CLOSED: [2026-05-07 Thu 11:54]
