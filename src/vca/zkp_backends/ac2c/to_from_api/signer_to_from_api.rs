@@ -4,6 +4,7 @@ use crate::impl_vca_roundtrip_json;
 use crate::vca::r#impl::to_from_api::*;
 use crate::vca::types::*;
 use crate::vca::VCAResult;
+use crate::vca::zkp_backends::ac2c::signer::AC2C_DOES_NOT_SURFACE_BSICP;
 // ------------------------------------------------------------------------------
 use crate::knox::short_group_sig_core::short_group_traits::ShortGroupSignatureScheme;
 use crate::prelude::blsful::inner_types::*;
@@ -122,7 +123,7 @@ impl<S: ShortGroupSignatureScheme> VcaTryFrom<BlindCredentialRequest<S>> for Bli
         Ok(BlindInfoForSigner {
             blinding_info: to_opaque_json(&x)?,
             blind_signing_info_correctness_proof: BlindSigningInfoCorrectnessProof(
-                "TODO-proof".to_string(),
+                AC2C_DOES_NOT_SURFACE_BSICP.to_string(),
             ),
         })
     }

@@ -92,19 +92,22 @@ impl SignerPublicData {
 //   https://anoncreds.github.io/anoncreds-spec/#the-blinded-link-secret-correctness-proof
 //   https://anoncreds.github.io/anoncreds-spec/#the-credential-signature-correctness-proof
 //
-
-// Motivted by those, the SignerPublicData, BlindInfoForSigner, Signature and BlindSignature types
+// These require one party to prove to another some property about data it has created.  For
+// example, BlindSigningInfoCorrectnessProof contains proof that a party requesting a blinded
+// signature knows the blinding factor(s) used to create a commitment to the value(s) to be
+// blinded.
+//
+// Motivated by those, the SignerPublicData, BlindInfoForSigner, Signature and BlindSignature types
 // each have a field for a "correctness proof".
 //
 // Only BlindInfoForSigner has been properly addressed so far.  DNC creates an explicit proof, AC2C
 // does not because it is done as part of the BlindSignatureContext.  Signer verifies the proofs at
-// thw General level (independent of specific backends), and there are happy path and tampering
-// tests at the General level, as well as support for backend=specific tamper tests.
-//
+// the General level (independent of specific backends), and there are happy path and tampering
+// tests at the General level, as well as support for backend-specific tamper tests.
+
 // TODO: For the remaining types (SignerPublicData, BlindInfoForSigner, Signature and
 // BlindSignature) correctness proofs are placeholders for now and the need for various backends to
-// implement analogous fucntionality has not been determined.  Similarly, it has not been determined
-// where in the general layer they should be verified.
+// implement analogous functionality has not been determined.
 
 /// Data resulting from a Signer's setup.
 #[derive(Clone, Eq, PartialEq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema)]

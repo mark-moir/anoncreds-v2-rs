@@ -108,7 +108,7 @@ pub fn specific_create_blind_signing_info<S: ShortGroupSignatureScheme>(
                     format!("{e:?}")
                 )))
             })?;
-        // NOTE: it is not necessary to explicitly create a proof of knowledge of the
+        // NOTE: we do notexplicitly create a proof of knowledge of the
         // blinders used; see comment in specific_sign_with_blinded_attributes below.
         Ok(BlindSigningInfo {
             blind_info_for_signer: to_api(blind_credential_request)?,
@@ -117,6 +117,10 @@ pub fn specific_create_blind_signing_info<S: ShortGroupSignatureScheme>(
         })
     })
 }
+
+pub const AC2C_DOES_NOT_SURFACE_BSICP: &str =
+    "No blind signing info correctness proof provided by AC2C backend; \
+     see comments in specific_sign_with_blinded_attributes/";
 
 pub fn specific_sign_with_blinded_attributes<S: ShortGroupSignatureScheme>(
 ) -> SpecificSignWithBlindedAttributes {
@@ -145,11 +149,13 @@ pub fn specific_sign_with_blinded_attributes<S: ShortGroupSignatureScheme>(
             // cannot use get_location_and_backtrace_on_panic! (in its current form) here because
             // the type `&mut issuer::Issuer` may not be safely transferred across an unwind boundary
 
-            // NOTE: it is not necessary to explicitly verify a proof of knowledge of the blinders used
-            // because it is included in BlindSignatureContext, which is included in
-            // BlindCredentialRequest.  The blind_sign_credential impls for both BBS and PS signature
-            // schemes verify this, as confirmed by the blind_sign_request_tamper_fails tests in
-            // tests/flow.rs.
+            // NOTE: we do not explicitly verify a proof of knowledge of the blinders used because
+            // it is included in BlindSignatureContext, which is included in BlindCredentialRequest.
+            // The blind_sign_credential impls for both BBS and PS signature schemes verify this, as
+            // confirmed by the blind_sign_request_tamper_fails tests in tests/flow.rs.
+            // For example, see:
+            //   https://github.com/anoncreds/anoncreds-v2-rs/blob/691297a7f9ffcc1f51a5d30741086402d64544c9/src/knox/bbs/blind_signature_context.rs#L21
+            // However, these do not (yet?) use the nonce provied to specific_create_blind_signing_info.
             let blind_credential_request: BlindCredentialRequest<S> = from_api(bifs)?;
             let sig = issuer
                 .blind_sign_credential(&blind_credential_request, &claims)
@@ -158,7 +164,8 @@ pub fn specific_sign_with_blinded_attributes<S: ShortGroupSignatureScheme>(
                 })?;
             to_api(Ac2cBlindSignatureWithProof {
                 blind_signature: sig,
-                correctness_proof: Ac2cBlindSignatureCorrectnessProof("TODO-proof".to_string()),
+                correctness_proof: Ac2cBlindSignatureCorrectnessProof(
+                    AC2C_DOES_NOT_SURFACE_BSICP.to_string()),
             })
         },
     )
@@ -291,7 +298,7 @@ fn vals_to_claim_data(sdcts: &[ClaimType], vals: &[DataValue]) -> VCAResult<Vec<
 pub fn verify_signer_public_setup_data_correctness_proof(
 ) -> VerifySignerPublicSetupDataCorrectnessProof {
     Arc::new(|_| {
-        // TODO: determine whether correctness proof is needed, implement verficiation if so
+        // TODO: determine whether correctness proof is needed, implement verification if so
         Ok(())
     })
 }
@@ -299,15 +306,16 @@ pub fn verify_signer_public_setup_data_correctness_proof(
 pub fn verify_blind_signing_info_correctness_proof() -> VerifyBlindSigningInfoCorrectnessProof {
     Arc::new(|_, _, _, _| {
         // The AC2C signature schemes include creating and verifying proof of knowledge
-        // of blinding factors.  We do not surface them here.  For example, see:
-        // https://github.com/anoncreds/anoncreds-v2-rs/blob/691297a7f9ffcc1f51a5d30741086402d64544c9/src/knox/bbs/blind_signature_context.rs#L21
+        // of blinding factors.  We do not surface them here.  See comments near
+        // definition of
+        let _ = AC2C_DOES_NOT_SURFACE_BSICP;
         Ok(())
     })
 }
 
 pub fn verify_signature_correctness_proof() -> VerifySignatureCorrectnessProof {
     Arc::new(|_, _| {
-        // TODO: determine whether correctness proof is needed, implement verficiation if so
+        // TODO: determine whether correctness proof is needed, implement verification if so
         Ok(())
     })
 }

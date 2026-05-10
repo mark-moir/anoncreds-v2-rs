@@ -4,6 +4,7 @@ use crate::vca::interfaces::primitives::types::*;
 use crate::vca::r#impl::to_from_api::*;
 use crate::vca::r#impl::types::*;
 use crate::vca::r#impl::util::*;
+use crate::vca::zkp_backends::ac2c::signer::AC2C_DOES_NOT_SURFACE_BSICP;
 use crate::vca::zkp_backends::ac2c::to_from_api::range_proof_to_from_api::*;
 use crate::vca::{Error, SerdeJsonError, VCAResult};
 // ------------------------------------------------------------------------------
@@ -259,7 +260,7 @@ fn transform_instruction<S: ShortGroupSignatureScheme>(
                 // TODO: implement correctness proof if needed, or change it to
                 // an indication of why not needed
                 signer_public_setup_data_correctness_proof: SignerPublicSetupDataCorrectnessProof(
-                    "TODO-proof".to_string(),
+                    AC2C_DOES_NOT_SURFACE_BSICP.to_string(),
                 ),
             })?;
             Ok(success(ProofInstructionGeneral {

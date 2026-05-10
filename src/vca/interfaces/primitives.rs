@@ -63,7 +63,7 @@ pub type SpecificCreateSignerData = Arc<
 >;
 
 pub type VerifySignerPublicSetupDataCorrectnessProof =
-    // Nonce for verifyin SignerPublicSetupDataCorrectnessProof?
+    // Nonce for verifying SignerPublicSetupDataCorrectnessProof?
     Arc<dyn Fn(&SignerPublicSetupData) -> VCAResult<()> + Send + Sync>;
 
 pub type CreateAccumulatorData = Arc<
