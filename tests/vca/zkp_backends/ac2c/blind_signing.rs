@@ -18,7 +18,7 @@ blind_signing_happy_path!(blind_sign_roundtrip_ok_bbs, &CRYPTO_INTERFACE_AC2C_BB
 blind_signing_happy_path!(blind_sign_roundtrip_ok_ps, &CRYPTO_INTERFACE_AC2C_PS);
 
 // TODO: AC2C backend currently relies on the built-in proof and verification, but it doesn't receive the nonce
-// Therefore these tests are ignored.
+// See comments in specific_sign_with_blinded_attributes. Therefore these tests are ignored.
 blind_signing_nonce_mismatch!(blind_sign_nonce_mismatch_bbs, &CRYPTO_INTERFACE_AC2C_BBS, ignore);
 blind_signing_nonce_mismatch!(blind_sign_nonce_mismatch_ps, &CRYPTO_INTERFACE_AC2C_PS, ignore);
 
