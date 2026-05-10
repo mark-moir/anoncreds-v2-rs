@@ -14,6 +14,7 @@ package com.example.vca.client.model;
 
 import java.util.Objects;
 import com.example.vca.client.model.DataValue;
+import com.example.vca.client.model.Signature;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -56,7 +57,7 @@ public class SignatureAndRelatedData {
   public static final String SERIALIZED_NAME_SIGNATURE = "signature";
   @SerializedName(SERIALIZED_NAME_SIGNATURE)
   @javax.annotation.Nonnull
-  private String signature;
+  private Signature signature;
 
   public static final String SERIALIZED_NAME_VALUES = "values";
   @SerializedName(SERIALIZED_NAME_VALUES)
@@ -71,7 +72,7 @@ public class SignatureAndRelatedData {
   public SignatureAndRelatedData() {
   }
 
-  public SignatureAndRelatedData signature(@javax.annotation.Nonnull String signature) {
+  public SignatureAndRelatedData signature(@javax.annotation.Nonnull Signature signature) {
     this.signature = signature;
     return this;
   }
@@ -81,11 +82,11 @@ public class SignatureAndRelatedData {
    * @return signature
    */
   @javax.annotation.Nonnull
-  public String getSignature() {
+  public Signature getSignature() {
     return signature;
   }
 
-  public void setSignature(@javax.annotation.Nonnull String signature) {
+  public void setSignature(@javax.annotation.Nonnull Signature signature) {
     this.signature = signature;
   }
 
@@ -232,9 +233,8 @@ public class SignatureAndRelatedData {
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (!jsonObj.get("signature").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `signature` to be a primitive type in the JSON string but got `%s`", jsonObj.get("signature").toString()));
-      }
+      // validate the required field `signature`
+      Signature.validateJsonElement(jsonObj.get("signature"));
       // ensure the json data is an array
       if (!jsonObj.get("values").isJsonArray()) {
         throw new IllegalArgumentException(String.format("Expected the field `values` to be an array in the JSON string but got `%s`", jsonObj.get("values").toString()));

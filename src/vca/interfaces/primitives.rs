@@ -54,12 +54,17 @@ pub mod types;
 pub type SpecificCreateSignerData = Arc<
     dyn Fn(
             Natural, // RNG seed
+            // Nonce for creating SignerPublicSetupDataCorrectnessProof?
             &[ClaimType],
             &[CredAttrIndex],
         ) -> VCAResult<(SignerPublicSetupData, SignerSecretData)>
         + Send
         + Sync,
 >;
+
+pub type VerifySignerPublicSetupDataCorrectnessProof =
+    // Nonce for verifying SignerPublicSetupDataCorrectnessProof?
+    Arc<dyn Fn(&SignerPublicSetupData) -> VCAResult<()> + Send + Sync>;
 
 pub type CreateAccumulatorData = Arc<
     dyn Fn(
@@ -72,6 +77,7 @@ pub type CreateAccumulatorData = Arc<
 pub type SpecificCreateBlindSigningInfo = Arc<
     dyn Fn(
             Natural, // RNG seed
+            &Nonce,
             &SignerPublicSetupData,
             &[ClaimType],
             &[CredAttrIndexAndDataValue], // Attributes to be blinded
@@ -80,9 +86,21 @@ pub type SpecificCreateBlindSigningInfo = Arc<
         + Sync,
 >;
 
+pub type VerifyBlindSigningInfoCorrectnessProof = Arc<
+    dyn Fn(
+            &SignerPublicSetupData,
+            &[CredAttrIndex],
+            &Nonce,
+            &BlindInfoForSigner
+        ) -> VCAResult<()>
+        + Send
+        + Sync,
+>;
+
 pub type SpecificSign = Arc<
     dyn Fn(
             Natural, // RNG seed
+            // Nonce for creating SignatureCorrectnessProof?
             &[DataValue],
             &SignerData,
         ) -> VCAResult<Signature>
@@ -90,9 +108,16 @@ pub type SpecificSign = Arc<
         + Sync,
 >;
 
+pub type VerifySignatureCorrectnessProof =
+    // Nonce for verifying SignatureCorrectnessProof?
+    Arc<dyn Fn(&SignerData, &Signature) -> VCAResult<()> + Send + Sync>;
+
+// TODO: reorder arguments following convention of creation order, also
+// check other primitves and nonprimitives
 pub type SpecificSignWithBlindedAttributes = Arc<
     dyn Fn(
             Natural, // RNG seed
+            // Nonce for creating BlindSignatureCorrectnessProof?
             &[ClaimType],
             &[CredAttrIndexAndDataValue], // Non-blinded attributes
             &BlindInfoForSigner,
@@ -102,6 +127,10 @@ pub type SpecificSignWithBlindedAttributes = Arc<
         + Send
         + Sync,
 >;
+
+pub type VerifyBlindSignatureCorrectnessProof =
+    // Nonce for verifying BlindSignatureCorrectnessProof?
+    Arc<dyn Fn(&SignerPublicSetupData, &BlindSignature) -> VCAResult<()> + Send + Sync>;
 
 pub type SpecificUnblindBlindedSignature = Arc<
     dyn Fn(

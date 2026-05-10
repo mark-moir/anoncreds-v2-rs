@@ -13,6 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
+import type { BlindSignature } from './BlindSignature';
+import {
+    BlindSignatureFromJSON,
+    BlindSignatureFromJSONTyped,
+    BlindSignatureToJSON,
+    BlindSignatureToJSONTyped,
+} from './BlindSignature';
 import type { CredAttrIndexAndDataValue } from './CredAttrIndexAndDataValue';
 import {
     CredAttrIndexAndDataValueFromJSON,
@@ -48,10 +55,10 @@ export interface UnblindBlindedSignatureRequest {
     blindedIndicesAndValues: Array<CredAttrIndexAndDataValue>;
     /**
      * The signature to be unblinded.
-     * @type {string}
+     * @type {BlindSignature}
      * @memberof UnblindBlindedSignatureRequest
      */
-    blindSignature: string;
+    blindSignature: BlindSignature;
     /**
      * See InfoForUnblinding.
      * @type {string}
@@ -83,7 +90,7 @@ export function UnblindBlindedSignatureRequestFromJSONTyped(json: any, ignoreDis
         
         'claimTypes': ((json['claimTypes'] as Array<any>).map(ClaimTypeFromJSON)),
         'blindedIndicesAndValues': ((json['blindedIndicesAndValues'] as Array<any>).map(CredAttrIndexAndDataValueFromJSON)),
-        'blindSignature': json['blindSignature'],
+        'blindSignature': BlindSignatureFromJSON(json['blindSignature']),
         'infoForUnblinding': json['infoForUnblinding'],
     };
 }
@@ -101,7 +108,7 @@ export function UnblindBlindedSignatureRequestToJSONTyped(value?: UnblindBlinded
         
         'claimTypes': ((value['claimTypes'] as Array<any>).map(ClaimTypeToJSON)),
         'blindedIndicesAndValues': ((value['blindedIndicesAndValues'] as Array<any>).map(CredAttrIndexAndDataValueToJSON)),
-        'blindSignature': value['blindSignature'],
+        'blindSignature': BlindSignatureToJSON(value['blindSignature']),
         'infoForUnblinding': value['infoForUnblinding'],
     };
 }

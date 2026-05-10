@@ -71,6 +71,9 @@ struct CreateBlindSigningInfoRequest {
     /// See SignerPublicData.
     signerPublicData: SignerPublicData,
 
+    /// Nonce binding the correctness proof.
+    nonce: String,
+
     /// The values to be blind signed.
     blindedIndicesAndValues: Vec<CredAttrIndexAndDataValue>,
 }
@@ -93,6 +96,7 @@ fn createBlindSigningInfo(
     let op = api.create_blind_signing_info;
     op(
         seed,
+        &dat.nonce,
         &dat.signerPublicData,
         &dat.blindedIndicesAndValues,
         ProofMode::Strict,
@@ -167,6 +171,133 @@ fn signWithBlindedAttributes(
         ProofMode::Strict,
     )
     .map_or_else(|e| vcaErr(e, "signWithBlindedAttributes"), |v| Ok(Json(v)))
+}
+
+// ------------------------------------------------------------------------------
+
+/// Verify a SignerPublicSetupData correctness proof.
+#[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
+struct VerifySignerPublicSetupDataCorrectnessProofRequest {
+    signerPublicSetupData: SignerPublicSetupData,
+}
+
+// Empty response indicates success
+#[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
+struct EmptyResponse {}
+
+#[openapi()]
+#[post(
+    "/vca/verifySignerPublicSetupDataCorrectnessProof?<zkp..>",
+    data = "<dat>"
+)]
+fn verifySignerPublicSetupDataCorrectnessProof(
+    zkp: ZkpLibQueryParam,
+    dat: crate::DataResult<'_, VerifySignerPublicSetupDataCorrectnessProofRequest>,
+) -> Result<Json<EmptyResponse>, (Status, Json<misc::Error>)> {
+    let api = getApiFromQP(zkp, "verifySignerPublicSetupDataCorrectnessProof")?;
+    let dat = dat.map_or_else(
+        |e| {
+            err(
+                format!("{:?}", e),
+                "verifySignerPublicSetupDataCorrectnessProof",
+            )
+        },
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.verify_signer_public_setup_data_correctness_proof;
+    op(&dat.signerPublicSetupData).map_or_else(
+        |e| vcaErr(e, "verifySignerPublicSetupDataCorrectnessProof"),
+        |_| Ok(Json(EmptyResponse {})),
+    )
+}
+
+// ------------------------------------------------------------------------------
+
+/// Verify a BlindSigningInfo correctness proof.
+#[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
+struct VerifyBlindSigningInfoCorrectnessProofRequest {
+    signerPublicSetupData: SignerPublicSetupData,
+    blindedAttributeIndices: Vec<CredAttrIndex>,
+    nonce: String,
+    blindInfoForSigner: BlindInfoForSigner,
+}
+
+#[openapi()]
+#[post("/vca/verifyBlindSigningInfoCorrectnessProof?<zkp..>", data = "<dat>")]
+fn verifyBlindSigningInfoCorrectnessProof(
+    zkp: ZkpLibQueryParam,
+    dat: crate::DataResult<'_, VerifyBlindSigningInfoCorrectnessProofRequest>,
+) -> Result<Json<EmptyResponse>, (Status, Json<misc::Error>)> {
+    let api = getApiFromQP(zkp, "verifyBlindSigningInfoCorrectnessProof")?;
+    let dat = dat.map_or_else(
+        |e| err(format!("{:?}", e), "verifyBlindSigningInfoCorrectnessProof"),
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.verify_blind_signing_info_correctness_proof;
+    op(
+        &dat.signerPublicSetupData,
+        &dat.blindedAttributeIndices,
+        &dat.nonce,
+        &dat.blindInfoForSigner,
+    )
+    .map_or_else(
+        |e| vcaErr(e, "verifyBlindSigningInfoCorrectnessProof"),
+        |_| Ok(Json(EmptyResponse {})),
+    )
+}
+
+// ------------------------------------------------------------------------------
+
+/// Verify a Signature correctness proof.
+#[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
+struct VerifySignatureCorrectnessProofRequest {
+    signerData: SignerData,
+    signature: Signature,
+}
+
+#[openapi()]
+#[post("/vca/verifySignatureCorrectnessProof?<zkp..>", data = "<dat>")]
+fn verifySignatureCorrectnessProof(
+    zkp: ZkpLibQueryParam,
+    dat: crate::DataResult<'_, VerifySignatureCorrectnessProofRequest>,
+) -> Result<Json<EmptyResponse>, (Status, Json<misc::Error>)> {
+    let api = getApiFromQP(zkp, "verifySignatureCorrectnessProof")?;
+    let dat = dat.map_or_else(
+        |e| err(format!("{:?}", e), "verifySignatureCorrectnessProof"),
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.verify_signature_correctness_proof;
+    op(&dat.signerData, &dat.signature).map_or_else(
+        |e| vcaErr(e, "verifySignatureCorrectnessProof"),
+        |_| Ok(Json(EmptyResponse {})),
+    )
+}
+
+// ------------------------------------------------------------------------------
+
+/// Verify a BlindSignature correctness proof.
+#[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
+struct VerifyBlindSignatureCorrectnessProofRequest {
+    signerPublicSetupData: SignerPublicSetupData,
+    blindSignature: BlindSignature,
+}
+
+#[openapi()]
+#[post("/vca/verifyBlindSignatureCorrectnessProof?<zkp..>", data = "<dat>")]
+fn verifyBlindSignatureCorrectnessProof(
+    zkp: ZkpLibQueryParam,
+    dat: crate::DataResult<'_, VerifyBlindSignatureCorrectnessProofRequest>,
+) -> Result<Json<EmptyResponse>, (Status, Json<misc::Error>)> {
+    let api = getApiFromQP(zkp, "verifyBlindSignatureCorrectnessProof")?;
+    let dat = dat.map_or_else(
+        |e| err(format!("{:?}", e), "verifyBlindSignatureCorrectnessProof"),
+        |v| Ok(v.into_inner()),
+    )?;
+    let op = api.verify_blind_signature_correctness_proof;
+    op(&dat.signerPublicSetupData, &dat.blindSignature).map_or_else(
+        |e| vcaErr(e, "verifyBlindSignatureCorrectnessProof"),
+        |_| Ok(Json(EmptyResponse {})),
+    )
 }
 
 // ------------------------------------------------------------------------------
@@ -597,10 +728,14 @@ async fn main() {
             "/",
             openapi_get_routes![
                 createSignerData,
+                verifySignerPublicSetupDataCorrectnessProof,
                 createBlindSigningInfo,
+                verifyBlindSigningInfoCorrectnessProof,
                 createAccumulatorData,
                 sign,
+                verifySignatureCorrectnessProof,
                 signWithBlindedAttributes,
+                verifyBlindSignatureCorrectnessProof,
                 unblindBlindedSignature,
                 createAccumulatorElement,
                 accumulatorAddRemove,

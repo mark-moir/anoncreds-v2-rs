@@ -59,6 +59,43 @@ paths:
       x-content-type: application/json
       x-accepts:
       - application/json
+  /vca/verifySignerPublicSetupDataCorrectnessProof:
+    post:
+      operationId: verifySignerPublicSetupDataCorrectnessProof
+      parameters:
+      - description: "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if\
+          \ missing)."
+        explode: true
+        in: query
+        name: zkpLib
+        required: true
+        schema:
+          description: "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error\
+            \ if missing)."
+          type: string
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifySignerPublicSetupDataCorrectnessProofRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: ""
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ""
+      x-content-type: application/json
+      x-accepts:
+      - application/json
   /vca/createBlindSigningInfo:
     post:
       description: Returns BlindSigningInfo
@@ -110,6 +147,43 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: ""
       summary: Create BlindSigningInfo
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /vca/verifyBlindSigningInfoCorrectnessProof:
+    post:
+      operationId: verifyBlindSigningInfoCorrectnessProof
+      parameters:
+      - description: "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if\
+          \ missing)."
+        explode: true
+        in: query
+        name: zkpLib
+        required: true
+        schema:
+          description: "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error\
+            \ if missing)."
+          type: string
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyBlindSigningInfoCorrectnessProofRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: ""
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ""
       x-content-type: application/json
       x-accepts:
       - application/json
@@ -214,6 +288,43 @@ paths:
       x-content-type: application/json
       x-accepts:
       - application/json
+  /vca/verifySignatureCorrectnessProof:
+    post:
+      operationId: verifySignatureCorrectnessProof
+      parameters:
+      - description: "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if\
+          \ missing)."
+        explode: true
+        in: query
+        name: zkpLib
+        required: true
+        schema:
+          description: "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error\
+            \ if missing)."
+          type: string
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifySignatureCorrectnessProofRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: ""
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ""
+      x-content-type: application/json
+      x-accepts:
+      - application/json
   /vca/signWithBlindedAttributes:
     post:
       description: Returns a BlindSignature.
@@ -266,6 +377,43 @@ paths:
           description: ""
       summary: "Create a BlindSignature from the given non-blinded values, blinding\
         \ info and SignerData."
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /vca/verifyBlindSignatureCorrectnessProof:
+    post:
+      operationId: verifyBlindSignatureCorrectnessProof
+      parameters:
+      - description: "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if\
+          \ missing)."
+        explode: true
+        in: query
+        name: zkpLib
+        required: true
+        schema:
+          description: "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error\
+            \ if missing)."
+          type: string
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyBlindSignatureCorrectnessProofRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: ""
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ""
       x-content-type: application/json
       x-accepts:
       - application/json
@@ -781,7 +929,9 @@ components:
       example:
         signerSecretData: signerSecretData
         signerPublicData:
-          signerPublicSetupData: signerPublicSetupData
+          signerPublicSetupData:
+            signerPublicSetupData: signerPublicSetupData
+            signerPublicSetupDataCorrectnessProof: signerPublicSetupDataCorrectnessProof
           signerPublicSchema:
           - CTText
           - CTText
@@ -801,7 +951,9 @@ components:
     SignerPublicData:
       description: A Signer's public keys and setup data.
       example:
-        signerPublicSetupData: signerPublicSetupData
+        signerPublicSetupData:
+          signerPublicSetupData: signerPublicSetupData
+          signerPublicSetupDataCorrectnessProof: signerPublicSetupDataCorrectnessProof
         signerPublicSchema:
         - CTText
         - CTText
@@ -810,8 +962,7 @@ components:
         - 0
       properties:
         signerPublicSetupData:
-          description: Data resulting from a Signer's setup.
-          type: string
+          $ref: '#/components/schemas/SignerPublicSetupData'
         signerPublicSchema:
           items:
             $ref: '#/components/schemas/ClaimType'
@@ -828,6 +979,20 @@ components:
       - signerPublicSetupData
       type: object
     SignerPublicSetupData:
+      example:
+        signerPublicSetupData: signerPublicSetupData
+        signerPublicSetupDataCorrectnessProof: signerPublicSetupDataCorrectnessProof
+      properties:
+        signerPublicSetupData:
+          type: string
+        signerPublicSetupDataCorrectnessProof:
+          description: Data resulting from a Signer's setup.
+          type: string
+      required:
+      - signerPublicSetupData
+      - signerPublicSetupDataCorrectnessProof
+      type: object
+    SignerPublicSetupDataCorrectnessProof:
       description: Data resulting from a Signer's setup.
       type: string
     ClaimType:
@@ -882,9 +1047,25 @@ components:
       - blindedAttributeIndices
       - claimTypes
       type: object
+    EmptyResponse:
+      type: object
+    VerifySignerPublicSetupDataCorrectnessProofRequest:
+      description: Verify a SignerPublicSetupData correctness proof.
+      example:
+        signerPublicSetupData:
+          signerPublicSetupData: signerPublicSetupData
+          signerPublicSetupDataCorrectnessProof: signerPublicSetupDataCorrectnessProof
+      properties:
+        signerPublicSetupData:
+          $ref: '#/components/schemas/SignerPublicSetupData'
+      required:
+      - signerPublicSetupData
+      type: object
     BlindSigningInfo:
       example:
-        blindInfoForSigner: blindInfoForSigner
+        blindInfoForSigner:
+          blindingInfo: blindingInfo
+          blindSigningInfoCorrectnessProof: blindSigningInfoCorrectnessProof
         infoForUnblinding: infoForUnblinding
         blindedAttributes:
         - index: 0
@@ -897,8 +1078,7 @@ components:
             tag: DVInt
       properties:
         blindInfoForSigner:
-          description: Info sent by requester to Signer to create blind signature
-          type: string
+          $ref: '#/components/schemas/BlindInfoForSigner'
         blindedAttributes:
           items:
             $ref: '#/components/schemas/CredAttrIndexAndDataValue'
@@ -912,7 +1092,26 @@ components:
       - infoForUnblinding
       type: object
     BlindInfoForSigner:
-      description: Info sent by requester to Signer to create blind signature
+      description: Info sent by requester to Signer to create blind signature. Carries
+        both the blinding commitment and its correctness proof so the general layer
+        can access the proof without backend-specific knowledge.
+      example:
+        blindingInfo: blindingInfo
+        blindSigningInfoCorrectnessProof: blindSigningInfoCorrectnessProof
+      properties:
+        blindingInfo:
+          type: string
+        blindSigningInfoCorrectnessProof:
+          description: Correctness proof for info sent by requester to Signer to create
+            blind signature
+          type: string
+      required:
+      - blindSigningInfoCorrectnessProof
+      - blindingInfo
+      type: object
+    BlindSigningInfoCorrectnessProof:
+      description: Correctness proof for info sent by requester to Signer to create
+        blind signature
       type: string
     CredAttrIndexAndDataValue:
       example:
@@ -953,11 +1152,15 @@ components:
           value:
             contents: 0
             tag: DVInt
+        nonce: nonce
       properties:
         signerPublicData:
           allOf:
           - $ref: '#/components/schemas/SignerPublicData'
           description: See SignerPublicData.
+        nonce:
+          description: Nonce binding the correctness proof.
+          type: string
         blindedIndicesAndValues:
           description: The values to be blind signed.
           items:
@@ -965,7 +1168,40 @@ components:
           type: array
       required:
       - blindedIndicesAndValues
+      - nonce
       - signerPublicData
+      type: object
+    VerifyBlindSigningInfoCorrectnessProofRequest:
+      description: Verify a BlindSigningInfo correctness proof.
+      example:
+        signerPublicSetupData:
+          signerPublicSetupData: signerPublicSetupData
+          signerPublicSetupDataCorrectnessProof: signerPublicSetupDataCorrectnessProof
+        blindInfoForSigner:
+          blindingInfo: blindingInfo
+          blindSigningInfoCorrectnessProof: blindSigningInfoCorrectnessProof
+        blindedAttributeIndices:
+        - 0
+        - 0
+        nonce: nonce
+      properties:
+        signerPublicSetupData:
+          $ref: '#/components/schemas/SignerPublicSetupData'
+        blindedAttributeIndices:
+          items:
+            format: uint64
+            minimum: 0.0
+            type: integer
+          type: array
+        nonce:
+          type: string
+        blindInfoForSigner:
+          $ref: '#/components/schemas/BlindInfoForSigner'
+      required:
+      - blindInfoForSigner
+      - blindedAttributeIndices
+      - nonce
+      - signerPublicSetupData
       type: object
     CreateAccumulatorResponse:
       description: Contains the AccumulatorData and the Accumulator.
@@ -1011,6 +1247,21 @@ components:
       type: string
     Signature:
       description: "A signature, based on the 'values', etc., given in a SignRequest."
+      example:
+        signature: signature
+        signatureCorrectnessProof: signatureCorrectnessProof
+      properties:
+        signature:
+          type: string
+        signatureCorrectnessProof:
+          description: Correctness proof for a signature
+          type: string
+      required:
+      - signature
+      - signatureCorrectnessProof
+      type: object
+    SignatureCorrectnessProof:
+      description: Correctness proof for a signature
       type: string
     SignRequest:
       description: "Sign the given values using the secret data, setup data and claim\
@@ -1036,16 +1287,59 @@ components:
       - signerData
       - values
       type: object
+    VerifySignatureCorrectnessProofRequest:
+      description: Verify a Signature correctness proof.
+      example:
+        signerData:
+          signerSecretData: signerSecretData
+          signerPublicData:
+            signerPublicSetupData:
+              signerPublicSetupData: signerPublicSetupData
+              signerPublicSetupDataCorrectnessProof: signerPublicSetupDataCorrectnessProof
+            signerPublicSchema:
+            - CTText
+            - CTText
+            signerBlindedAttrIdxs:
+            - 0
+            - 0
+        signature:
+          signature: signature
+          signatureCorrectnessProof: signatureCorrectnessProof
+      properties:
+        signerData:
+          $ref: '#/components/schemas/SignerData'
+        signature:
+          $ref: '#/components/schemas/Signature'
+      required:
+      - signature
+      - signerData
+      type: object
     BlindSignature:
-      description: "A blinded signature, based on the 'values', etc., given in a TODO\
-        \ -- what's this?"
+      description: A blinded signature
+      example:
+        blindSignatureCorrectnessProof: blindSignatureCorrectnessProof
+        blindSignature: blindSignature
+      properties:
+        blindSignature:
+          type: string
+        blindSignatureCorrectnessProof:
+          description: Correctness proof for a blinded signature
+          type: string
+      required:
+      - blindSignature
+      - blindSignatureCorrectnessProof
+      type: object
+    BlindSignatureCorrectnessProof:
+      description: Correctness proof for a blinded signature
       type: string
     SignWithBlindedAttributesRequest:
       description: Supplies non-blinded attributes and a commitment (BlindInfoForSigner)
         to the blinded attributes.
       example:
         signerData: ""
-        blindInfoForSigner: blindInfoForSigner
+        blindInfoForSigner:
+          blindingInfo: blindingInfo
+          blindSigningInfoCorrectnessProof: blindSigningInfoCorrectnessProof
         nonBlindedAttributes:
         - index: 0
           value:
@@ -1062,8 +1356,7 @@ components:
             $ref: '#/components/schemas/CredAttrIndexAndDataValue'
           type: array
         blindInfoForSigner:
-          description: Info sent by requester to Signer to create blind signature
-          type: string
+          $ref: '#/components/schemas/BlindInfoForSigner'
         signerData:
           allOf:
           - $ref: '#/components/schemas/SignerData'
@@ -1072,6 +1365,24 @@ components:
       - blindInfoForSigner
       - nonBlindedAttributes
       - signerData
+      type: object
+    VerifyBlindSignatureCorrectnessProofRequest:
+      description: Verify a BlindSignature correctness proof.
+      example:
+        signerPublicSetupData:
+          signerPublicSetupData: signerPublicSetupData
+          signerPublicSetupDataCorrectnessProof: signerPublicSetupDataCorrectnessProof
+        blindSignature:
+          blindSignatureCorrectnessProof: blindSignatureCorrectnessProof
+          blindSignature: blindSignature
+      properties:
+        signerPublicSetupData:
+          $ref: '#/components/schemas/SignerPublicSetupData'
+        blindSignature:
+          $ref: '#/components/schemas/BlindSignature'
+      required:
+      - blindSignature
+      - signerPublicSetupData
       type: object
     UnblindBlindedSignatureRequest:
       description: "Supplies blinded attributes, InfoForUnblinding and the BlindSignature\

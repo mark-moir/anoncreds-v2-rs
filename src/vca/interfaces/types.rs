@@ -84,10 +84,46 @@ impl SignerPublicData {
     }
 }
 
+// Note about "Correctness proofs"
+//
+// The AnonCreds spec includes various kinds of "correctness proofs", see:
+//
+//   https://anoncreds.github.io/anoncreds-spec/#verifying-the-key-correctness-proof
+//   https://anoncreds.github.io/anoncreds-spec/#the-blinded-link-secret-correctness-proof
+//   https://anoncreds.github.io/anoncreds-spec/#the-credential-signature-correctness-proof
+//
+// These require one party to prove to another some property about data it has created.  For
+// example, BlindSigningInfoCorrectnessProof contains proof that a party requesting a blinded
+// signature knows the blinding factor(s) used to create a commitment to the value(s) to be
+// blinded.
+//
+// Motivated by those, the SignerPublicData, BlindInfoForSigner, Signature and BlindSignature types
+// each have a field for a "correctness proof".
+//
+// Only BlindInfoForSigner has been properly addressed so far.  DNC creates an explicit proof, AC2C
+// does not because it is done as part of the BlindSignatureContext.  Signer verifies the proofs at
+// the General level (independent of specific backends), and there are happy path and tampering
+// tests at the General level, as well as support for backend-specific tamper tests.
+
+// TODO: For the remaining types (SignerPublicData, BlindInfoForSigner, Signature and
+// BlindSignature) correctness proofs are placeholders for now and the need for various backends to
+// implement analogous functionality has not been determined.
+
 /// Data resulting from a Signer's setup.
 #[derive(Clone, Eq, PartialEq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema)]
-pub struct SignerPublicSetupData(pub OpaqueMaterial);
-impl_Debug_for_OpaqueMaterial_wrapper! { SignerPublicSetupData }
+pub struct SignerPublicSetupDataCorrectnessProof(pub OpaqueMaterial);
+impl_Debug_for_OpaqueMaterial_wrapper! { SignerPublicSetupDataCorrectnessProof }
+
+#[derive(
+    Clone, Debug, Eq, PartialEq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema,
+)]
+pub struct SignerPublicSetupData {
+    #[serde(rename = "signerPublicSetupData")]
+    pub signer_public_setup_data: OpaqueMaterial,
+
+    #[serde(rename = "signerPublicSetupDataCorrectnessProof")]
+    pub signer_public_setup_data_correctness_proof: SignerPublicSetupDataCorrectnessProof,
+}
 
 /// A Signer's secret keys.
 #[derive(Clone, Eq, PartialEq, PartialOrd, Ord, Serialize, Deserialize, JsonSchema)]
@@ -148,22 +184,51 @@ impl fmt::Display for DataValue {
     }
 }
 
-/// A signature, based on the 'values', etc., given in a SignRequest.
-#[derive(Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
-pub struct Signature(pub OpaqueMaterial);
-impl_Debug_for_OpaqueMaterial_wrapper! { Signature }
+/// Correctness proof for a signature
+#[derive(Clone, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
+pub struct SignatureCorrectnessProof(pub OpaqueMaterial);
+impl_Debug_for_OpaqueMaterial_wrapper! { SignatureCorrectnessProof }
 
-impl Eq for Signature {}
+/// A signature, based on the 'values', etc., given in a SignRequest.
+#[derive(Clone, Eq, PartialEq, Serialize, Deserialize, JsonSchema, Debug)]
+pub struct Signature {
+    pub signature: OpaqueMaterial,
+
+    #[serde(rename = "signatureCorrectnessProof")]
+    pub signature_correctness_proof: SignatureCorrectnessProof,
+}
+
+/// Correctness proof for a blinded signature
+#[derive(Clone, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
+pub struct BlindSignatureCorrectnessProof(pub OpaqueMaterial);
+impl_Debug_for_OpaqueMaterial_wrapper! { BlindSignatureCorrectnessProof }
 
 /// A blinded signature
-#[derive(Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
-pub struct BlindSignature(pub OpaqueMaterial);
-impl_Debug_for_OpaqueMaterial_wrapper! { BlindSignature }
+#[derive(Clone, Eq, PartialEq, Serialize, Deserialize, JsonSchema, Debug)]
+pub struct BlindSignature {
+    #[serde(rename = "blindSignature")]
+    pub blind_signature: OpaqueMaterial,
 
-/// Info sent by requester to Signer to create blind signature
+    #[serde(rename = "blindSignatureCorrectnessProof")]
+    pub blind_signature_correctness_proof: BlindSignatureCorrectnessProof,
+}
+
+/// Correctness proof for info sent by requester to Signer to create blind signature
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
-pub struct BlindInfoForSigner(pub OpaqueMaterial);
-impl_Debug_for_OpaqueMaterial_wrapper! { BlindInfoForSigner }
+pub struct BlindSigningInfoCorrectnessProof(pub OpaqueMaterial);
+impl_Debug_for_OpaqueMaterial_wrapper! { BlindSigningInfoCorrectnessProof }
+
+/// Info sent by requester to Signer to create blind signature.
+/// Carries both the blinding commitment and its correctness proof so the
+/// general layer can access the proof without backend-specific knowledge.
+#[derive(Clone, Eq, PartialEq, Debug, Serialize, Deserialize, JsonSchema)]
+pub struct BlindInfoForSigner {
+    #[serde(rename = "blindingInfo")]
+    pub blinding_info: OpaqueMaterial,
+
+    #[serde(rename = "blindSigningInfoCorrectnessProof")]
+    pub blind_signing_info_correctness_proof: BlindSigningInfoCorrectnessProof,
+}
 
 /// Data retained by requester to unblind blind signature
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]

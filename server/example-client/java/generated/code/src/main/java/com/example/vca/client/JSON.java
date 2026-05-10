@@ -99,6 +99,8 @@ public class JSON {
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.AccumulatorAddRemoveResponse.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.AccumulatorData.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.AuthorityData.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.BlindInfoForSigner.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.BlindSignature.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.BlindSigningInfo.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.CreateAccumulatorResponse.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.CreateBlindSigningInfoRequest.CustomTypeAdapterFactory());
@@ -123,13 +125,19 @@ public class JSON {
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.SPVList.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.SignRequest.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.SignWithBlindedAttributesRequest.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.Signature.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.SignatureAndRelatedData.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.SignerData.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.SignerPublicData.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.SignerPublicSetupData.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.UnblindBlindedSignatureRequest.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.UpdateAccumulatorWitnessRequest.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.VerifyBlindSignatureCorrectnessProofRequest.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.VerifyBlindSigningInfoCorrectnessProofRequest.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.VerifyDecryptionRequest.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.VerifyProofRequest.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.VerifySignatureCorrectnessProofRequest.CustomTypeAdapterFactory());
+        gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.VerifySignerPublicSetupDataCorrectnessProofRequest.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.Warning.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.WarningUnsupportedFeature.CustomTypeAdapterFactory());
         gsonBuilder.registerTypeAdapterFactory(new com.example.vca.client.model.WarningRevealPrivacy.CustomTypeAdapterFactory());

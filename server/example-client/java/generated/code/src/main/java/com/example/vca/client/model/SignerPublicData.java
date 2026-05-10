@@ -14,6 +14,7 @@ package com.example.vca.client.model;
 
 import java.util.Objects;
 import com.example.vca.client.model.ClaimType;
+import com.example.vca.client.model.SignerPublicSetupData;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -54,7 +55,7 @@ public class SignerPublicData {
   public static final String SERIALIZED_NAME_SIGNER_PUBLIC_SETUP_DATA = "signerPublicSetupData";
   @SerializedName(SERIALIZED_NAME_SIGNER_PUBLIC_SETUP_DATA)
   @javax.annotation.Nonnull
-  private String signerPublicSetupData;
+  private SignerPublicSetupData signerPublicSetupData;
 
   public static final String SERIALIZED_NAME_SIGNER_PUBLIC_SCHEMA = "signerPublicSchema";
   @SerializedName(SERIALIZED_NAME_SIGNER_PUBLIC_SCHEMA)
@@ -69,21 +70,21 @@ public class SignerPublicData {
   public SignerPublicData() {
   }
 
-  public SignerPublicData signerPublicSetupData(@javax.annotation.Nonnull String signerPublicSetupData) {
+  public SignerPublicData signerPublicSetupData(@javax.annotation.Nonnull SignerPublicSetupData signerPublicSetupData) {
     this.signerPublicSetupData = signerPublicSetupData;
     return this;
   }
 
   /**
-   * Data resulting from a Signer&#39;s setup.
+   * Get signerPublicSetupData
    * @return signerPublicSetupData
    */
   @javax.annotation.Nonnull
-  public String getSignerPublicSetupData() {
+  public SignerPublicSetupData getSignerPublicSetupData() {
     return signerPublicSetupData;
   }
 
-  public void setSignerPublicSetupData(@javax.annotation.Nonnull String signerPublicSetupData) {
+  public void setSignerPublicSetupData(@javax.annotation.Nonnull SignerPublicSetupData signerPublicSetupData) {
     this.signerPublicSetupData = signerPublicSetupData;
   }
 
@@ -230,9 +231,8 @@ public class SignerPublicData {
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (!jsonObj.get("signerPublicSetupData").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `signerPublicSetupData` to be a primitive type in the JSON string but got `%s`", jsonObj.get("signerPublicSetupData").toString()));
-      }
+      // validate the required field `signerPublicSetupData`
+      SignerPublicSetupData.validateJsonElement(jsonObj.get("signerPublicSetupData"));
       // ensure the required json array is present
       if (jsonObj.get("signerPublicSchema") == null) {
         throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");

@@ -57,6 +57,11 @@ public class CreateBlindSigningInfoRequest {
   @javax.annotation.Nonnull
   private SignerPublicData signerPublicData;
 
+  public static final String SERIALIZED_NAME_NONCE = "nonce";
+  @SerializedName(SERIALIZED_NAME_NONCE)
+  @javax.annotation.Nonnull
+  private String nonce;
+
   public static final String SERIALIZED_NAME_BLINDED_INDICES_AND_VALUES = "blindedIndicesAndValues";
   @SerializedName(SERIALIZED_NAME_BLINDED_INDICES_AND_VALUES)
   @javax.annotation.Nonnull
@@ -81,6 +86,25 @@ public class CreateBlindSigningInfoRequest {
 
   public void setSignerPublicData(@javax.annotation.Nonnull SignerPublicData signerPublicData) {
     this.signerPublicData = signerPublicData;
+  }
+
+
+  public CreateBlindSigningInfoRequest nonce(@javax.annotation.Nonnull String nonce) {
+    this.nonce = nonce;
+    return this;
+  }
+
+  /**
+   * Nonce binding the correctness proof.
+   * @return nonce
+   */
+  @javax.annotation.Nonnull
+  public String getNonce() {
+    return nonce;
+  }
+
+  public void setNonce(@javax.annotation.Nonnull String nonce) {
+    this.nonce = nonce;
   }
 
 
@@ -122,12 +146,13 @@ public class CreateBlindSigningInfoRequest {
     }
     CreateBlindSigningInfoRequest createBlindSigningInfoRequest = (CreateBlindSigningInfoRequest) o;
     return Objects.equals(this.signerPublicData, createBlindSigningInfoRequest.signerPublicData) &&
+        Objects.equals(this.nonce, createBlindSigningInfoRequest.nonce) &&
         Objects.equals(this.blindedIndicesAndValues, createBlindSigningInfoRequest.blindedIndicesAndValues);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(signerPublicData, blindedIndicesAndValues);
+    return Objects.hash(signerPublicData, nonce, blindedIndicesAndValues);
   }
 
   @Override
@@ -135,6 +160,7 @@ public class CreateBlindSigningInfoRequest {
     StringBuilder sb = new StringBuilder();
     sb.append("class CreateBlindSigningInfoRequest {\n");
     sb.append("    signerPublicData: ").append(toIndentedString(signerPublicData)).append("\n");
+    sb.append("    nonce: ").append(toIndentedString(nonce)).append("\n");
     sb.append("    blindedIndicesAndValues: ").append(toIndentedString(blindedIndicesAndValues)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -159,11 +185,13 @@ public class CreateBlindSigningInfoRequest {
     // a set of all properties/fields (JSON key names)
     openapiFields = new HashSet<String>();
     openapiFields.add("signerPublicData");
+    openapiFields.add("nonce");
     openapiFields.add("blindedIndicesAndValues");
 
     // a set of required properties/fields (JSON key names)
     openapiRequiredFields = new HashSet<String>();
     openapiRequiredFields.add("signerPublicData");
+    openapiRequiredFields.add("nonce");
     openapiRequiredFields.add("blindedIndicesAndValues");
   }
 
@@ -197,6 +225,9 @@ public class CreateBlindSigningInfoRequest {
         JsonObject jsonObj = jsonElement.getAsJsonObject();
       // validate the required field `signerPublicData`
       SignerPublicData.validateJsonElement(jsonObj.get("signerPublicData"));
+      if (!jsonObj.get("nonce").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format("Expected the field `nonce` to be a primitive type in the JSON string but got `%s`", jsonObj.get("nonce").toString()));
+      }
       // ensure the json data is an array
       if (!jsonObj.get("blindedIndicesAndValues").isJsonArray()) {
         throw new IllegalArgumentException(String.format("Expected the field `blindedIndicesAndValues` to be an array in the JSON string but got `%s`", jsonObj.get("blindedIndicesAndValues").toString()));

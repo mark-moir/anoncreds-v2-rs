@@ -4,6 +4,7 @@ use crate::vca::interfaces::types::ProofMode::*;
 use crate::vca::r#impl::general::signer::create_signer_data;
 use crate::vca::r#impl::to_from_api::*;
 use crate::vca::zkp_backends::ac2c::signer::specific_create_signer_data;
+use crate::vca::zkp_backends::ac2c::signer::verify_signer_public_setup_data_correctness_proof;
 use crate::vca::VCAResult;
 // ------------------------------------------------------------------------------
 use crate::knox::short_group_sig_core::short_group_traits::ShortGroupSignatureScheme;
@@ -17,7 +18,10 @@ use std::sync::Arc;
 // future, but not before AC2C supports decryption.  Therefore, for now, we create a dummy Issuer to
 // be used only for the purposes of verifiable encryption.
 pub fn create_authority_data<S: ShortGroupSignatureScheme>() -> CreateAuthorityData {
-    let create_signer_data = create_signer_data(specific_create_signer_data::<S>());
+    let create_signer_data = create_signer_data(
+        specific_create_signer_data::<S>(),
+        verify_signer_public_setup_data_correctness_proof(),
+    );
     Arc::new(move |rng_seed| {
         // The schema is empty because we use the API-level create_signer_data, which adds the revocation
         // claim required by AC2C's "opinionated" requirement
@@ -40,7 +44,7 @@ pub fn create_authority_data<S: ShortGroupSignatureScheme>() -> CreateAuthorityD
             ..
         } = from_api(&signer_secret_data)?;
         Ok(AuthorityData::new(
-            AuthorityPublicData(signer_public_setup_data.0),
+            AuthorityPublicData(signer_public_setup_data.signer_public_setup_data.clone()),
             AuthoritySecretData("BOGUS-AUTHORITY-DOES-NOT-SIGN-ANYTHING".to_string()),
             to_api(verifiable_decryption_key)?,
         ))

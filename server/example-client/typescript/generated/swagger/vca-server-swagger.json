@@ -68,6 +68,55 @@
         }
       }
     },
+    "/vca/verifySignerPublicSetupDataCorrectnessProof": {
+      "post": {
+        "operationId": "verifySignerPublicSetupDataCorrectnessProof",
+        "parameters": [
+          {
+            "name": "zkpLib",
+            "in": "query",
+            "description": "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing).",
+            "required": true,
+            "schema": {
+              "description": "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing).",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifySignerPublicSetupDataCorrectnessProofRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmptyResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/vca/createBlindSigningInfo": {
       "post": {
         "summary": "Create BlindSigningInfo",
@@ -114,6 +163,55 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BlindSigningInfo"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vca/verifyBlindSigningInfoCorrectnessProof": {
+      "post": {
+        "operationId": "verifyBlindSigningInfoCorrectnessProof",
+        "parameters": [
+          {
+            "name": "zkpLib",
+            "in": "query",
+            "description": "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing).",
+            "required": true,
+            "schema": {
+              "description": "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing).",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyBlindSigningInfoCorrectnessProofRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmptyResponse"
                 }
               }
             }
@@ -247,6 +345,55 @@
         }
       }
     },
+    "/vca/verifySignatureCorrectnessProof": {
+      "post": {
+        "operationId": "verifySignatureCorrectnessProof",
+        "parameters": [
+          {
+            "name": "zkpLib",
+            "in": "query",
+            "description": "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing).",
+            "required": true,
+            "schema": {
+              "description": "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing).",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifySignatureCorrectnessProofRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmptyResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/vca/signWithBlindedAttributes": {
       "post": {
         "summary": "Create a BlindSignature from the given non-blinded values, blinding info and SignerData.",
@@ -293,6 +440,55 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BlindSignature"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vca/verifyBlindSignatureCorrectnessProof": {
+      "post": {
+        "operationId": "verifyBlindSignatureCorrectnessProof",
+        "parameters": [
+          {
+            "name": "zkpLib",
+            "in": "query",
+            "description": "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing).",
+            "required": true,
+            "schema": {
+              "description": "Which ZKP library to use. AC2C_BBS, AC2C_PS or DNC (error if missing).",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyBlindSignatureCorrectnessProofRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmptyResponse"
                 }
               }
             }
@@ -983,6 +1179,21 @@
         }
       },
       "SignerPublicSetupData": {
+        "type": "object",
+        "required": [
+          "signerPublicSetupData",
+          "signerPublicSetupDataCorrectnessProof"
+        ],
+        "properties": {
+          "signerPublicSetupData": {
+            "type": "string"
+          },
+          "signerPublicSetupDataCorrectnessProof": {
+            "$ref": "#/components/schemas/SignerPublicSetupDataCorrectnessProof"
+          }
+        }
+      },
+      "SignerPublicSetupDataCorrectnessProof": {
         "description": "Data resulting from a Signer's setup.",
         "type": "string"
       },
@@ -1041,6 +1252,21 @@
           }
         }
       },
+      "EmptyResponse": {
+        "type": "object"
+      },
+      "VerifySignerPublicSetupDataCorrectnessProofRequest": {
+        "description": "Verify a SignerPublicSetupData correctness proof.",
+        "type": "object",
+        "required": [
+          "signerPublicSetupData"
+        ],
+        "properties": {
+          "signerPublicSetupData": {
+            "$ref": "#/components/schemas/SignerPublicSetupData"
+          }
+        }
+      },
       "BlindSigningInfo": {
         "type": "object",
         "required": [
@@ -1064,7 +1290,23 @@
         }
       },
       "BlindInfoForSigner": {
-        "description": "Info sent by requester to Signer to create blind signature",
+        "description": "Info sent by requester to Signer to create blind signature. Carries both the blinding commitment and its correctness proof so the general layer can access the proof without backend-specific knowledge.",
+        "type": "object",
+        "required": [
+          "blindSigningInfoCorrectnessProof",
+          "blindingInfo"
+        ],
+        "properties": {
+          "blindingInfo": {
+            "type": "string"
+          },
+          "blindSigningInfoCorrectnessProof": {
+            "$ref": "#/components/schemas/BlindSigningInfoCorrectnessProof"
+          }
+        }
+      },
+      "BlindSigningInfoCorrectnessProof": {
+        "description": "Correctness proof for info sent by requester to Signer to create blind signature",
         "type": "string"
       },
       "CredAttrIndexAndDataValue": {
@@ -1136,6 +1378,7 @@
         "type": "object",
         "required": [
           "blindedIndicesAndValues",
+          "nonce",
           "signerPublicData"
         ],
         "properties": {
@@ -1147,12 +1390,45 @@
               }
             ]
           },
+          "nonce": {
+            "description": "Nonce binding the correctness proof.",
+            "type": "string"
+          },
           "blindedIndicesAndValues": {
             "description": "The values to be blind signed.",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CredAttrIndexAndDataValue"
             }
+          }
+        }
+      },
+      "VerifyBlindSigningInfoCorrectnessProofRequest": {
+        "description": "Verify a BlindSigningInfo correctness proof.",
+        "type": "object",
+        "required": [
+          "blindInfoForSigner",
+          "blindedAttributeIndices",
+          "nonce",
+          "signerPublicSetupData"
+        ],
+        "properties": {
+          "signerPublicSetupData": {
+            "$ref": "#/components/schemas/SignerPublicSetupData"
+          },
+          "blindedAttributeIndices": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            }
+          },
+          "nonce": {
+            "type": "string"
+          },
+          "blindInfoForSigner": {
+            "$ref": "#/components/schemas/BlindInfoForSigner"
           }
         }
       },
@@ -1202,6 +1478,22 @@
       },
       "Signature": {
         "description": "A signature, based on the 'values', etc., given in a SignRequest.",
+        "type": "object",
+        "required": [
+          "signature",
+          "signatureCorrectnessProof"
+        ],
+        "properties": {
+          "signature": {
+            "type": "string"
+          },
+          "signatureCorrectnessProof": {
+            "$ref": "#/components/schemas/SignatureCorrectnessProof"
+          }
+        }
+      },
+      "SignatureCorrectnessProof": {
+        "description": "Correctness proof for a signature",
         "type": "string"
       },
       "SignRequest": {
@@ -1229,8 +1521,40 @@
           }
         }
       },
+      "VerifySignatureCorrectnessProofRequest": {
+        "description": "Verify a Signature correctness proof.",
+        "type": "object",
+        "required": [
+          "signature",
+          "signerData"
+        ],
+        "properties": {
+          "signerData": {
+            "$ref": "#/components/schemas/SignerData"
+          },
+          "signature": {
+            "$ref": "#/components/schemas/Signature"
+          }
+        }
+      },
       "BlindSignature": {
-        "description": "A blinded signature, based on the 'values', etc., given in a TODO -- what's this?",
+        "description": "A blinded signature",
+        "type": "object",
+        "required": [
+          "blindSignature",
+          "blindSignatureCorrectnessProof"
+        ],
+        "properties": {
+          "blindSignature": {
+            "type": "string"
+          },
+          "blindSignatureCorrectnessProof": {
+            "$ref": "#/components/schemas/BlindSignatureCorrectnessProof"
+          }
+        }
+      },
+      "BlindSignatureCorrectnessProof": {
+        "description": "Correctness proof for a blinded signature",
         "type": "string"
       },
       "SignWithBlindedAttributesRequest": {
@@ -1259,6 +1583,22 @@
                 "$ref": "#/components/schemas/SignerData"
               }
             ]
+          }
+        }
+      },
+      "VerifyBlindSignatureCorrectnessProofRequest": {
+        "description": "Verify a BlindSignature correctness proof.",
+        "type": "object",
+        "required": [
+          "blindSignature",
+          "signerPublicSetupData"
+        ],
+        "properties": {
+          "signerPublicSetupData": {
+            "$ref": "#/components/schemas/SignerPublicSetupData"
+          },
+          "blindSignature": {
+            "$ref": "#/components/schemas/BlindSignature"
           }
         }
       },

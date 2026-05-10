@@ -12,7 +12,10 @@ use std::rc::Rc;
 use std::sync::Arc;
 // ----------------------------------------------------------------------------
 
-pub fn create_signer_data(spec_create_signer_data: SpecificCreateSignerData) -> CreateSignerData {
+pub fn create_signer_data(
+    spec_create_signer_data: SpecificCreateSignerData,
+    verify_signer_public_setup_data_correctness_proof: VerifySignerPublicSetupDataCorrectnessProof,
+) -> CreateSignerData {
     Arc::new(move |rng_seed, schema, blind_attr_idxs, proof_mode| {
         // Keep indices sorted to facilitate comparison when checking correct indices provided
         let mut blind_attr_idxs: Vec<_> = blind_attr_idxs.to_vec();
@@ -34,9 +37,11 @@ pub fn create_signer_data(spec_create_signer_data: SpecificCreateSignerData) -> 
 
 pub fn create_blind_signing_info(
     spec_create_blind_signing_info: SpecificCreateBlindSigningInfo,
+    verify_blind_signing_info_correctness_proof: VerifyBlindSigningInfoCorrectnessProof,
 ) -> CreateBlindSigningInfo {
     Arc::new(
         move |rng_seed,
+              nonce,
               SignerPublicData {
                   signer_public_setup_data,
                   signer_public_schema,
@@ -62,6 +67,7 @@ pub fn create_blind_signing_info(
             }
             spec_create_blind_signing_info(
                 rng_seed,
+                nonce,
                 signer_public_setup_data,
                 signer_public_schema,
                 blinded_attrs,
@@ -70,7 +76,9 @@ pub fn create_blind_signing_info(
     )
 }
 
-pub fn sign(spec_sign: SpecificSign) -> Sign {
+pub fn sign(
+    spec_sign: SpecificSign,
+) -> Sign {
     Arc::new(
         move |rng_seed,
               vals,
@@ -97,6 +105,8 @@ pub fn sign(spec_sign: SpecificSign) -> Sign {
     )
 }
 
+/// Sign with blinded attributes.  Caller is assumed to have verified the BlindInfoForSigner
+/// correctness proof before signing
 pub fn sign_with_blinded_attributes(
     spec_sign_wba: SpecificSignWithBlindedAttributes,
 ) -> SignWithBlindedAttributes {

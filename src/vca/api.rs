@@ -25,6 +25,11 @@ pub struct VcaApi {
     pub create_blind_signing_info: CreateBlindSigningInfo,
     pub sign_with_blinded_attributes: SignWithBlindedAttributes,
     pub unblind_blinded_signature: UnblindBlindedSignature,
+    pub verify_signer_public_setup_data_correctness_proof:
+        VerifySignerPublicSetupDataCorrectnessProof,
+    pub verify_blind_signing_info_correctness_proof: VerifyBlindSigningInfoCorrectnessProof,
+    pub verify_signature_correctness_proof: VerifySignatureCorrectnessProof,
+    pub verify_blind_signature_correctness_proof: VerifyBlindSignatureCorrectnessProof,
     // Range proof setup
     pub create_range_proof_proving_key: CreateRangeProofProvingKey,
     // This function should return the largest value for which the underlying ZKP

@@ -13,6 +13,7 @@
 package com.example.vca.client.model;
 
 import java.util.Objects;
+import com.example.vca.client.model.BlindSignature;
 import com.example.vca.client.model.ClaimType;
 import com.example.vca.client.model.CredAttrIndexAndDataValue;
 import com.google.gson.TypeAdapter;
@@ -65,7 +66,7 @@ public class UnblindBlindedSignatureRequest {
   public static final String SERIALIZED_NAME_BLIND_SIGNATURE = "blindSignature";
   @SerializedName(SERIALIZED_NAME_BLIND_SIGNATURE)
   @javax.annotation.Nonnull
-  private String blindSignature;
+  private BlindSignature blindSignature;
 
   public static final String SERIALIZED_NAME_INFO_FOR_UNBLINDING = "infoForUnblinding";
   @SerializedName(SERIALIZED_NAME_INFO_FOR_UNBLINDING)
@@ -129,7 +130,7 @@ public class UnblindBlindedSignatureRequest {
   }
 
 
-  public UnblindBlindedSignatureRequest blindSignature(@javax.annotation.Nonnull String blindSignature) {
+  public UnblindBlindedSignatureRequest blindSignature(@javax.annotation.Nonnull BlindSignature blindSignature) {
     this.blindSignature = blindSignature;
     return this;
   }
@@ -139,11 +140,11 @@ public class UnblindBlindedSignatureRequest {
    * @return blindSignature
    */
   @javax.annotation.Nonnull
-  public String getBlindSignature() {
+  public BlindSignature getBlindSignature() {
     return blindSignature;
   }
 
-  public void setBlindSignature(@javax.annotation.Nonnull String blindSignature) {
+  public void setBlindSignature(@javax.annotation.Nonnull BlindSignature blindSignature) {
     this.blindSignature = blindSignature;
   }
 
@@ -275,9 +276,8 @@ public class UnblindBlindedSignatureRequest {
       for (int i = 0; i < jsonArrayblindedIndicesAndValues.size(); i++) {
         CredAttrIndexAndDataValue.validateJsonElement(jsonArrayblindedIndicesAndValues.get(i));
       };
-      if (!jsonObj.get("blindSignature").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `blindSignature` to be a primitive type in the JSON string but got `%s`", jsonObj.get("blindSignature").toString()));
-      }
+      // validate the required field `blindSignature`
+      BlindSignature.validateJsonElement(jsonObj.get("blindSignature"));
       if (!jsonObj.get("infoForUnblinding").isJsonPrimitive()) {
         throw new IllegalArgumentException(String.format("Expected the field `infoForUnblinding` to be a primitive type in the JSON string but got `%s`", jsonObj.get("infoForUnblinding").toString()));
       }

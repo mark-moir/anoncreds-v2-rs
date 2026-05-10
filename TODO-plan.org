@@ -2,8 +2,81 @@
 
 * TODOs
 
+
+** API changes
+*** DONE src/vca/interfaces/primitives.rs                      - correctness proof interfaces added
+    - Added verifier function aliases, ProofMode skip variants, and General-layer hooks.
+*** DONE src/vca/interfaces/types.rs:163                       - reshape BlindInfoForSigner to include commitment and correctness proof
+CLOSED: [2026-05-06 Wed]
+    - BlindInfoForSigner is now a struct carrying blinding commitment and correctness proof
+*** DONE src/vca/interfaces/types.rs:187                       - remove correctness proof field from BlindSigningInfo once folded into BlindInfoForSigner struct
+CLOSED: [2026-05-06 Wed]
+    - Correctness proof removed from BlindSigningInfo; lives inside BlindInfoForSigner
+
+*** DONE - update server and examples due to type changes
+CLOSED: [2026-05-08 Fri 14:03]
+- State "DONE"       from "TODO"       [2026-05-08 Fri 14:03]
+*** DONE src/vca/impl/general/signer.rs:44                     - add nonce input to create_blind_signing_info
+CLOSED: [2026-05-08 Fri]
+    - API now takes explicit Nonce argument (propagated to specific create), removing placeholder.
+*** DONE src/vca/impl/general/signer.rs:70                     - pass nonce through when building blind signing info
+CLOSED: [2026-05-08 Fri]
+    - General layer threads caller-supplied nonce into SpecificCreateBlindSigningInfo.
+*** DONE src/vca/zkp_backends/dnc/signer.rs:213                - thread nonce into DNC blind signing info creation
+CLOSED: [2026-05-08 Fri]
+    - SpecificCreateBlindSigningInfo now accepts nonce and mixes it into blinder.
+*** DONE src/vca/zkp_backends/dnc/signer.rs:223                - include nonce contribution in blinded message commitment
+CLOSED: [2026-05-08 Fri]
+    - Blinder includes field element derived from caller nonce.
+
+** Correctness proof verification stubs
+*** DONE src/vca/zkp_backends/dnc/signer.rs:362               - implement blind signing info correctness verification (currently returns Verified)
+    - now verifies blind info proof via verify_blind_info_correctness_proof
+*** DROP src/vca/zkp_backends/ac2c/signer.rs:299              - implement blind signing info correctness verification (currently returns Verified)
+CLOSED: [2026-05-07 Thu 11:55]
+- State "DROP"       from "DONE"       [2026-05-07 Thu 11:55]
+- State "DONE"       from "TODO"       [2026-05-07 Thu 11:55]
+    // TODO: implement correctness proof verification instead of always returning Verified
+    - commented on why unnecessary
+*** TODO various                                              - various types of correctness proofs needed
+    - BlindSigningInfo contains a correctness proof; DNC implements it explicitly, while AC2C signature schemes include it (not currently surfaced)
+    - Correctness proofs for other types SignerPublicData, Signature and BlindSignature also have fields for correctness proofs, but these
+      have not been implemented or investigated for existing backends.  Search for "TODO-proof" to see where bogus placeholders are currently created
+*** TODO src/vca/zkp_backends/dnc/signer.rs:355               - implement signer public setup correctness verification (currently returns Verified)
+    // TODO: implement correctness proof verification instead of always returning Verified
+*** TODO src/vca/zkp_backends/dnc/signer.rs:391               - implement signature correctness verification (currently returns Verified)
+    // TODO: implement correctness proof verification instead of always returning Verified
+*** TODO src/vca/zkp_backends/dnc/signer.rs:398               - implement blind signature correctness verification (currently returns Verified)
+    // TODO: implement correctness proof verification instead of always returning Verified
+*** TODO src/vca/zkp_backends/ac2c/signer.rs:294              - implement signer public setup correctness verification (currently returns Verified)
+    // TODO: implement correctness proof verification instead of always returning Verified
+*** TODO src/vca/zkp_backends/ac2c/signer.rs:318              - implement signature correctness verification (currently returns Verified)
+    // TODO: implement correctness proof verification instead of always returning Verified
+*** TODO src/vca/zkp_backends/ac2c/signer.rs:325              - implement blind signature correctness verification (currently returns Verified)
+    // TODO: implement correctness proof verification instead of always returning Verified
+*** DONE src/vca/impl/general/signer.rs:91                    - avoid verifying blind signing info we just built; signer should verify
+CLOSED: [2026-05-07 Thu 11:54]
+- State "DONE"       from "TODO"       [2026-05-07 Thu 11:54]
+    // TODO: doesn't make sense to verify proof we just created, other than
+*** DONE src/vca/impl/general/signer.rs:229                   - avoid verifying blind signature proof we just built; holder should verify
+CLOSED: [2026-05-07 Thu 11:54]
+- State "DONE"       from "TODO"       [2026-05-07 Thu 11:54]
+    // TODO: doesn't make sense to verify proof we just created, other than
+*** DONE tests/vca/test_framework/steps.rs:278                - verify blind_signing_info_correctness_proof in test harness
+CLOSED: [2026-05-07 Thu]
+    - step now errors if blind_signing_info_correctness_proof is missing
+*** DONE tests/vca/zkp_functionality_tests/blind_signing_common.rs:130 - verify blind signing info correctness proof before signing
+    (api.verify_blind_signing_info_correctness_proof.clone())(
 ** BlindSigningCorrectnessProof related
-*** TODO src/vca/zkp_backends/dnc/signer.rs:63                 - abstraction fail?
+*** DONE src/vca/zkp_backends/dnc/to_from_api/signer_to_from_api.rs:100 - update to/from conversion when BlindInfoForSigner becomes structured
+CLOSED: [2026-05-06 Wed]
+    - Added conversions for structured BlindInfoForSigner carrying commitment + correctness proof
+*** DONE src/vca/zkp_backends/dnc/signer.rs:90                 - abstraction fail?
+    - Proof now uses proof_system Pedersen-commitment PoK
+*** DONE src/vca/zkp_backends/dnc/signer.rs:214               - eliminate BlindInfoForSignerPayload; move correctness proof into BlindSigningInfo
+    - BlindSigningInfo now carries commitment; correctness proof in blind_signing_info_correctness_proof
+*** DONE src/vca/zkp_backends/dnc/types.rs:41                 - eliminate BlindInfoForSignerPayload wrapper type
+    - Removed payload wrapper; BlindInfoCorrectnessProof remains as Proof<Bls12_381>
 
 ** Security - must do
 *** DONE src/vca/zkp_backends/dnc/proof.rs:48                  - use real seed
@@ -30,11 +103,14 @@
       - [DataValue::DVText(x)] => Ok(x), // TODO: temporary workaround, or reasonable semantic change?
       - This would go away if we eliminated =SPVList=, which we never ended up using
       - suspended because it will require updating server and example workloads
-*** SUSP src/vca/interfaces/types.rs:222                       - eliminate NotInAccum
+*** SUSP src/vca/interfaces/types.rs:291                       - eliminate NotInAccum
       - // TODO: remove?
       - remove NotInAccum and eveything related to it
       - check that "cargo test 000" still passes
       - suspended because it will require updating server and example workloads
+*** DONE src/vca/interfaces/types.rs:778               - eliminate CorrectnessVerificationResult type; return VcaResult<()>
+CLOSED: [2026-05-07 Thu]
+      - CorrectnessVerificationResult removed; verification functions now return VCAResult<()>
 
 ** Server and example clients
 *** SUSP the server seems to only handle requests sequentially - investigate and make parallel

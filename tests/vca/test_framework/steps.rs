@@ -211,6 +211,7 @@ pub fn step_create_blind_signing_info(
         )?;
         let bsi = create_blind_signing_info(
             0,
+            &TestState::default_nonce(),
             &sd.signer_public_data,
             &blinded_vals,
             proof_mode.clone(),

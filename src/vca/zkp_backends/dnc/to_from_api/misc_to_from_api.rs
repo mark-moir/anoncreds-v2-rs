@@ -1,6 +1,9 @@
 // ------------------------------------------------------------------------------
 use crate::vca::interfaces::types as api;
 use crate::vca::r#impl::to_from_api::*;
+use crate::vca::zkp_backends::dnc::to_from_api::signer_to_from_api::{
+    DncSignatureCorrectnessProof, DncSignatureWithProof,
+};
 use crate::vca::zkp_backends::dnc::types::*;
 use crate::vca::{Error, VCAResult};
 // ------------------------------------------------------------------------------
@@ -14,7 +17,10 @@ impl VcaTryFrom<(ImplSignature, Vec<api::DataValue>, AccumWitnesses)>
     fn vca_try_from(
         (s, values, w): (ImplSignature, Vec<api::DataValue>, AccumWitnesses),
     ) -> VCAResult<api::SignatureAndRelatedData> {
-        let signature = to_api(s)?;
+        let signature = to_api(DncSignatureWithProof {
+            signature: s,
+            correctness_proof: DncSignatureCorrectnessProof("TODO-proof".to_string()),
+        })?;
         let accumulator_witnesses = to_api(w)?;
         Ok(api::SignatureAndRelatedData {
             signature,

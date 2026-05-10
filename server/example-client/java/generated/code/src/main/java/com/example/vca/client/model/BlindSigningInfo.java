@@ -13,6 +13,7 @@
 package com.example.vca.client.model;
 
 import java.util.Objects;
+import com.example.vca.client.model.BlindInfoForSigner;
 import com.example.vca.client.model.CredAttrIndexAndDataValue;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
@@ -54,7 +55,7 @@ public class BlindSigningInfo {
   public static final String SERIALIZED_NAME_BLIND_INFO_FOR_SIGNER = "blindInfoForSigner";
   @SerializedName(SERIALIZED_NAME_BLIND_INFO_FOR_SIGNER)
   @javax.annotation.Nonnull
-  private String blindInfoForSigner;
+  private BlindInfoForSigner blindInfoForSigner;
 
   public static final String SERIALIZED_NAME_BLINDED_ATTRIBUTES = "blindedAttributes";
   @SerializedName(SERIALIZED_NAME_BLINDED_ATTRIBUTES)
@@ -69,21 +70,21 @@ public class BlindSigningInfo {
   public BlindSigningInfo() {
   }
 
-  public BlindSigningInfo blindInfoForSigner(@javax.annotation.Nonnull String blindInfoForSigner) {
+  public BlindSigningInfo blindInfoForSigner(@javax.annotation.Nonnull BlindInfoForSigner blindInfoForSigner) {
     this.blindInfoForSigner = blindInfoForSigner;
     return this;
   }
 
   /**
-   * Info sent by requester to Signer to create blind signature
+   * Get blindInfoForSigner
    * @return blindInfoForSigner
    */
   @javax.annotation.Nonnull
-  public String getBlindInfoForSigner() {
+  public BlindInfoForSigner getBlindInfoForSigner() {
     return blindInfoForSigner;
   }
 
-  public void setBlindInfoForSigner(@javax.annotation.Nonnull String blindInfoForSigner) {
+  public void setBlindInfoForSigner(@javax.annotation.Nonnull BlindInfoForSigner blindInfoForSigner) {
     this.blindInfoForSigner = blindInfoForSigner;
   }
 
@@ -222,9 +223,8 @@ public class BlindSigningInfo {
         }
       }
         JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (!jsonObj.get("blindInfoForSigner").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format("Expected the field `blindInfoForSigner` to be a primitive type in the JSON string but got `%s`", jsonObj.get("blindInfoForSigner").toString()));
-      }
+      // validate the required field `blindInfoForSigner`
+      BlindInfoForSigner.validateJsonElement(jsonObj.get("blindInfoForSigner"));
       // ensure the json data is an array
       if (!jsonObj.get("blindedAttributes").isJsonArray()) {
         throw new IllegalArgumentException(String.format("Expected the field `blindedAttributes` to be an array in the JSON string but got `%s`", jsonObj.get("blindedAttributes").toString()));

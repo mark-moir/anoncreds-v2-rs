@@ -4,6 +4,7 @@ use crate::vca::interfaces::primitives::types::*;
 use crate::vca::r#impl::to_from_api::*;
 use crate::vca::r#impl::types::*;
 use crate::vca::r#impl::util::*;
+use crate::vca::zkp_backends::ac2c::signer::AC2C_DOES_NOT_SURFACE_BSICP;
 use crate::vca::zkp_backends::ac2c::to_from_api::range_proof_to_from_api::*;
 use crate::vca::{Error, SerdeJsonError, VCAResult};
 // ------------------------------------------------------------------------------
@@ -254,7 +255,14 @@ fn transform_instruction<S: ShortGroupSignatureScheme>(
             let IssuerPublic::<S> {
                 verifiable_encryption_key,
                 ..
-            } = from_api(&SignerPublicSetupData(authority_as_issuer.clone()))?;
+            } = from_api(&SignerPublicSetupData {
+                signer_public_setup_data: authority_as_issuer.clone(),
+                // TODO: implement correctness proof if needed, or change it to
+                // an indication of why not needed
+                signer_public_setup_data_correctness_proof: SignerPublicSetupDataCorrectnessProof(
+                    AC2C_DOES_NOT_SURFACE_BSICP.to_string(),
+                ),
+            })?;
             Ok(success(ProofInstructionGeneral {
                 cred_label: cred_label.clone(),
                 attr_idx_general: *attr_idx_general,

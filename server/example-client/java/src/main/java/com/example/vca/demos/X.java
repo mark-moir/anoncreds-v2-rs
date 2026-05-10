@@ -74,8 +74,8 @@ public class X {
         Util.sop("dVals", TestData.dVals());
         Util.sop("sVals", TestData.sVals());
 
-        final var dSig        = (String) sDataAndSigs[2];
-        final var sSig        = (String) sDataAndSigs[3];
+        final var dSig        = (Signature) sDataAndSigs[2];
+        final var sSig        = (Signature) sDataAndSigs[3];
 
         Util.sop("dSig", dSig);
         Util.sop("sSig", sSig);
@@ -103,8 +103,8 @@ public class X {
     {
         final SignerData dSignerData;
         final SignerData sSignerData;
-        final String dSig;
-        final String sSig;
+        final Signature dSig;
+        final Signature sSig;
         if (sigType == X.SigType.NonBlinded) {
             dSignerData = api.createSignerData(new CreateSignerDataRequest()
                                                .claimTypes(TestData.dCTs(zkpLib))
@@ -134,20 +134,22 @@ public class X {
             final BlindSigningInfo dBlindSigningInfo =
                 api.createBlindSigningInfo(new CreateBlindSigningInfoRequest()
                                            .signerPublicData(dSignerData.getSignerPublicData())
+                                           .nonce(TestData.NONCE)
                                            .blindedIndicesAndValues(TestData.dBlindedIndicesAndVals()),
                                            zkpLib, 0);
             final BlindSigningInfo sBlindSigningInfo =
                 api.createBlindSigningInfo(new CreateBlindSigningInfoRequest()
                                            .signerPublicData(sSignerData.getSignerPublicData())
+                                           .nonce(TestData.NONCE)
                                            .blindedIndicesAndValues(TestData.sBlindedIndicesAndVals()),
                                            zkpLib, 0);
-            final String dBlindSignature =
+            final BlindSignature dBlindSignature =
                 api.signWithBlindedAttributes(new SignWithBlindedAttributesRequest()
                                               .nonBlindedAttributes(TestData.dNonBlindedIndicesAndVals())
                                               .blindInfoForSigner(dBlindSigningInfo.getBlindInfoForSigner())
                                               .signerData(dSignerData),
                                               zkpLib, 0);
-            final String sBlindSignature =
+            final BlindSignature sBlindSignature =
                 api.signWithBlindedAttributes(new SignWithBlindedAttributesRequest()
                                               .nonBlindedAttributes(TestData.sNonBlindedIndicesAndVals())
                                               .blindInfoForSigner(sBlindSigningInfo.getBlindInfoForSigner())

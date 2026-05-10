@@ -18,8 +18,8 @@ export class X {
   readonly zkpLib      : string;
   readonly sigType     : SigType;
   readonly ci          : VCA;
-  dSard                : GENERATED.SignatureAndRelatedData = { signature: "", values: [], accumulatorWitnesses: {}}
-  sSard                : GENERATED.SignatureAndRelatedData = { signature: "", values: [], accumulatorWitnesses: {}}
+  dSard                : GENERATED.SignatureAndRelatedData = { signature: { signature: "", signatureCorrectnessProof: "" }, values: [], accumulatorWitnesses: {}}
+  sSard                : GENERATED.SignatureAndRelatedData = { signature: { signature: "", signatureCorrectnessProof: "" }, values: [], accumulatorWitnesses: {}}
   shared               : Map<string, GENERATED.SharedParamValue> = new Map();
   reqs                 : Map<string, GENERATED.CredentialReqs>   = new Map();
   credD                : GENERATED.CredentialReqs = { signerLabel: "", disclosed: [], inAccum: [], notInAccum: [],
@@ -94,7 +94,7 @@ export class X {
 
   static async createSignerDataAndSignatures(
     x : X
-  ) : Promise<[GENERATED.SignerData, GENERATED.SignerData, string, string]> {
+  ) : Promise<[GENERATED.SignerData, GENERATED.SignerData, GENERATED.Signature, GENERATED.Signature]> {
     let dSignerData = undefined;
     let sSignerData = undefined;
     let dSig        = undefined;
@@ -108,9 +108,9 @@ export class X {
       dSignerData = await x.ci.createSignerData(0, TestData.dCTs(x.zkpLib), TestData.DL_BLINDED_INDICES);
       sSignerData = await x.ci.createSignerData(1, TestData.sCTs(x.zkpLib), TestData.SUB_BLINDED_INDICES);
       const dBlindSigningInfo = await x.ci.createBlindSigningInfo(
-        0, dSignerData.signerPublicData, TestData.dBlindedIndicesAndVals());
+        0, TestData.NONCE, dSignerData.signerPublicData, TestData.dBlindedIndicesAndVals());
       const sBlindSigningInfo = await x.ci.createBlindSigningInfo(
-        0, sSignerData.signerPublicData, TestData.sBlindedIndicesAndVals());
+        0, TestData.NONCE, sSignerData.signerPublicData, TestData.sBlindedIndicesAndVals());
       const dBlindSignature   = await x.ci.signWithBlindedAttributes(
         0, dSignerData, TestData.dNonBlindedIndicesAndVals(), dBlindSigningInfo.blindInfoForSigner);
       const sBlindSignature   = await x.ci.signWithBlindedAttributes(
@@ -144,4 +144,3 @@ export class X {
     return x.ci.verifyProof(x.reqs, x.shared, dfv, decryptRequests, TestData.NONCE);
   }
 }
-

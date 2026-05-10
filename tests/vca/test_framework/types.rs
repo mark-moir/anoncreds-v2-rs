@@ -287,3 +287,9 @@ pub fn new_credential_reqs(i_lbl: IssuerLabel) -> api::CredentialReqs {
         equal_to: api::EqualTo(vec![]),
     }
 }
+
+impl TestState {
+    pub fn default_nonce() -> String {
+        "test-nonce".to_string()
+    }
+}

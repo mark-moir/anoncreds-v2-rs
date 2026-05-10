@@ -18,6 +18,7 @@ import type {
   AccumulatorAddRemoveRequest,
   AccumulatorAddRemoveResponse,
   AuthorityData,
+  BlindSignature,
   BlindSigningInfo,
   CreateAccumulatorResponse,
   CreateBlindSigningInfoRequest,
@@ -26,11 +27,16 @@ import type {
   GetAccumulatorWitnessRequest,
   SignRequest,
   SignWithBlindedAttributesRequest,
+  Signature,
   SignerData,
   UnblindBlindedSignatureRequest,
   UpdateAccumulatorWitnessRequest,
+  VerifyBlindSignatureCorrectnessProofRequest,
+  VerifyBlindSigningInfoCorrectnessProofRequest,
   VerifyDecryptionRequest,
   VerifyProofRequest,
+  VerifySignatureCorrectnessProofRequest,
+  VerifySignerPublicSetupDataCorrectnessProofRequest,
   Warning,
   WarningsAndDataForVerifier,
   WarningsAndDecryptResponses,
@@ -42,6 +48,8 @@ import {
     AccumulatorAddRemoveResponseToJSON,
     AuthorityDataFromJSON,
     AuthorityDataToJSON,
+    BlindSignatureFromJSON,
+    BlindSignatureToJSON,
     BlindSigningInfoFromJSON,
     BlindSigningInfoToJSON,
     CreateAccumulatorResponseFromJSON,
@@ -58,16 +66,26 @@ import {
     SignRequestToJSON,
     SignWithBlindedAttributesRequestFromJSON,
     SignWithBlindedAttributesRequestToJSON,
+    SignatureFromJSON,
+    SignatureToJSON,
     SignerDataFromJSON,
     SignerDataToJSON,
     UnblindBlindedSignatureRequestFromJSON,
     UnblindBlindedSignatureRequestToJSON,
     UpdateAccumulatorWitnessRequestFromJSON,
     UpdateAccumulatorWitnessRequestToJSON,
+    VerifyBlindSignatureCorrectnessProofRequestFromJSON,
+    VerifyBlindSignatureCorrectnessProofRequestToJSON,
+    VerifyBlindSigningInfoCorrectnessProofRequestFromJSON,
+    VerifyBlindSigningInfoCorrectnessProofRequestToJSON,
     VerifyDecryptionRequestFromJSON,
     VerifyDecryptionRequestToJSON,
     VerifyProofRequestFromJSON,
     VerifyProofRequestToJSON,
+    VerifySignatureCorrectnessProofRequestFromJSON,
+    VerifySignatureCorrectnessProofRequestToJSON,
+    VerifySignerPublicSetupDataCorrectnessProofRequestFromJSON,
+    VerifySignerPublicSetupDataCorrectnessProofRequestToJSON,
     WarningFromJSON,
     WarningToJSON,
     WarningsAndDataForVerifierFromJSON,
@@ -155,6 +173,16 @@ export interface UpdateAccumulatorWitnessOperationRequest {
     updateAccumulatorWitnessRequest: UpdateAccumulatorWitnessRequest;
 }
 
+export interface VerifyBlindSignatureCorrectnessProofOperationRequest {
+    zkpLib: string;
+    verifyBlindSignatureCorrectnessProofRequest: VerifyBlindSignatureCorrectnessProofRequest;
+}
+
+export interface VerifyBlindSigningInfoCorrectnessProofOperationRequest {
+    zkpLib: string;
+    verifyBlindSigningInfoCorrectnessProofRequest: VerifyBlindSigningInfoCorrectnessProofRequest;
+}
+
 export interface VerifyDecryptionOperationRequest {
     zkpLib: string;
     verifyDecryptionRequest: VerifyDecryptionRequest;
@@ -163,6 +191,16 @@ export interface VerifyDecryptionOperationRequest {
 export interface VerifyProofOperationRequest {
     zkpLib: string;
     verifyProofRequest: VerifyProofRequest;
+}
+
+export interface VerifySignatureCorrectnessProofOperationRequest {
+    zkpLib: string;
+    verifySignatureCorrectnessProofRequest: VerifySignatureCorrectnessProofRequest;
+}
+
+export interface VerifySignerPublicSetupDataCorrectnessProofOperationRequest {
+    zkpLib: string;
+    verifySignerPublicSetupDataCorrectnessProofRequest: VerifySignerPublicSetupDataCorrectnessProofRequest;
 }
 
 /**
@@ -665,7 +703,7 @@ export class DefaultApi extends runtime.BaseAPI {
      * Returns Signature.
      * Create a signature from the given values and SignerData.
      */
-    async signRaw(requestParameters: SignOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+    async signRaw(requestParameters: SignOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Signature>> {
         if (requestParameters['signRequest'] == null) {
             throw new runtime.RequiredError(
                 'signRequest',
@@ -695,18 +733,14 @@ export class DefaultApi extends runtime.BaseAPI {
             body: SignRequestToJSON(requestParameters['signRequest']),
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<string>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.JSONApiResponse(response, (jsonValue) => SignatureFromJSON(jsonValue));
     }
 
     /**
      * Returns Signature.
      * Create a signature from the given values and SignerData.
      */
-    async sign(requestParameters: SignOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
+    async sign(requestParameters: SignOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Signature> {
         const response = await this.signRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -715,7 +749,7 @@ export class DefaultApi extends runtime.BaseAPI {
      * Returns a BlindSignature.
      * Create a BlindSignature from the given non-blinded values, blinding info and SignerData.
      */
-    async signWithBlindedAttributesRaw(requestParameters: SignWithBlindedAttributesOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+    async signWithBlindedAttributesRaw(requestParameters: SignWithBlindedAttributesOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BlindSignature>> {
         if (requestParameters['signWithBlindedAttributesRequest'] == null) {
             throw new runtime.RequiredError(
                 'signWithBlindedAttributesRequest',
@@ -745,18 +779,14 @@ export class DefaultApi extends runtime.BaseAPI {
             body: SignWithBlindedAttributesRequestToJSON(requestParameters['signWithBlindedAttributesRequest']),
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<string>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.JSONApiResponse(response, (jsonValue) => BlindSignatureFromJSON(jsonValue));
     }
 
     /**
      * Returns a BlindSignature.
      * Create a BlindSignature from the given non-blinded values, blinding info and SignerData.
      */
-    async signWithBlindedAttributes(requestParameters: SignWithBlindedAttributesOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
+    async signWithBlindedAttributes(requestParameters: SignWithBlindedAttributesOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BlindSignature> {
         const response = await this.signWithBlindedAttributesRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -765,7 +795,7 @@ export class DefaultApi extends runtime.BaseAPI {
      * Returns Signature.
      * Unblinded a blinded signature.
      */
-    async unblindBlindedSignatureRaw(requestParameters: UnblindBlindedSignatureOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+    async unblindBlindedSignatureRaw(requestParameters: UnblindBlindedSignatureOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Signature>> {
         if (requestParameters['unblindBlindedSignatureRequest'] == null) {
             throw new runtime.RequiredError(
                 'unblindBlindedSignatureRequest',
@@ -795,18 +825,14 @@ export class DefaultApi extends runtime.BaseAPI {
             body: UnblindBlindedSignatureRequestToJSON(requestParameters['unblindBlindedSignatureRequest']),
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<string>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.JSONApiResponse(response, (jsonValue) => SignatureFromJSON(jsonValue));
     }
 
     /**
      * Returns Signature.
      * Unblinded a blinded signature.
      */
-    async unblindBlindedSignature(requestParameters: UnblindBlindedSignatureOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
+    async unblindBlindedSignature(requestParameters: UnblindBlindedSignatureOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Signature> {
         const response = await this.unblindBlindedSignatureRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -861,6 +887,96 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async updateAccumulatorWitness(requestParameters: UpdateAccumulatorWitnessOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
         const response = await this.updateAccumulatorWitnessRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async verifyBlindSignatureCorrectnessProofRaw(requestParameters: VerifyBlindSignatureCorrectnessProofOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters['zkpLib'] == null) {
+            throw new runtime.RequiredError(
+                'zkpLib',
+                'Required parameter "zkpLib" was null or undefined when calling verifyBlindSignatureCorrectnessProof().'
+            );
+        }
+
+        if (requestParameters['verifyBlindSignatureCorrectnessProofRequest'] == null) {
+            throw new runtime.RequiredError(
+                'verifyBlindSignatureCorrectnessProofRequest',
+                'Required parameter "verifyBlindSignatureCorrectnessProofRequest" was null or undefined when calling verifyBlindSignatureCorrectnessProof().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['zkpLib'] != null) {
+            queryParameters['zkpLib'] = requestParameters['zkpLib'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/vca/verifyBlindSignatureCorrectnessProof`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: VerifyBlindSignatureCorrectnessProofRequestToJSON(requestParameters['verifyBlindSignatureCorrectnessProofRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     */
+    async verifyBlindSignatureCorrectnessProof(requestParameters: VerifyBlindSignatureCorrectnessProofOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.verifyBlindSignatureCorrectnessProofRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async verifyBlindSigningInfoCorrectnessProofRaw(requestParameters: VerifyBlindSigningInfoCorrectnessProofOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters['zkpLib'] == null) {
+            throw new runtime.RequiredError(
+                'zkpLib',
+                'Required parameter "zkpLib" was null or undefined when calling verifyBlindSigningInfoCorrectnessProof().'
+            );
+        }
+
+        if (requestParameters['verifyBlindSigningInfoCorrectnessProofRequest'] == null) {
+            throw new runtime.RequiredError(
+                'verifyBlindSigningInfoCorrectnessProofRequest',
+                'Required parameter "verifyBlindSigningInfoCorrectnessProofRequest" was null or undefined when calling verifyBlindSigningInfoCorrectnessProof().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['zkpLib'] != null) {
+            queryParameters['zkpLib'] = requestParameters['zkpLib'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/vca/verifyBlindSigningInfoCorrectnessProof`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: VerifyBlindSigningInfoCorrectnessProofRequestToJSON(requestParameters['verifyBlindSigningInfoCorrectnessProofRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     */
+    async verifyBlindSigningInfoCorrectnessProof(requestParameters: VerifyBlindSigningInfoCorrectnessProofOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.verifyBlindSigningInfoCorrectnessProofRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -959,6 +1075,96 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async verifyProof(requestParameters: VerifyProofOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WarningsAndDecryptResponses> {
         const response = await this.verifyProofRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async verifySignatureCorrectnessProofRaw(requestParameters: VerifySignatureCorrectnessProofOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters['zkpLib'] == null) {
+            throw new runtime.RequiredError(
+                'zkpLib',
+                'Required parameter "zkpLib" was null or undefined when calling verifySignatureCorrectnessProof().'
+            );
+        }
+
+        if (requestParameters['verifySignatureCorrectnessProofRequest'] == null) {
+            throw new runtime.RequiredError(
+                'verifySignatureCorrectnessProofRequest',
+                'Required parameter "verifySignatureCorrectnessProofRequest" was null or undefined when calling verifySignatureCorrectnessProof().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['zkpLib'] != null) {
+            queryParameters['zkpLib'] = requestParameters['zkpLib'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/vca/verifySignatureCorrectnessProof`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: VerifySignatureCorrectnessProofRequestToJSON(requestParameters['verifySignatureCorrectnessProofRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     */
+    async verifySignatureCorrectnessProof(requestParameters: VerifySignatureCorrectnessProofOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.verifySignatureCorrectnessProofRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async verifySignerPublicSetupDataCorrectnessProofRaw(requestParameters: VerifySignerPublicSetupDataCorrectnessProofOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters['zkpLib'] == null) {
+            throw new runtime.RequiredError(
+                'zkpLib',
+                'Required parameter "zkpLib" was null or undefined when calling verifySignerPublicSetupDataCorrectnessProof().'
+            );
+        }
+
+        if (requestParameters['verifySignerPublicSetupDataCorrectnessProofRequest'] == null) {
+            throw new runtime.RequiredError(
+                'verifySignerPublicSetupDataCorrectnessProofRequest',
+                'Required parameter "verifySignerPublicSetupDataCorrectnessProofRequest" was null or undefined when calling verifySignerPublicSetupDataCorrectnessProof().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['zkpLib'] != null) {
+            queryParameters['zkpLib'] = requestParameters['zkpLib'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/vca/verifySignerPublicSetupDataCorrectnessProof`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: VerifySignerPublicSetupDataCorrectnessProofRequestToJSON(requestParameters['verifySignerPublicSetupDataCorrectnessProofRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     */
+    async verifySignerPublicSetupDataCorrectnessProof(requestParameters: VerifySignerPublicSetupDataCorrectnessProofOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.verifySignerPublicSetupDataCorrectnessProofRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

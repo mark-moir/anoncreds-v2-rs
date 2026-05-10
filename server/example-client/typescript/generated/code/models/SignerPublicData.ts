@@ -13,6 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
+import type { SignerPublicSetupData } from './SignerPublicSetupData';
+import {
+    SignerPublicSetupDataFromJSON,
+    SignerPublicSetupDataFromJSONTyped,
+    SignerPublicSetupDataToJSON,
+    SignerPublicSetupDataToJSONTyped,
+} from './SignerPublicSetupData';
 import type { ClaimType } from './ClaimType';
 import {
     ClaimTypeFromJSON,
@@ -28,11 +35,11 @@ import {
  */
 export interface SignerPublicData {
     /**
-     * Data resulting from a Signer's setup.
-     * @type {string}
+     * 
+     * @type {SignerPublicSetupData}
      * @memberof SignerPublicData
      */
-    signerPublicSetupData: string;
+    signerPublicSetupData: SignerPublicSetupData;
     /**
      * 
      * @type {Array<ClaimType>}
@@ -67,7 +74,7 @@ export function SignerPublicDataFromJSONTyped(json: any, ignoreDiscriminator: bo
     }
     return {
         
-        'signerPublicSetupData': json['signerPublicSetupData'],
+        'signerPublicSetupData': SignerPublicSetupDataFromJSON(json['signerPublicSetupData']),
         'signerPublicSchema': ((json['signerPublicSchema'] as Array<any>).map(ClaimTypeFromJSON)),
         'signerBlindedAttrIdxs': json['signerBlindedAttrIdxs'],
     };
@@ -84,7 +91,7 @@ export function SignerPublicDataToJSONTyped(value?: SignerPublicData | null, ign
 
     return {
         
-        'signerPublicSetupData': value['signerPublicSetupData'],
+        'signerPublicSetupData': SignerPublicSetupDataToJSON(value['signerPublicSetupData']),
         'signerPublicSchema': ((value['signerPublicSchema'] as Array<any>).map(ClaimTypeToJSON)),
         'signerBlindedAttrIdxs': value['signerBlindedAttrIdxs'],
     };
