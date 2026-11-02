@@ -39,7 +39,7 @@ macro_rules! define_crypto_interface_with {
                     update_accumulator_witness     : update_accumulator_witness(),
                     specific_prover                : specific_prover_ac2c::<$scheme>(),
                     specific_verifier              : specific_verifier_ac2c::<$scheme>(),
-                    specific_verify_decryption     : specific_verify_decryption_ac2c(),
+                    specific_verify_decryption     : specific_verify_decryption_ac2c::<$scheme>(),
                 };
             }
         }
