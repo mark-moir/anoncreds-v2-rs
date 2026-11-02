@@ -68,21 +68,21 @@ fn range_proof_round_trip_json_serialization_json() -> Result<(), serde_json::Er
 }
 
 #[test]
-fn range_proof_round_trip_json_serialization_cbor() -> Result<(), serde_cbor::Error> {
+fn range_proof_round_trip_json_serialization_cbor() -> Result<(), String> {
     let (b, p, v, r, c) = create_range_proof();
-    let s_cbor = serde_cbor::to_vec(&r).unwrap();
-    let d: RangeProof = serde_cbor::from_slice(&s_cbor)?;
+    let s_cbor = cbor2::to_vec(&r).unwrap();
+    let d: RangeProof = cbor2::from_slice(&s_cbor).map_err(|e| format!("{e}"))?;
     verify_proof(b, p, v, d, c);
     Ok(())
 }
 
 #[test]
-fn range_proof_round_trip_json_base64_serialization() -> Result<(), serde_cbor::Error> {
+fn range_proof_round_trip_json_base64_serialization() -> Result<(), String> {
     let (b, p, v, r, c) = create_range_proof();
-    let s_cbor = serde_cbor::to_vec(&r).unwrap();
+    let s_cbor = cbor2::to_vec(&r).unwrap();
     let s_str = BASE64_STANDARD.encode(s_cbor);
     let s_cbor_1 = BASE64_STANDARD.decode(s_str).unwrap();
-    let d: RangeProof = serde_cbor::from_slice(&s_cbor_1)?;
+    let d: RangeProof = cbor2::from_slice(&s_cbor_1).map_err(|e| format!("{e}"))?;
     verify_proof(b, p, v, d, c);
     Ok(())
 }
