@@ -25,7 +25,7 @@ pub enum Error {
     FileError(String),
     FromUtf8Error(std::string::FromUtf8Error),
     General(String),
-    SerdeCborError(SerdeCborError),
+    Cbor2Error(String),
     SerdeError(SerdeJsonError),
     UnexpectedError(UnexpectedError),
     Utf8Error(std::str::Utf8Error),
@@ -51,9 +51,9 @@ impl PartialEq for SerdeJsonError {
 }
 
 #[derive(Debug)]
-pub struct SerdeCborError(serde_cbor::Error);
+pub struct Cbor2Error(String);
 
-impl PartialEq for SerdeCborError {
+impl PartialEq for Cbor2Error {
     fn eq(&self, other: &Self) -> bool {
         format!("{self:?}") == format!("{other:?}")
     }

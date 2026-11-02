@@ -1,11 +1,11 @@
 // ------------------------------------------------------------------------------
-use crate::vca::{self, Error, SerdeCborError, SerdeJsonError, VCAResult};
+use crate::vca::{self, Error, Cbor2Error, SerdeJsonError, VCAResult};
 // ------------------------------------------------------------------------------
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 // ------------------------------------------------------------------------------
 use base64::prelude::*;
 use serde::{Deserialize, Serialize};
-use serde_cbor::*;
+use cbor2::*;
 use std::str;
 // ------------------------------------------------------------------------------
 
@@ -93,12 +93,12 @@ pub fn from_opaque_json<T: for<'de> Deserialize<'de>>(s: &str) -> VCAResult<T> {
 // TODO: remove these when possible.  These should not be needed, but currently are, due to a
 // serialization bug in bulletproofs; see tests/vca/range_proof_serialization_test.rs
 pub fn to_opaque_cbor<T: Serialize>(t: &T) -> VCAResult<String> {
-    let s = to_vec(t).map_err(|err| Error::SerdeCborError(SerdeCborError(err)))?;
+    let s = to_vec(t).map_err(|err| Error::Cbor2Error(format!("{err}")))?;
     Ok(to_opaque(s))
 }
 pub fn from_opaque_cbor<T: for<'de> Deserialize<'de>>(s: &str) -> VCAResult<T> {
     let v = from_opaque_to_vec(s)?;
-    let s = from_slice(&v).map_err(|err| Error::SerdeCborError(SerdeCborError(err)))?;
+    let s = from_slice(&v).map_err(|err| Error::Cbor2Error(format!("{err}")))?;
     Ok(s)
 }
 
