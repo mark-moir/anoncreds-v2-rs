@@ -15,9 +15,13 @@ use crate::{get_location_and_backtrace_on_panic, str_vec_from};
 use crate::claim::{ClaimData, ScalarClaim};
 use crate::knox::short_group_sig_core::short_group_traits::ShortGroupSignatureScheme;
 use crate::prelude::{
+    GovernanceVerificationProof,
     Presentation, PresentationCredential, PresentationProofs, PresentationSchema,
+    Statements, VerifiableEncryptionStatement, verify_governance_proof
 };
 // ------------------------------------------------------------------------------
+use blsful::{Bls12381G2Impl, SecretKey};
+use blsful::inner_types::{G1Projective};
 use indexmap::IndexMap;
 use std::collections::HashMap;
 use std::panic::RefUnwindSafe;
@@ -92,13 +96,27 @@ where
                 &str_vec_from!("specific_verifier_ac2c", "encryption proof not found"),
             )?;
             if let PresentationProofs::VerifiableEncryption(verenc) = prf {
-                let dk = from_api(authority_decryption_key)?;
-                let decrypted_value_scalar =
-                    verenc.decrypt_scalar(&dk).ok_or(Error::General(format!(
-                        "Error decrypting attribute {a_idx} of credential \
-                         issued by {i_lbl} for {a_lbl}"
-                    )))?;
 
+                // Get encryption key from presentation schema
+                let encryption_key = match lookup_throw_if_absent(
+                    &stmt_id,
+                    &pres_sch.statements,
+                    Error::General,
+                    &str_vec_from!("specific_verifier_ac2c", "verifiable encryption statement not found", stmt_id),
+                )? {
+                    Statements::VerifiableEncryption(ve_stmt) => ve_stmt.encryption_key,
+                    _ => return Err(Error::General(format!("{stmt_id} is not verifiably encrypted").to_string()))
+                };
+
+                let dk: SecretKey<Bls12381G2Impl> = from_api(authority_decryption_key)?;
+
+                let proof = verenc.create_governance_verification_proof(
+                    stmt_id.clone(),
+                    &encryption_key,
+                    &dk)
+                    .map_err(|e| convert_to_crypto_library_error("AC2C", "specific_verifier_ac2c", e))?;
+
+                let decrypted_value_scalar = proof.decrypted_scalar;
                 let decrypted_value = ScalarClaim::from(decrypted_value_scalar)
                     .decode_to_str()
                     .map_err(|e| {
@@ -107,12 +125,12 @@ where
                               for attribute {a_idx} of credential issued by {i_lbl} for {a_lbl}"
                         ))
                     })?;
+
                 let dr = DecryptResponse {
                     value: decrypted_value,
-                    decryption_proof: DecryptionProof(
-                        "BOGUS-DECRYPTION-VERIFICATION-NOT-YET-SUPPORTED".to_string(),
-                    ),
+                    decryption_proof: to_api(&proof)?
                 };
+
                 insert_throw_if_present_3_lvl(
                     i_lbl,
                     a_idx,
@@ -187,10 +205,69 @@ fn remove_empty_inner_maps(
         .map(|(k, v)| (k.clone(), v.clone()))
         .collect::<IndexMap<_, _>>()
 }
-pub fn specific_verify_decryption_ac2c() -> SpecificVerifyDecryption {
-    Arc::new(|_prf_instrs, _eqs, _proof_api, _decr_reqs, _auth_dks| {
-        Err(Error::General(
-            "specific_verify_decryption_ac2c : UNIMPLEMENTED".to_string(),
-        ))
+pub fn specific_verify_decryption_ac2c<S: ShortGroupSignatureScheme>(
+)-> SpecificVerifyDecryption {
+    Arc::new(|prf_instrs, eqs, dfv, _auth_decr_keys, decr_resps| {
+
+        // Reconstruct presentation schema from proof instructions and equalities
+        let WarningsAndResult {
+            warnings: warns,
+            result: pres_sch,
+        } = presentation_schema_from::<S>(prf_instrs, eqs)?;
+
+        // Get AC2C proof
+        let proof_ac2c: Presentation<S> = from_api(&dfv.proof)?;
+
+        // Verify each DecryptResponse
+        for (
+            i_lbl,
+            a_idx,
+            a_lbl,
+            decrypt_response,
+        ) in three_lvl_map_to_vec_of_tuples(decr_resps)
+        {
+            // Get the decryption proof
+            let gov_proof: GovernanceVerificationProof =
+                from_api(decrypt_response.decryption_proof.clone())?;
+
+            // Check that the decrypted scalar in the GovernanceProof is consistent with the
+            // value claimed in the DecryptResponse.
+            let decrypted_value = ScalarClaim::from(gov_proof.decrypted_scalar)
+                .decode_to_str()
+                .map_err(|e| convert_to_crypto_library_error(
+                    "AC2C", "specific_verify_decryption_ac2c could not decode decrypted scalar", e
+                ))?;
+
+            let claimed_value = decrypt_response.value.clone();
+            if decrypted_value != claimed_value {
+                return Err(Error::General(format!(
+                    "Decrypted value is {decrypted_value}, Authority claimed it was {claimed_value}")))
+            };
+
+            // Get encryption key from presentation schema
+            let stmt_id = encrypted_for_label_for(i_lbl, a_idx, a_lbl);
+            let encryption_key = match lookup_throw_if_absent(
+                &stmt_id,
+                &pres_sch.statements,
+                Error::General,
+                &str_vec_from!("specific_verifier_ac2c",
+                               "verifiable encryption statement not found",
+                               stmt_id),
+            )? {
+                Statements::VerifiableEncryption(ve_stmt) => ve_stmt.encryption_key,
+                _ => return Err(Error::General(format!(
+                    "{stmt_id} is not verifiably encrypted").to_string()))
+            };
+
+            verify_governance_proof(
+                &encryption_key,
+                &proof_ac2c,
+                &gov_proof)
+                .map_err(|e| convert_to_crypto_library_error(
+                    "AC2C", "specific_verify_decryption_ac2c", e
+                ))?;
+
+        }
+        Ok(warns)
     })
 }
