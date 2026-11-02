@@ -72,6 +72,7 @@ pub mod prelude {
     pub use presentation::*;
     pub use revocation_registry::*;
     pub use statement::*;
+    pub use verifier::verify_governance_proof;
 
     pub use blsful;
 }
